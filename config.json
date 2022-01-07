@@ -1,0 +1,18 @@
+{	
+	"DATABASE_SETTINGS": {
+		"host": "",
+		"user": "",
+		"password": "",
+		"database": "slashy",
+		"waitForConnections": true,
+		"connectionLimit": 10,
+		"queueLimit": 0,
+		"port": "",
+		"timezone": "+00:00"
+	},
+	"NOWPLAYING": "/help",
+	"TOKEN": "",
+	"BOT_LOGO": "https://i.imgur.com/d9DucXP.png",
+	"KEZ_AVATAR": "https://i.imgur.com/cBG5KvY.png",
+	"MAX_COMMANDS": 30
+}

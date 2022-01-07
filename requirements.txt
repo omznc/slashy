@@ -1,0 +1,2 @@
+aiomysql==0.0.22
+novus==0.0.5

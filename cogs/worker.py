@@ -1,3 +1,4 @@
+from discord.errors import HTTPException
 from discord.ext import commands
 from discord import Embed
 from logging import warning
@@ -121,8 +122,9 @@ class Worker(commands.Cog):
 
         if await self.bot.db.getNumberOfCommands(ctx.guild.id) >= MAX_COMMANDS:
             return await ctx.send(
-                content="You have reached the maximum number of **Slashy** commands (30) for your server."
+                content=f"You have reached the maximum number of **Slashy** commands ({MAX_COMMANDS}) for your server."
                 "\nPlease remove some before adding more. 🙂"
+                "\nThis limit will be incerased in the future."
             )
 
         response = await self.bot.http.upsert_guild_command(
@@ -255,11 +257,26 @@ class Worker(commands.Cog):
                 "This command can only be run in servers.", ephemeral=True
             )
 
+        if isinstance(error, HTTPException) and error.code == 30032:
+            return await ctx.send(
+                "This server has reached the maximum number of commands allowed by Discord (100)."
+                "\nPlease remove some before adding more.",
+                ephemeral=True,
+            )
+
         if not isinstance(error, commands.CommandNotFound):
             try:
-                warning(f"{ctx.command} failed with {error}")
+                warning(f"{ctx.command} failed with **{error}**")
             except:  # Yes, bare except. No, I don't care.
-                warning(f"{ctx.command_name} failed with {error}")
+                warning(f"{ctx.command_name} failed with **{error}**")
+            return await ctx.send(
+                "Something went wrong. Please let @Kez#6673 know."
+                "\nError is as follows:"
+                "\n```"
+                f"\n{error}"
+                "\n```",
+                ephemeral=True,
+            )
 
 
 def setup(client):

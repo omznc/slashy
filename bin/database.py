@@ -33,7 +33,30 @@ class Database:
                 result = await cur.fetchone()
                 return result is not None and result[0] == 1
 
-    async def getNumberOfCommands(self, guild_id: int) -> int:
+    async def getGlobalCommandUsage(self, guild_id: int = None) -> int:
+        """
+        Returns the number of times slashy has been used across all or just 1 server.
+        """
+        with await self.pool as con:
+            async with con.cursor() as cur:
+                if guild_id is None:
+                    await cur.execute(
+                        """
+                        SELECT SUM(uses) FROM slashyCommands
+                        """
+                    )
+                else:
+                    await cur.execute(
+                        """
+                        SELECT SUM(uses) FROM slashyCommands
+                        WHERE guild_id = %s
+                        """,
+                        (guild_id,),
+                    )
+                result = await cur.fetchone()
+                return result[0]
+
+    async def getNumberOfCommands(self, guild_id: int = None) -> int:
         """Returns the number of commands in a guild.
 
         Args:
@@ -42,16 +65,22 @@ class Database:
         Returns:
             int: The number of commands in the guild.
         """
-
         with await self.pool as con:
             async with con.cursor() as cur:
-                await cur.execute(
-                    """
-                    SELECT COUNT(*) FROM slashyCommands
-                    WHERE guild_id = %s
-                    """,
-                    (guild_id,),
-                )
+                if guild_id is not None:
+                    await cur.execute(
+                        """
+                        SELECT COUNT(*) FROM slashyCommands
+                        WHERE guild_id = %s
+                        """,
+                        (guild_id,),
+                    )
+                else:
+                    await cur.execute(
+                        """
+                        SELECT COUNT(*) FROM slashyCommands
+                        """
+                    )
                 result = await cur.fetchone()
                 return result[0]
 
@@ -251,17 +280,19 @@ class Database:
         """
         Connects to the database.
         """
-
-        self.started = True
-
-        # Connect
-        self.pool = await aiomysql.create_pool(
-            host=self.__host,
-            user=self.__user,
-            password=DB_CONFIG["password"],
-            db=self.__database,
-            autocommit=True,
-        )
+        try:
+            # Connect
+            self.pool = await aiomysql.create_pool(
+                host=self.__host,
+                user=self.__user,
+                password=DB_CONFIG["password"],
+                db=self.__database,
+                autocommit=True,
+            )
+        except:
+            self.started = False
+            return self.started
+        
         with await self.pool as con:
             async with con.cursor() as cur:
                 await cur.execute(
@@ -284,6 +315,7 @@ class Database:
                     )
                     """
                 )
+                self.started = True
         return self.started
 
     async def ping(self) -> None:

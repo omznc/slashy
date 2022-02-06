@@ -15,6 +15,7 @@ RESERVED_COMMANDS = {
     "edit",
     "list",
     "help",
+    "slashystats",
 }  # These command names are reserved to prevent confusion with custom ones.
 
 
@@ -61,10 +62,11 @@ class Worker(commands.Cog):
         """
 
         # Name: 1-32 characters, no spaces, no special characters.
-        if name is not None and (len(name) > 32 or not name.isalnum()):
+        if name is not None and ((len(name) > 32 or not name.isalpha() or not name.isascii()) or name.isnumeric()):
             await ctx.send(
                 content="The name of the command must be less than or equal **32** letters."
-                f"\nYours was **{len(name)}** characters long."
+                "\nRemember, you can only use latin characters (a-z), and the command name will always be in lowercase."
+                f"\nYou entered{(': `' + name + '`') if len(name) < 500 else ' a way too long of a name...'}"
             )
             return False
 
@@ -112,6 +114,8 @@ class Worker(commands.Cog):
     async def add(
         self, ctx, name: str, reply: str, description: str = "A command made by Slashy"
     ) -> None:
+        name = name.lower()
+        
         if not await self.checkInputValidity(ctx, name, reply, description):
             return
 
@@ -149,7 +153,8 @@ class Worker(commands.Cog):
     async def edit(
         self, ctx, name: str, reply: str = None, description: str = None
     ) -> None:
-
+        name = name.lower()
+        
         # Manually parsing the arguments.
         name = ctx.given_values.get("name")
         reply = ctx.given_values.get("reply")
@@ -195,6 +200,8 @@ class Worker(commands.Cog):
         50, 86400, commands.BucketType.guild
     )  # 50 uses per 24 hours, per Discord server.
     async def remove(self, ctx, name: str) -> None:
+        name = name.lower()
+        
         if not await self.checkInputValidity(ctx, name):
             return
 

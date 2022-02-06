@@ -7,6 +7,14 @@ from json import load
 config = load(open("config.json"))
 LOGO = config["BOT_LOGO"]  # Slashy's logo.
 AVATAR = config["KEZ_AVATAR"]  # My, the developer's avatar.
+RESERVED_COMMANDS = {
+    "add",
+    "remove",
+    "edit",
+    "list",
+    "help",
+    "slashystats",
+}  # These command names are reserved to prevent confusion with custom ones.
 
 
 class Help(commands.Cog):
@@ -58,10 +66,15 @@ class Help(commands.Cog):
             value="Used to list all of your server's commands." "\nUsage: `/list`",
         )
         embed.add_field(
+            name="__SlashyStats__",
+            value="Displays some Slashy statistics." "\nUsage: `/slashystats`",
+        )
+        embed.add_field(
             name="Notes",
             inline=False,
             value="`<>` are required arguments and `[]` are optional arguments."
-            "\n👑 means the command can only be used by server administrators.",
+            "\n👑 means the command can only be used by server administrators."
+            f"\nThe following command names are reserved and can't be used to prevent confusion: `{'`, `'.join(RESERVED_COMMANDS)}`.",
         )
         await ctx.send(embed=embed, ephemeral=True)
 

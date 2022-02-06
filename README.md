@@ -9,9 +9,27 @@ You can get help on using the bot with the `/help` command in any of the servers
 
 ## Invite
 
-Click [right here](https://hey.imkez.com/slashy-invite) to add Slashy to your own server, or just copy https://hey.imkez.com/slashy-invite
+Click [right here](https://hey.imkez.com/slashy-invite) to add Slashy to your own server.
 
+## Help
+Below are all the commands you can currently use.
 
+<u>Underlined</u> commands mean that only members with the `Administrator` permission can use them. Will be customizable in the future.
+
+<> are required arguments and [] are optional arguments.
+
+The following command names are reserved and can't be used to prevent confusion: `edit`, `add`, `remove`, `slashystats`, `help`, `list`
+| Command 	| Usage 	| Description 	|
+|---	|---	|---	|
+| help 	| `/help` 	| You guessed it, shows you this, but in Discord! 	|
+| add 	| `/add <name> <reply> [description]` 	| Add new slash commands.<br>The description field is optional, with the bot using **A command made by Slashy** by default. 	|
+| remove 	| `/remove <name>` 	| Remove existing slash commands. 	|
+| edit 	| `/edit <name> [new-reply] [new-description]` 	| Edit an existing command's reply, description, or both. 	|
+| list 	| `/list` 	| List all of your server's commands. 	|
+| slashystats 	| `/slashystats` 	| Display some Slashy statistics.<br>Different outputs whether you run it in a server or in a DM. 	|
+
+## Contributing
+Feel free.
 
 ## License
 

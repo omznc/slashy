@@ -9,7 +9,7 @@ You can get help on using the bot with the `/help` command in any of the servers
 
 ## Invite
 
-Click [right here](https://hey.imkez.com/slashy-invite) to add Slashy to your own server.
+Click [right here](https://hey.imkez.com/slashy-invite) to add Slashy to your server.
 
 ## Help
 Below are all the commands you can currently use.
@@ -26,7 +26,7 @@ The following command names are reserved and can't be used to prevent confusion:
 | remove 	| `/remove <name>` 	| Remove existing slash commands. 	|
 | edit 	| `/edit <name> [new-reply] [new-description]` 	| Edit an existing command's reply, description, or both. 	|
 | list 	| `/list` 	| List all of your server's commands. 	|
-| slashystats 	| `/slashystats` 	| Display some Slashy statistics.<br>Different outputs whether you run it in a server or in a DM. 	|
+| slashystats 	| `/slashystats` 	| Display some Slashy statistics.<br>Different outputs whether you run it in a server or a DM. 	|
 
 ## Contributing
 Feel free.

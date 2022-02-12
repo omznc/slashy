@@ -37,3 +37,6 @@ This project is licensed under the [GNU General Public License v3.0](https://www
 
 This was built using some code from [LiveLaunch](https://github.com/juststephen/LiveLaunch), which is licensed under the same license.
 
+## Notes
+This repository isn't and won't be updated with the realtime production code the bot is using, and will usually be a version or so late. I honestly don't have the time to push every single tiny change every time.
+

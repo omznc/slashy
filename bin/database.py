@@ -2,6 +2,10 @@ import aiomysql
 from logging import warning
 from json import load
 
+from warnings import filterwarnings
+
+filterwarnings("ignore", category=aiomysql.Warning)
+
 DB_CONFIG = load(open("config.json"))["DATABASE_SETTINGS"]
 
 
@@ -15,6 +19,132 @@ class Database:
         self.__user = DB_CONFIG["user"]
         self.__database = DB_CONFIG["database"]
         self.started = False
+
+    async def addNewGuilds(self, guild_ids: list[int]) -> None:
+        """
+        Adds multiple guilds to guildSettings, only if the guild_id row doesn't exist.
+        Runs once on bot startup.
+        
+        Args:
+            guild_id (int): Discord server's ID
+        """
+        with await self.pool as con:
+            async with con.cursor() as cur:
+                await cur.executemany(
+                    """
+                    INSERT IGNORE INTO guildSettings (guild_id)
+                    VALUES (%s)
+                    """,
+                    guild_ids,
+                )
+
+    async def addNewGuild(self, guild_id: int) -> None:
+        """Adds a new guild to guildSettings, only if the guild_id row doesn't exist.
+        
+        Args:
+            guild_id (int): Discord server's ID
+        """
+        with await self.pool as con:
+            async with con.cursor() as cur:
+                await cur.execute(
+                    """
+                    INSERT IGNORE INTO guildSettings (guild_id)
+                    VALUES (%s)
+                    """,
+                    (guild_id,),
+                )
+
+    async def removeGuild(self, guild_id: int) -> None:
+        """Removes the guild from the settings table, and all its commands.
+        
+        Args:
+            guild_id (int): Discord server's ID
+        """
+        with await self.pool as con:
+            async with con.cursor() as cur:
+                await cur.execute(
+                    """
+                    DELETE FROM guildSettings
+                    WHERE guild_id = %s
+                    """,
+                    (guild_id,),
+                )
+                await cur.execute(
+                    """
+                    DELETE FROM slashyCommands
+                    WHERE guild_id = %s
+                    """,
+                    (guild_id,),
+                )
+
+    async def getAllGuildIDs(self) -> list[int]:
+        """Gets all the guild_ids from the database.
+        
+        Returns:
+            list[int]: List of guild_ids
+        """
+        with await self.pool as con:
+            async with con.cursor() as cur:
+                await cur.execute(
+                    """
+                    SELECT guild_id FROM guildSettings
+                    """
+                )
+                result = await cur.fetchall()
+                return [x[0] for x in result]
+
+    async def removeInactiveGuilds(self, guild_ids: list[int]) -> None:
+        """
+        Removes the guilds that the bot isn't in but that still exist in the database.
+        Usually happens if the bot is offline when someone kicks it out.
+        
+        Args:
+            guild_ids (list[int]): List of guild_ids
+        """
+        for guild in await self.getAllGuildIDs():
+            if guild not in guild_ids:
+                await self.removeGuild(guild)
+                print(f"Removed guild {guild} (Removed from server)")
+
+    async def setMaxCommands(self, guild_id: int, max_commands: int) -> None:
+        """Sets the max commands for a guild.
+        
+        Args:
+            guild_id (int): Discord server's ID
+            max_commands (int): Maximum commands allowed
+        """
+        with await self.pool as con:
+            async with con.cursor() as cur:
+                await cur.execute(
+                    """
+                    UPDATE guildSettings
+                    SET max_commands = %s
+                    WHERE guild_id = %s
+                    """,
+                    (max_commands, guild_id),
+                )
+
+    async def getMaxCommands(self, guild_id: int) -> int:
+        """
+        Gets the command limit of a guild.
+        
+        Args:
+            guild_id (int): Discord server's ID
+        
+        Returns:
+            int: Maximum commands allowed
+        """
+        with await self.pool as con:
+            async with con.cursor() as cur:
+                await cur.execute(
+                    """
+                    SELECT max_commands FROM guildSettings
+                    WHERE guild_id = %s
+                    """,
+                    (guild_id,),
+                )
+                result = await cur.fetchone()
+                return result[0]
 
     # I don't plan to use this yet, maybe ever.
     async def isPremium(self, guild_id: int) -> bool:
@@ -34,8 +164,13 @@ class Database:
                 return result is not None and result[0] == 1
 
     async def getGlobalCommandUsage(self, guild_id: int = None) -> int:
-        """
-        Returns the number of times slashy has been used across all or just 1 server.
+        """Returns the number of times slashy has been across a guild, or across all guilds.
+        
+        Args:
+            guild_id (int, optional), : Discord server's ID
+    
+        Returns:
+            int: Number of times custom commands have been ran
         """
         with await self.pool as con:
             async with con.cursor() as cur:
@@ -57,13 +192,13 @@ class Database:
                 return result[0]
 
     async def getNumberOfCommands(self, guild_id: int = None) -> int:
-        """Returns the number of commands in a guild.
+        """Returns the number of commands in a guild, or across all servers.
 
         Args:
-            guild_id (int): Discord server's ID.
+            guild_id (int, optional): Discord server's ID
 
         Returns:
-            int: The number of commands in the guild.
+            int: The number of commands in the guild
         """
         with await self.pool as con:
             async with con.cursor() as cur:
@@ -89,8 +224,8 @@ class Database:
         Lookup by name.
 
         Args:
-            guild_id (int): Discord server's ID.
-            name (str): The name of the command.
+            guild_id (int): Discord server's ID
+            name (str): The name of the command
 
         Returns:
             bool: True if the command exists, False otherwise.
@@ -118,11 +253,11 @@ class Database:
         """Adds a command to the database to the specified guild.
 
         Args:
-            command_id (int): Discord-provided command ID.
-            guild_id (int): Discord server's ID.
-            name (str): Command name.
-            reply (str): Reply of the command when invoked.
-            description (str): The description of the command.
+            command_id (int): Discord-provided command ID
+            guild_id (int): Discord server's ID
+            name (str): Command name
+            reply (str): Reply of the command when invoked
+            description (str): The description of the command
         """
         with await self.pool as con:
             async with con.cursor() as cur:
@@ -142,10 +277,10 @@ class Database:
     async def removeCommand(self, guild_id: int, name: str) -> int:
         """Removes a command from the database.
         Lookup by name.
-        Returns the removed command id.
+        Returns the removed command ID.
 
         Returns:
-            [int]: Discord-provided command ID.
+            [int]: Discord-provided command ID
         """
         with await self.pool as con:
             async with con.cursor() as cur:
@@ -174,7 +309,7 @@ class Database:
         Returns the edited command id.
 
         Returns:
-            [int]: Discord-provided command ID.
+            [int]: Discord-provided command ID
         """
         with await self.pool as con:
             async with con.cursor() as cur:
@@ -222,8 +357,8 @@ class Database:
         TODO: Something more with this, probably.
 
         Args:
-            guild_id (int): Discord server's ID.
-            name (str): Command name.
+            guild_id (int): Discord server's ID
+            name (str): Command name
         """
         with await self.pool as con:
             async with con.cursor() as cur:
@@ -241,7 +376,7 @@ class Database:
         Lookup by name.
 
         Returns:
-            [str]: The reply of the command when invoked.
+            [str]: The reply of the command when invoked
         """
         with await self.pool as con:
             async with con.cursor() as cur:
@@ -255,30 +390,47 @@ class Database:
                 result = await cur.fetchone()
                 return result[0]
 
-    async def getCommands(self, guild_id: int) -> list:
+    async def getCommands(self, guild_id: int, name_only: bool = False) -> list:
         """Returns names and descriptions of all commands in a guild.
 
         Args:
-            guild_id (int): Discord server's ID.
+            guild_id (int): Discord server's ID
+            name_only (bool, optional): If True, only returns names of commands.
 
         Returns:
-            list: List of tuples containing the command name [0] and description [1].
+            list: List of tuples containing the command name [0], description [1], and reply [2]
+                  If name_only is True, returns a list of command names.
         """
+        if not name_only:
+            with await self.pool as con:
+                async with con.cursor() as cur:
+                    await cur.execute(
+                        """
+                        SELECT name, description, uses FROM slashyCommands
+                        WHERE guild_id = %s
+                        """,
+                        (guild_id,),
+                    )
+                    result = await cur.fetchall()
+                    return result
         with await self.pool as con:
             async with con.cursor() as cur:
                 await cur.execute(
                     """
-                    SELECT name, description, uses FROM slashyCommands
+                    SELECT name FROM slashyCommands
                     WHERE guild_id = %s
                     """,
                     (guild_id,),
                 )
                 result = await cur.fetchall()
+                result = [x[0] for x in result]
                 return result
 
     async def start(self) -> bool:
-        """
-        Connects to the database.
+        """Connects to the database.
+        
+        Returns:
+            bool: True if connection was successful, False otherwise
         """
         try:
             # Connect
@@ -292,7 +444,7 @@ class Database:
         except:
             self.started = False
             return self.started
-        
+
         with await self.pool as con:
             async with con.cursor() as cur:
                 await cur.execute(
@@ -311,7 +463,8 @@ class Database:
                     """
                     CREATE TABLE IF NOT EXISTS guildSettings (
                         guild_id BIGINT UNSIGNED PRIMARY KEY,
-                        premium TINYINT UNSIGNED DEFAULT 0
+                        premium TINYINT UNSIGNED DEFAULT 0,
+                        max_commands INT UNSIGNED DEFAULT 30
                     )
                     """
                 )

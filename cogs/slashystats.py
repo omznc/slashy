@@ -23,8 +23,11 @@ class SlashyStats(commands.Cog):
         embed = Embed(
             color=0x00FF00,
             description="Just a summary of Slashy's stats."
-            + ("\nRun the command in a server to get into the specifics." if ctx.guild is None else "")
-            ,
+            + (
+                "\nRun the command in a server to get into the specifics."
+                if ctx.guild is None
+                else ""
+            ),
             title="Slashy - Stats",
             url="https://hey.imkez.com/slashy-code",
         )
@@ -38,7 +41,7 @@ class SlashyStats(commands.Cog):
         embed.add_field(
             name="__Servers__",
             value=(
-                f'Hanging out in **{len(self.bot.guilds)}** servers, with **{sum(i.member_count for i in self.bot.guilds)}** users.'
+                f"Hanging out in **{len(self.bot.guilds)}** servers, with **{sum(i.member_count for i in self.bot.guilds)}** users."
                 + ("\nYou're one of them!" if ctx.guild is not None else "")
             ),
             inline=False,

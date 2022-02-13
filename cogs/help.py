@@ -42,8 +42,7 @@ class Help(commands.Cog):
         )
         embed.set_thumbnail(url=LOGO)
         embed.set_footer(
-            text="Thanks to www.juststephen.com for the help with this.",
-            icon_url="https://juststephen.com/images/apple-touch-icon.png",
+            text="Check out the source code at https://hey.imkez.com/slashy-code",
         )
         embed.add_field(
             name="👑 __Add__",

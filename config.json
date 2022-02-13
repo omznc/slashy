@@ -14,5 +14,5 @@
 	"TOKEN": "",
 	"BOT_LOGO": "https://i.imgur.com/d9DucXP.png",
 	"KEZ_AVATAR": "https://i.imgur.com/cBG5KvY.png",
-	"MAX_COMMANDS": 30
+	"MAX_COMMANDS_DEFAULT": 30
 }

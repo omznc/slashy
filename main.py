@@ -2,7 +2,7 @@ from discord import Game
 from discord.ext.commands import Bot
 from json import load
 from logging import basicConfig, WARNING
-from os import listdir, rename
+from os import listdir
 
 basicConfig(
     filename="slashy.log",
@@ -24,21 +24,6 @@ if not TOKEN:
 @client.event
 async def on_ready():
     await client.change_presence(activity=Game(name=NOWPLAYING))
-
-    """
-    Initial command publishing
-    Will be changed as soon as Novus adds an easier options system to commands
-    Runs only once to register the commands.
-    """
-    if "commands.json" in listdir("."):
-        with open("commands.json", "r", encoding="utf-8") as f:
-            commands = load(f)
-
-        await client.http.bulk_upsert_global_commands(
-            client.application_id, commands["commands"]
-        )
-        rename("commands.json", "commands.json.old")
-
     print(f"{client.user} Connected to {len(client.guilds)} servers.")
 
 
@@ -51,6 +36,7 @@ extensions = [
         if file.endswith(".py") and "db" not in file
     ],
 ]
+
 for extension in extensions:
     client.load_extension(extension)
     print(f"Loaded {extension}")

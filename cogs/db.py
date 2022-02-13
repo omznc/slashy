@@ -1,6 +1,5 @@
 from asyncio import sleep
 from discord.ext import commands, tasks
-
 from bin.database import Database
 
 
@@ -22,6 +21,27 @@ class DB(commands.Cog):
     def cog_unload(self):
         self.bot.db.pool.close()
 
+    @commands.Cog.listener()
+    async def on_ready(self):
+        await self.bot.db.addNewGuilds([guild.id for guild in self.bot.guilds])
+        print("[Database] Updated Guild List\n[Database] Removing inactive guilds...")
+        await self.bot.db.removeInactiveGuilds([guild.id for guild in self.bot.guilds])
+        print("[Database] Done!")
+
+    @commands.Cog.listener()
+    async def on_guild_join(self, guild):
+        await self.bot.db.addNewGuild(guild.id)
+        print(
+            f"[Guild] Joined {guild.name} ({guild.id}) -> {guild.member_count} Members."
+        )
+
+    @commands.Cog.listener()
+    async def on_guild_remove(self, guild):
+        await self.bot.db.removeGuild(guild.id)
+        print(
+            f"[Guild] Left {guild.name} ({guild.id}) -> {guild.member_count} Members."
+        )
+
     @tasks.loop(minutes=30)
     async def ping(self):
         """
@@ -31,10 +51,10 @@ class DB(commands.Cog):
             n = 1
             while True:
                 if await self.bot.db.start():
-                    print("Connection successful!")
+                    print("[Database] Connection successful!")
                     break
                 else:
-                    print(f"Database failed to start. Retrying... ({n})")
+                    print(f"[Database] Database failed to start. Retrying... ({n})")
                     n += 1
                     await sleep(30)
 

@@ -28,6 +28,23 @@ The following command names are reserved and can't be used to prevent confusion:
 | list 	| `/list` 	| List all of your server's commands. 	|
 | slashystats 	| `/slashystats` 	| Display some Slashy statistics.<br>Different outputs whether you run it in a server or a DM. 	|
 
+## Placeholders
+These are all the placeholders you can use in your custom command replies. 
+Feel free to open an issue to suggest any new ones.
+ 
+| Placeholder 	| Description 	|
+|---	|---	|
+| [[user]] 	| Mentions the user who ran the command. 	|
+| [[user.id]] 	| The user ID of the user who ran the command. 	|
+| [[user.name]] 	| The username of the user who ran the command. 	|
+| [[user.avatar]] 	| The avatar URL of the user who ran the command. 	|
+| [[server]] 	| The server name. 	|
+| [[server.id]] 	| The server's ID. 	|
+| [[server.icon]] 	| The server's icon URL. 	|
+| [[server.member_count]] 	| The server's member count. 	|
+| [[channel]] 	| The channel the command was ran in. 	|
+  
+
 ## Contributing
 Feel free.
 

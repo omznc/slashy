@@ -11,6 +11,19 @@ You can get help on using the bot with the `/help` command in any of the servers
 
 Click [right here](https://hey.imkez.com/slashy-invite) to add Slashy to your server.
 
+## Changelog
+
+### The Cleaner Code Update - 13. Feb, 2022
+
+- Added placeholder support:
+   - Things like [[user]], [[server.member_count]] and such.
+   - Read up below.
+
+- Updated Novus to 0.0.6, which in turn allowed me to do the following:
+   - Added auto-completion support for command names when using /edit and /remove.
+   - No longer using raw HTTP requests to manage your commands.
+- Cleaned up a lot of unnecessary code.
+
 ## Help
 Below are all the commands you can currently use.
 

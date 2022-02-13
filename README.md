@@ -9,7 +9,7 @@ You can get help on using the bot with the `/help` command in any of the servers
 
 ## Invite
 
-Click [right here](https://hey.imkez.com/slashy-invite) to add Slashy to your own server.
+Click [right here](https://hey.imkez.com/slashy-invite) to add Slashy to your server.
 
 ## Help
 Below are all the commands you can currently use.
@@ -26,7 +26,24 @@ The following command names are reserved and can't be used to prevent confusion:
 | remove 	| `/remove <name>` 	| Remove existing slash commands. 	|
 | edit 	| `/edit <name> [new-reply] [new-description]` 	| Edit an existing command's reply, description, or both. 	|
 | list 	| `/list` 	| List all of your server's commands. 	|
-| slashystats 	| `/slashystats` 	| Display some Slashy statistics.<br>Different outputs whether you run it in a server or in a DM. 	|
+| slashystats 	| `/slashystats` 	| Display some Slashy statistics.<br>Different outputs whether you run it in a server or a DM. 	|
+
+## Placeholders
+These are all the placeholders you can use in your custom command replies. 
+Feel free to open an issue to suggest any new ones.
+ 
+| Placeholder 	| Description 	|
+|---	|---	|
+| [[user]] 	| Mentions the user who ran the command. 	|
+| [[user.id]] 	| The user ID of the user who ran the command. 	|
+| [[user.name]] 	| The username of the user who ran the command. 	|
+| [[user.avatar]] 	| The avatar URL of the user who ran the command. 	|
+| [[server]] 	| The server name. 	|
+| [[server.id]] 	| The server's ID. 	|
+| [[server.icon]] 	| The server's icon URL. 	|
+| [[server.member_count]] 	| The server's member count. 	|
+| [[channel]] 	| The channel the command was ran in. 	|
+  
 
 ## Contributing
 Feel free.
@@ -36,4 +53,7 @@ Feel free.
 This project is licensed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html), so you can do a lot of things with it, as long as your code is open-source as well. Would be cool of you to link back to this project, but it's not required.
 
 This was built using some code from [LiveLaunch](https://github.com/juststephen/LiveLaunch), which is licensed under the same license.
+
+## Notes
+This repository isn't and won't be updated with the realtime production code the bot is using, and will usually be a version or so late. I honestly don't have the time to push every single tiny change every time.
 

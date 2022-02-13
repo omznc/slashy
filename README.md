@@ -16,7 +16,7 @@ Click [right here](https://hey.imkez.com/slashy-invite) to add Slashy to your se
 ### The Cleaner Code Update - 13. Feb, 2022
 
 - Added placeholder support:
-   - Things like [[user]], [[server.member_count]] and such.
+   - Things like `[[user]]`, `[[server.member_count]]` and such.
    - Read up below.
 
 - Updated Novus to 0.0.6, which in turn allowed me to do the following:
@@ -47,15 +47,15 @@ Feel free to open an issue to suggest any new ones.
  
 | Placeholder 	| Description 	|
 |---	|---	|
-| [[user]] 	| Mentions the user who ran the command. 	|
-| [[user.id]] 	| The user ID of the user who ran the command. 	|
-| [[user.name]] 	| The username of the user who ran the command. 	|
-| [[user.avatar]] 	| The avatar URL of the user who ran the command. 	|
-| [[server]] 	| The server name. 	|
-| [[server.id]] 	| The server's ID. 	|
-| [[server.icon]] 	| The server's icon URL. 	|
-| [[server.member_count]] 	| The server's member count. 	|
-| [[channel]] 	| The channel the command was ran in. 	|
+| `[[user]]` 	| Mentions the user who ran the command. 	|
+| `[[user.id]]` 	| The user ID of the user who ran the command. 	|
+| `[[user.name]]` 	| The username of the user who ran the command. 	|
+| `[[user.avatar]]` 	| The avatar URL of the user who ran the command. 	|
+| `[[server]]` 	| The server name. 	|
+| `[[server.id]]` 	| The server's ID. 	|
+| `[[server.icon]]` 	| The server's icon URL. 	|
+| `[[server.member_count]]` 	| The server's member count. 	|
+| `[[channel]]` 	| The channel the command was ran in. 	|
   
 
 ## Contributing

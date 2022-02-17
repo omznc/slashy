@@ -1,9 +1,12 @@
 from asyncio import sleep
-from discord.ext import commands, tasks
+
+from discord.ext import tasks
+from discord.ext.commands import Cog
+
 from bin.database import Database
 
 
-class DB(commands.Cog):
+class DB(Cog):
     """
     Discord.py cog for loading database methods.
 
@@ -21,26 +24,22 @@ class DB(commands.Cog):
     def cog_unload(self):
         self.bot.db.pool.close()
 
-    @commands.Cog.listener()
+    @Cog.listener()
     async def on_ready(self):
-        await self.bot.db.addNewGuilds([guild.id for guild in self.bot.guilds])
+        await self.bot.db.add_new_guilds([guild.id for guild in self.bot.guilds])
         print("[Database] Updated Guild List\n[Database] Removing inactive guilds...")
-        await self.bot.db.removeInactiveGuilds([guild.id for guild in self.bot.guilds])
+        await self.bot.db.remove_inactive_guilds([guild.id for guild in self.bot.guilds])
         print("[Database] Done!")
 
-    @commands.Cog.listener()
+    @Cog.listener()
     async def on_guild_join(self, guild):
-        await self.bot.db.addNewGuild(guild.id)
-        print(
-            f"[Guild] Joined {guild.name} ({guild.id}) -> {guild.member_count} Members."
-        )
+        await self.bot.db.add_new_guild(guild.id)
+        print(f"[Guild] Joined {guild.name} ({guild.id}) -> {guild.member_count} Members.")
 
-    @commands.Cog.listener()
+    @Cog.listener()
     async def on_guild_remove(self, guild):
-        await self.bot.db.removeGuild(guild.id)
-        print(
-            f"[Guild] Left {guild.name} ({guild.id}) -> {guild.member_count} Members."
-        )
+        await self.bot.db.remove_guild(guild.id)
+        print(f"[Guild] Left {guild.name} ({guild.id}) -> {guild.member_count} Members.")
 
     @tasks.loop(minutes=30)
     async def ping(self):
@@ -48,7 +47,7 @@ class DB(commands.Cog):
         This just pings the database every 4 hours.
         """
         if not self.bot.db.started and not await self.bot.db.start():
-            n = 1
+            n: int = 1
             while True:
                 if await self.bot.db.start():
                     print("[Database] Connection successful!")

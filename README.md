@@ -13,33 +13,50 @@ Click [right here](https://hey.imkez.com/slashy-invite) to add Slashy to your se
 
 ## Changelog
 
+### The Commands Update - 17. Feb, 2022
+
+- Moved all commands under the `/slashy` category.
+   - Every non-custom command now starts with `/slashy`, e.g. `/slashy add`
+   - This made it so you can use names like `help`, `list` and such as your custom command names.
+- Added `/slashy config` so you can set a permission level to use the bot.
+   - The command is `Administrator`-only and will stay that way.
+   - If you want me to add any other permissions, open an issue.
+- Redone some of the cog organization. This shouldn't concern end-users, just makes my life easier.
+- Fixed SQL injection... lol.
+- Probably introduced new bugs. Time will tell.
+
 ### The Cleaner Code Update - 13. Feb, 2022
 
 - Added placeholder support:
    - Things like `[[user]]`, `[[server.member_count]]` and such.
    - Read up below.
 
-- Updated Novus to 0.0.6, which in turn allowed me to do the following:
+- Updated Novus to latest Github build, which in turn allowed me to do the following:
    - Added auto-completion support for command names when using /edit and /remove.
    - No longer using raw HTTP requests to manage your commands.
 - Cleaned up a lot of unnecessary code.
 
+
 ## Help
 Below are all the commands you can currently use.
 
-<u>Underlined</u> commands mean that only members with the `Administrator` permission can use them. Will be customizable in the future.
+<u>Underlined</u> commands mean that only members with a set permission can use them. Defaults to `Administrator`. Set with `/slashy config <permission>` which is always restricted to the `Administrator` permission..
 
 <> are required arguments and [] are optional arguments.
 
-The following command names are reserved and can't be used to prevent confusion: `edit`, `add`, `remove`, `slashystats`, `help`, `list`
+You can't create commands with names that start with `slashy` as I've reserved those for the bot.
 | Command 	| Usage 	| Description 	|
 |---	|---	|---	|
-| help 	| `/help` 	| You guessed it, shows you this, but in Discord! 	|
-| add 	| `/add <name> <reply> [description]` 	| Add new slash commands.<br>The description field is optional, with the bot using **A command made by Slashy** by default. 	|
-| remove 	| `/remove <name>` 	| Remove existing slash commands. 	|
-| edit 	| `/edit <name> [new-reply] [new-description]` 	| Edit an existing command's reply, description, or both. 	|
-| list 	| `/list` 	| List all of your server's commands. 	|
-| slashystats 	| `/slashystats` 	| Display some Slashy statistics.<br>Different outputs whether you run it in a server or a DM. 	|
+| <u>add</u> 	| `/slashy add <name> <reply> [description]` 	| Add new slash commands.<br>The description field is optional, with the bot using **A command made by Slashy** by default. 	|
+| <u>remove</u> 	| `/slashy remove <name>` 	| Remove existing slash commands. 	|
+| <u>edit</u> 	| `/slashy edit <name> [new-reply] [new-description]` 	| Edit an existing command's reply, description, or both. 	|
+| <u>config</u> 	| `/slashy config <permission>` 	| Set the permission required to manage slash commands. Can only be run by users with the `Administrator` permission. 	|
+| list 	| `/slashy list` 	| List all of your server's commands. 	|
+| stats 	| `/slashy stats` 	| Display some Slashy statistics.<br>Different outputs whether you run it in a server or a DM. 	|
+| help 	| `/slashy help` 	| You guessed it, shows you this, but in Discord! 	|
+
+
+
 
 ## Placeholders
 These are all the placeholders you can use in your custom command replies. 
@@ -48,12 +65,11 @@ Feel free to open an issue to suggest any new ones.
 | Placeholder 	| Description 	|
 |---	|---	|
 | `[[user]]` 	| Mentions the user who ran the command. 	|
-| `[[user.id]]` 	| The user ID of the user who ran the command. 	|
-| `[[user.name]]` 	| The username of the user who ran the command. 	|
+| `[[user.id]] `	| The user ID of the user who ran the command. 	|
+| `[[user.name]] `	| The username of the user who ran the command. 	|
 | `[[user.avatar]]` 	| The avatar URL of the user who ran the command. 	|
-| `[[server]]` 	| The server name. 	|
-| `[[server.id]]` 	| The server's ID. 	|
-| `[[server.icon]]` 	| The server's icon URL. 	|
+| `[[server]] `	| The server name. 	|
+| `[[server.id]] `	| The server's ID. 	|
 | `[[server.member_count]]` 	| The server's member count. 	|
 | `[[channel]]` 	| The channel the command was ran in. 	|
   

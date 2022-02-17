@@ -1,3 +1,4 @@
+import discord
 from discord import Game
 from discord.ext.commands import Bot
 from json import load
@@ -11,10 +12,11 @@ basicConfig(
 )
 
 # The command_prefix is here to prevent non application commands
-client = Bot(command_prefix="slashybutasacommandprefix", help_command=None)
+client: discord.ext.commands.Bot = Bot(command_prefix="slashybutasacommandprefix", help_command=None)
 
 config = load(open("config.json"))
-TOKEN, NOWPLAYING = config["TOKEN"], config["NOWPLAYING"]
+TOKEN: str = config["TOKEN"]["PRODUCTION"]
+NOWPLAYING: str = config["NOWPLAYING"]
 
 if not TOKEN:
     print("You need to set the token (and most other things) in config.json")
@@ -26,9 +28,8 @@ async def on_ready():
     await client.change_presence(activity=Game(name=NOWPLAYING))
     print(f"{client.user} Connected to {len(client.guilds)} servers.")
 
-
 # Load cogs when run, with DB first
-extensions = [
+extensions: list[str] = [
     "cogs.db",
     *[
         f"cogs.{file[:-3]}"

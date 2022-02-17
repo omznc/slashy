@@ -1,18 +1,35 @@
 {	
 	"DATABASE_SETTINGS": {
-		"host": "",
-		"user": "",
-		"password": "",
-		"database": "slashy",
-		"waitForConnections": true,
-		"connectionLimit": 10,
-		"queueLimit": 0,
-		"port": "",
-		"timezone": "+00:00"
+		"PRODUCTION": {
+			"host": "",
+			"user": "",
+			"password": "",
+			"database": "",
+			"waitForConnections": true,
+			"connectionLimit": 10,
+			"queueLimit": 0,
+			"port": "3306",
+			"timezone": "+00:00"
+		},
+		"DEVELOPMENT": {
+			"host": "",
+			"user": "",
+			"password": "",
+			"database": "",
+			"waitForConnections": true,
+			"connectionLimit": 10,
+			"queueLimit": 0,
+			"port": "3306",
+			"timezone": "+00:00"
+		}
 	},
-	"NOWPLAYING": "/help",
-	"TOKEN": "",
+	"NOWPLAYING": "/slashy help",
+	"TOKEN": {
+		"PRODUCTION": "",
+		"DEVELOPMENT": ""
+	},
 	"BOT_LOGO": "https://i.imgur.com/d9DucXP.png",
 	"KEZ_AVATAR": "https://i.imgur.com/cBG5KvY.png",
-	"MAX_COMMANDS_DEFAULT": 30
+	"MAX_COMMANDS_DEFAULT": 30,
+	"OWNER_ID": 123
 }

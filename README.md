@@ -47,10 +47,10 @@ Below are all the commands you can currently use.
 You can't create commands with names that start with `slashy` as I've reserved those for the bot.
 | Command 	| Usage 	| Description 	|
 |---	|---	|---	|
-| <u>add</u> 	| `/slashy add <name> <reply> [description]` 	| Add new slash commands.<br>The description field is optional, with the bot using **A command made by Slashy** by default. 	|
-| <u>remove</u> 	| `/slashy remove <name>` 	| Remove existing slash commands. 	|
-| <u>edit</u> 	| `/slashy edit <name> [new-reply] [new-description]` 	| Edit an existing command's reply, description, or both. 	|
-| <u>config</u> 	| `/slashy config <permission>` 	| Set the permission required to manage slash commands. Can only be run by users with the `Administrator` permission. 	|
+| <ins>add</ins> 	| `/slashy add <name> <reply> [description]` 	| Add new slash commands.<br>The description field is optional, with the bot using **A command made by Slashy** by default. 	|
+| <ins>remove</ins> 	| `/slashy remove <name>` 	| Remove existing slash commands. 	|
+| <ins>edit</ins> 	| `/slashy edit <name> [new-reply] [new-description]` 	| Edit an existing command's reply, description, or both. 	|
+| <ins>config</ins> 	| `/slashy config <permission>` 	| Set the permission required to manage slash commands. Can only be run by users with the `Administrator` permission. 	|
 | list 	| `/slashy list` 	| List all of your server's commands. 	|
 | stats 	| `/slashy stats` 	| Display some Slashy statistics.<br>Different outputs whether you run it in a server or a DM. 	|
 | help 	| `/slashy help` 	| You guessed it, shows you this, but in Discord! 	|

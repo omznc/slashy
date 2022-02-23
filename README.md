@@ -5,7 +5,7 @@
 
 The code for this bot exists because I'm like the open-source community, so feel free to run it yourself, or submit pull requests to improve it.
 
-You can get help on using the bot with the `/help` command in any of the servers Slashy is in, or in Slashy's DM-s.
+You can get help on using the bot with the `/slashy help` command in any of the servers Slashy is in, or in Slashy's DM-s.
 
 ## Invite
 

@@ -1,4 +1,4 @@
-<p align="center"><img src="https://i.imgur.com/d9DucXP.png" style="width: 8rem;border-radius: 10%;"><h1 align="center">Slashy - Your custom slash-commands bot</h1></p>
+<p align="center"><img src="https://i.imgur.com/j8rrx7R.png" style="width: 8rem;border-radius: 20%;"><h1 align="center">Slashy - Your custom slash-commands bot</h1></p>
 <p align="center"><a href="https://top.gg/bot/928089024252506173"><img src="https://img.shields.io/badge/top.gg-Slashy-blue?style=for-the-badge"></a> <a href="https://hey.imkez.com/slashy-invite"><img src="https://img.shields.io/badge/Invite%20Me%20to-Discord-blue?style=for-the-badge&logo=discord"></a></p>
 
 ## Hey, I'm Slashy - your friendly neighborhood custom-command bot!
@@ -24,6 +24,7 @@ Click [right here](https://hey.imkez.com/slashy-invite) to add Slashy to your se
 - Redone some of the cog organization. This shouldn't concern end-users, just makes my life easier.
 - Fixed SQL injection... lol.
 - Probably introduced new bugs. Time will tell.
+- New logo, that's cool I guess.
 
 ### The Cleaner Code Update - 13. Feb, 2022
 

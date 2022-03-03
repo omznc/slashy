@@ -12,7 +12,7 @@ You can get help on using the bot with the `/slashy help` command in any of the 
 Click [right here](https://hey.imkez.com/slashy-invite) to add Slashy to your server.
 
 ## Changes
-Check [CHANGELOG.md](https://github.com/omznc/Slashy/CHANGELOG.md)
+Check [CHANGELOG.md](https://github.com/omznc/Slashy/blob/main/CHANGELOG.md)
 
 ## Help
 Below are all the commands you can currently use.

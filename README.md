@@ -38,6 +38,7 @@ You can't create commands with names that start with `slashy` as I've reserved t
 
 ## Placeholders
 These are all the placeholders you can use in your custom command replies. 
+They don't work in descriptions because that can't be dynamically changed.
 Feel free to open an issue to suggest any new ones.
  
 | Placeholder 	| Description 	|

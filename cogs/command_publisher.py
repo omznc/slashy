@@ -1,3 +1,5 @@
+from json import loads, dump
+
 from discord import (
     ApplicationCommand,
     ApplicationCommandType,
@@ -10,7 +12,7 @@ from discord.ext.commands import Cog
 
 class CommandPublisher(Cog):
     """
-    Cog for handling the help command.
+    Cog for checking changes in the global command, and updating it if necessary.
     """
 
     def __init__(self, bot):
@@ -18,149 +20,178 @@ class CommandPublisher(Cog):
 
     @Cog.listener()
     async def on_ready(self):
-        commands = [
-            ApplicationCommand(
-                name="slashy",
-                description="The category for slashy's commands.",
-                type=ApplicationCommandType.chat_input,
-                options=[
-                    ApplicationCommandOption(
-                        name="add",
-                        description="[ADMIN] Add a custom command.",
-                        type=ApplicationCommandOptionType.subcommand,
-                        options=[
-                            ApplicationCommandOption(
-                                name="name",
-                                description="What's the name of the command?",
-                                type=ApplicationCommandOptionType.string,
-                            ),
-                            ApplicationCommandOption(
-                                name="reply",
-                                description="What will the command reply?",
-                                type=ApplicationCommandOptionType.string,
-                            ),
-                            ApplicationCommandOption(
-                                name="description",
-                                description="What's the description of the command?",
-                                type=ApplicationCommandOptionType.string,
-                                required=False,
-                            ),
-                        ],
-                    ),
-                    ApplicationCommandOption(
-                        name="edit",
-                        description="[ADMIN] Edit an existing custom command.",
-                        type=ApplicationCommandOptionType.subcommand,
-                        options=[
-                            ApplicationCommandOption(
-                                name="name",
-                                description="What's the name of the command you want to edit?",
-                                type=ApplicationCommandOptionType.string,
-                                autocomplete=True,
-                            ),
-                            ApplicationCommandOption(
-                                name="reply",
-                                description="What will the command reply now?",
-                                type=ApplicationCommandOptionType.string,
-                                required=False,
-                            ),
-                            ApplicationCommandOption(
-                                name="description",
-                                description="What's the description of the command now?",
-                                type=ApplicationCommandOptionType.string,
-                                required=False,
-                            ),
-                        ],
-                    ),
-                    ApplicationCommandOption(
-                        name="remove",
-                        description="[ADMIN] Remove an existing custom command.",
-                        type=ApplicationCommandOptionType.subcommand,
-                        options=[
-                            ApplicationCommandOption(
-                                name="name",
-                                description="What's the name of the command you want to remove?",
-                                type=ApplicationCommandOptionType.string,
-                                autocomplete=True,
-                            )
-                        ],
-                    ),
-                    ApplicationCommandOption(
-                        name="config",
-                        description="[ADMIN] Bot configuration.",
-                        type=ApplicationCommandOptionType.subcommand,
-                        options=[
-                            ApplicationCommandOption(
-                                name="permission",
-                                description="What's the permission a user needs to use administrator commands?",
-                                type=ApplicationCommandOptionType.string,
-                                required=False,
-                                choices=[
-                                    ApplicationCommandOptionChoice(
-                                        name="Administrator",
-                                        value="administrator",
-                                    ),
-                                    ApplicationCommandOptionChoice(
-                                        name="Manage Channels",
-                                        value="manage_channels",
-                                    ),
-                                    ApplicationCommandOptionChoice(
-                                        name="Manage Guild",
-                                        value="manage_guild",
-                                    ),
-                                    ApplicationCommandOptionChoice(
-                                        name="Manage Messages",
-                                        value="manage_messages",
-                                    ),
-                                    ApplicationCommandOptionChoice(
-                                        name="Manage Roles",
-                                        value="manage_roles",
-                                    ),
-                                    ApplicationCommandOptionChoice(
-                                        name="Moderate Members",
-                                        value="moderate_members",
-                                    ),
-                                    ApplicationCommandOptionChoice(
-                                        name="Manage Permissions",
-                                        value="manage_permissions",
-                                    ),
-                                ],
-                            )
-                        ],
-                    ),
-                    ApplicationCommandOption(
-                        name="list",
-                        description="List all custom commands for this server.",
-                        type=ApplicationCommandOptionType.subcommand,
-                    ),
-                    ApplicationCommandOption(
-                        name="help",
-                        description="Get help on how to use Slashy.",
-                        type=ApplicationCommandOptionType.subcommand,
-                    ),
-                    ApplicationCommandOption(
-                        name="stats",
-                        description="Some stats about the Bot",
-                        type=ApplicationCommandOptionType.subcommand,
-                    ),
-                ],
-            )
-        ]
+        localizations = loads(open("localizations.json", "r", encoding="utf-8").read())
 
-        for command in commands:
-            for option in command.options:
-                self.bot.reserved_commands.append(f"{command.name} {option.name}")
+        local_command = ApplicationCommand(
+            name="slashy",
+            description="The category for Slashy's commands.",
+            type=ApplicationCommandType.chat_input,
+            options=[
+                ApplicationCommandOption(
+                    name="add",
+                    description="[ADMIN] Add a custom command.",
+                    name_localizations=localizations["subcommands"]["add"]["name_localizations"],
+                    description_localizations=localizations["subcommands"]["add"]["description_localizations"],
+                    type=ApplicationCommandOptionType.subcommand,
+                    options=[
+                        ApplicationCommandOption(
+                            name="name",
+                            description="What's the name of the command?",
+                            name_localizations=localizations["options"]["name"]["name_localizations"],
+                            description_localizations=localizations["options"]["name"]["description_localizations"],
+                            type=ApplicationCommandOptionType.string,
+                        ),
+                        ApplicationCommandOption(
+                            name="reply",
+                            description="What will the command reply?",
+                            name_localizations=localizations["options"]["reply"]["name_localizations"],
+                            description_localizations=localizations["options"]["reply"]["description_localizations"],
+                            type=ApplicationCommandOptionType.string,
+                        ),
+                        ApplicationCommandOption(
+                            name="description",
+                            description="What's the description of the command?",
+                            name_localizations=localizations["options"]["description"]["name_localizations"],
+                            description_localizations=localizations["options"]["description"][
+                                "description_localizations"],
+                            type=ApplicationCommandOptionType.string,
+                            required=False,
+                        ),
+                    ],
+                ),
+                ApplicationCommandOption(
+                    name="edit",
+                    description="[ADMIN] Edit an existing custom command.",
+                    name_localizations=localizations["subcommands"]["edit"]["name_localizations"],
+                    description_localizations=localizations["subcommands"]["edit"]["description_localizations"],
+                    type=ApplicationCommandOptionType.subcommand,
+                    options=[
+                        ApplicationCommandOption(
+                            name="name",
+                            description="What's the name of the command you want to edit?",
+                            name_localizations=localizations["options"]["name"]["name_localizations"],
+                            description_localizations=localizations["options"]["name"]["description_localizations"],
+                            type=ApplicationCommandOptionType.string,
+                            autocomplete=True,
+                        ),
+                        ApplicationCommandOption(
+                            name="reply",
+                            description="What will the command reply now?",
+                            name_localizations=localizations["options"]["reply"]["name_localizations"],
+                            description_localizations=localizations["options"]["reply"]["description_localizations"],
+                            type=ApplicationCommandOptionType.string,
+                            required=False,
+                        ),
+                        ApplicationCommandOption(
+                            name="description",
+                            description="What's the description of the command now?",
+                            name_localizations=localizations["options"]["description"]["name_localizations"],
+                            description_localizations=localizations["options"]["description"][
+                                "description_localizations"],
+                            type=ApplicationCommandOptionType.string,
+                            required=False,
+                        ),
+                    ],
+                ),
+                ApplicationCommandOption(
+                    name="remove",
+                    description="[ADMIN] Remove an existing custom command.",
+                    name_localizations=localizations["subcommands"]["remove"]["name_localizations"],
+                    description_localizations=localizations["subcommands"]["remove"]["description_localizations"],
+                    type=ApplicationCommandOptionType.subcommand,
+                    options=[
+                        ApplicationCommandOption(
+                            name="name",
+                            description="What's the name of the command you want to remove?",
+                            name_localizations=localizations["options"]["name"]["name_localizations"],
+                            description_localizations=localizations["options"]["name"]["description_localizations"],
+                            type=ApplicationCommandOptionType.string,
+                            autocomplete=True,
+                        )
+                    ],
+                ),
+                ApplicationCommandOption(
+                    name="config",
+                    description="[ADMIN] Bot configuration.",
+                    name_localizations=localizations["subcommands"]["config"]["name_localizations"],
+                    description_localizations=localizations["subcommands"]["config"]["description_localizations"],
+                    type=ApplicationCommandOptionType.subcommand,
+                    options=[
+                        ApplicationCommandOption(
+                            name="permission",
+                            description="What's the permission a user needs to use administrator commands?",
+                            name_localizations=localizations["options"]["permission"]["name_localizations"],
+                            description_localizations=localizations["options"]["permission"][
+                                "description_localizations"],
+                            type=ApplicationCommandOptionType.string,
+                            required=False,
+                            choices=[
+                                ApplicationCommandOptionChoice(
+                                    name="Administrator",
+                                    value="administrator",
+                                ),
+                                ApplicationCommandOptionChoice(
+                                    name="Manage Channels",
+                                    value="manage_channels",
+                                ),
+                                ApplicationCommandOptionChoice(
+                                    name="Manage Guild",
+                                    value="manage_guild",
+                                ),
+                                ApplicationCommandOptionChoice(
+                                    name="Manage Messages",
+                                    value="manage_messages",
+                                ),
+                                ApplicationCommandOptionChoice(
+                                    name="Manage Roles",
+                                    value="manage_roles",
+                                ),
+                                ApplicationCommandOptionChoice(
+                                    name="Moderate Members",
+                                    value="moderate_members",
+                                ),
+                                ApplicationCommandOptionChoice(
+                                    name="Manage Permissions",
+                                    value="manage_permissions",
+                                ),
+                            ],
+                        )
+                    ],
+                ),
+                ApplicationCommandOption(
+                    name="list",
+                    description="List all custom commands for this server.",
+                    name_localizations=localizations["subcommands"]["list"]["name_localizations"],
+                    description_localizations=localizations["subcommands"]["list"]["description_localizations"],
+                    type=ApplicationCommandOptionType.subcommand,
+                ),
+                ApplicationCommandOption(
+                    name="help",
+                    description="Get help on how to use Slashy.",
+                    name_localizations=localizations["subcommands"]["help"]["name_localizations"],
+                    description_localizations=localizations["subcommands"]["help"]["description_localizations"],
+                    type=ApplicationCommandOptionType.subcommand,
+                ),
+                ApplicationCommandOption(
+                    name="stats",
+                    description="Some stats about Slashy.",
+                    name_localizations=localizations["subcommands"]["stats"]["name_localizations"],
+                    description_localizations=localizations["subcommands"]["stats"]["description_localizations"],
+                    type=ApplicationCommandOptionType.subcommand,
+                ),
+            ],
+        )
 
-        current_commands = await self.bot.fetch_global_application_commands()
+        self.bot.reserved_commands = [f"slashy {subcommand.name}" for subcommand in local_command.options]
 
-        if current_commands != commands:
-            # Figure out which commands are new and which are removed
-            print("[Command Publisher] Change detected. Updating...")
-            for command in current_commands:
-                await self.bot.delete_global_application_command(command)
+        # Register commands if not already registered
+        remote_commands: list[ApplicationCommand] = await self.bot.fetch_global_application_commands(with_localizations=True)
 
-            await self.bot.bulk_create_global_application_commands(commands)
-            print("[Command Publisher] Updated! Will take up to an hour to take effect.")
+        if remote_commands is None or remote_commands[0] == local_command:
+            return print("[Command Publisher] No changes found.")
+
+        await self.bot.create_global_application_command(local_command)
+        print("[Command Publisher] Found changes and updated commands.")
 
 
 def setup(client):

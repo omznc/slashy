@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 from json import load
 from logging import warning
 
-import discord
 from discord import (
     Embed,
     ApplicationCommandOptionChoice,
@@ -19,82 +18,11 @@ AVATAR: str = config["KEZ_AVATAR"]
 MAX_COMMANDS_DEFAULT: int = config["MAX_COMMANDS_DEFAULT"]
 
 
-async def help(ctx):
-    """Handles the `/help` command.
-
-    Args:
-        ctx: Interaction.
-    """
-    embed: discord.Embed = Embed(
-        color=0x00FF00,
-        description="Hey, I'm Slashy - your friendly neighborhood custom-command bot!\nBelow are all the commands you can use.",
-        title="Slashy - Help 💡",
-        url="https://hey.imkez.com/slashy-code",
-    )
-    embed.set_author(
-        name="from Kez",
-        url="https://hey.imkez.com/slashy-invite",
-        icon_url=AVATAR,
-    )
-    embed.set_thumbnail(url=LOGO)
-    embed.set_footer(
-        text="Hello there!",
-    )
-    embed.add_field(
-        name="__Add__",
-        value="Server-only."
-        "\nUsed to add new slash commands."
-        "\nThe description field is optional."
-        "\nYou can use [placeholders](https://hey.imkez.com/slashy-code#placeholders) in your reply"
-        "or even hyperlinks! `[Like this!](https://imkez.com)`."
-        "\nUsage: ```/slashy add <name> <reply> [description]```",
-        inline=False,
-    )
-    embed.add_field(
-        name="__Remove__",
-        value="Server-only.\nUsed to remove existing slash commands.\nUsage: ```/slashy remove <name>```",
-        inline=False,
-    )
-    embed.add_field(
-        name="__Edit__",
-        value="Server-only."
-        "\nUsed to edit an existing command's reply, description, or both."
-        "\nUsage: ```/slashy edit <name> [new-reply] [new-description]```",
-        inline=False,
-    )
-    embed.add_field(
-        name="__Configuration__",
-        value="Server-only."
-        "\nConfigure Slashy"
-        "\nCurrently only supports changing the permission needed to modify commands and the config"
-        "\nUsage: ```/slashy config <permission>```",
-        inline=False,
-    )
-    embed.add_field(
-        name="**List**",
-        value="Server-only.\nUsed to list all of your server's commands. \nUsage: ```/slashy list```",
-        inline=False,
-    )
-    embed.add_field(
-        name="**Stats**",
-        value="Displays some global Slashy statistics.\nUsage: ```/slashy stats```",
-        inline=False,
-    )
-    embed.add_field(
-        name="_Notes_",
-        inline=False,
-        value="`<>` are required arguments and `[]` are optional arguments."
-        "\n__Underlined__ commands need permissions to be used. Defaults to **Administrator**, but can be set with `/slashy config`"
-        "\nCommands starting with `slashy` are reserved for bot usage and can't be used as custom commands to prevent confusion.",
-    )
-    await ctx.send(embed=embed, ephemeral=True)
-
-
 async def validate_input(
-    ctx,
-    name: str = None,
-    reply: str = None,
-    description: str = None,
+        ctx,
+        name: str = None,
+        reply: str = None,
+        description: str = None,
 ) -> bool:  # sourcery skip: use-fstring-for-concatenation
     """Checks if the provided inputs are valid for the Discord API.
 
@@ -112,8 +40,8 @@ async def validate_input(
     if name is not None and ((len(name) > 32 or not name.isalpha() or not name.isascii()) or name.isnumeric()):
         await ctx.send(
             content="The name of the command must be less than or equal **32** letters."
-            "\nRemember, you can only use latin characters (a-z), and the command name will always be in lowercase."
-            f"\nYou entered{(': `' + name + '`') if len(name) < 500 else ' a way too long of a name...'}"
+                    "\nRemember, you can only use latin characters (a-z), and the command name will always be in lowercase."
+                    f"\nYou entered{(': `' + name + '`') if len(name) < 500 else ' a way too long of a name...'}"
         )
         return False
 
@@ -121,7 +49,7 @@ async def validate_input(
     if description is not None and len(description) > 100:
         await ctx.send(
             content="The description of the command must be less than or equal **100** characters."
-            f"\nYours was **{len(description)}** characters long."
+                    f"\nYours was **{len(description)}** characters long."
         )
         return False
 
@@ -146,7 +74,7 @@ async def setup_embed(page: int, page_size: int) -> Embed:
         Embed: Discord.Embed object.
     """
 
-    embed: discord.Embed = Embed(title=f"Commands ({page}/{page_size + 1})")
+    embed: Embed = Embed(title=f"Commands ({page}/{page_size + 1})")
     embed.set_thumbnail(url=LOGO)
     embed.set_footer(text="Slashy says Hi!")
     return embed
@@ -154,7 +82,7 @@ async def setup_embed(page: int, page_size: int) -> Embed:
 
 class CommandHandler(Cog):
     """
-    Cog for handling the reserved commands.
+    Cog for handling the /slashy commands.
     """
 
     def __init__(self, bot):
@@ -176,27 +104,33 @@ class CommandHandler(Cog):
             "[[user]]": ctx.user.mention,
             "[[user.id]]": ctx.user.id,
             "[[user.name]]": ctx.user.name,
-            "[[user.avatar]]": ctx.user.avatar.url,
             "[[server]]": ctx.guild.name,
             "[[server.id]]": ctx.guild.id,
-            #"[[server.icon]]": ctx.guild.icon.url,
             "[[server.member_count]]": ctx.guild.member_count,
             "[[channel]]": ctx.channel.name,
         }
+        try:
+            placeholders["[[user.avatar]]"] = ctx.user.avatar.url
+        except AttributeError:
+            placeholders["[[user.avatar]]"] = "https://cdn.discordapp.com/embed/avatars/0.png"
+            if self.bot.extra_logging:
+                print("[WARN] User has no avatar, using default.")
 
         # Get the reply from the database and replace placeholders.
         if self.cached_commands.get(ctx.guild.id) is None:
             self.cached_commands[ctx.guild.id] = {}
 
         if self.cached_commands[ctx.guild.id].get(ctx.command_name) is None:
-            self.cached_commands[ctx.guild.id][ctx.command_name] = await self.bot.db.get_command(ctx.guild.id, ctx.command_name)
+            self.cached_commands[ctx.guild.id][ctx.command_name] = await self.bot.db.get_command(ctx.guild.id,
+                                                                                                 ctx.command_name)
 
         reply: str = self.cached_commands[ctx.guild.id][ctx.command_name]
         if reply is None:
             return await ctx.edit_original_message(
                 content="This command either doesn't exist, or you're using one of the commands that Discord's API hasn't updated yet, which may take up to an hour."
-                "\n[Click here to learn more](<https://discord.com/developers/docs/interactions/application-commands#making-a-global-command>), or try again later."
+                        "\n[Click here to learn more](<https://discord.com/developers/docs/interactions/application-commands#making-a-global-command>), or try again later."
             )
+
         for placeholder in placeholders:
             reply: str = reply.replace(
                 placeholder,
@@ -226,17 +160,90 @@ class CommandHandler(Cog):
 
         for key, value in iter(ctx.author.guild_permissions):
             if key == permission and not value:
-                await ctx.send(content=f"You don't have the required permissions to use this command ({permission.capitalize()})")
+                await ctx.send(
+                    content=f"You don't have the required permission to use this command ({permission.capitalize()})\nAn Administrator can set this using `/slashy config`."
+                )
                 return False
 
         return True
 
+    @staticmethod
+    async def help(ctx) -> None:
+        """Handles the `/help` command.
+
+        Args:
+            ctx: Interaction.
+        """
+        embed: Embed = Embed(
+            color=0x00FF00,
+            description="Hey, I'm Slashy - your friendly neighborhood custom-command bot!\nBelow are all the commands you can use.",
+            title="Slashy - Help 💡",
+            url="https://hey.imkez.com/slashy-code",
+        )
+        embed.set_author(
+            name="from Kez",
+            url="https://hey.imkez.com/slashy-invite",
+            icon_url=AVATAR,
+        )
+        embed.set_thumbnail(url=LOGO)
+        embed.set_footer(
+            text="Hello there!",
+        )
+        embed.add_field(
+            name="__Add__",
+            value="Server-only."
+                  "\nUsed to add new slash commands."
+                  "\nThe description field is optional."
+                  "\nYou can use [placeholders](https://hey.imkez.com/slashy-code#placeholders) in your reply"
+                  " or even hyperlinks! `[Like this!](https://imkez.com)`."
+                  "\nUsage: ```/slashy add <name> <reply> [description]```",
+            inline=False,
+        )
+        embed.add_field(
+            name="__Remove__",
+            value="Server-only.\nUsed to remove existing slash commands.\nUsage: ```/slashy remove <name>```",
+            inline=False,
+        )
+        embed.add_field(
+            name="__Edit__",
+            value="Server-only."
+                  "\nUsed to edit an existing command's reply, description, or both."
+                  "\nUsage: ```/slashy edit <name> [new-reply] [new-description]```",
+            inline=False,
+        )
+        embed.add_field(
+            name="__Configuration__",
+            value="Server-only."
+                  "\nConfigure Slashy"
+                  "\nCurrently only supports changing the permission needed to modify commands, and there are only a few hand-picked permissions."
+                  "\nUsage: ```/slashy config <permission>```",
+            inline=False,
+        )
+        embed.add_field(
+            name="**List**",
+            value="Server-only.\nUsed to list all of your server's commands. \nUsage: ```/slashy list```",
+            inline=False,
+        )
+        embed.add_field(
+            name="**Stats**",
+            value="Displays some global Slashy statistics.\nUsage: ```/slashy stats```",
+            inline=False,
+        )
+        embed.add_field(
+            name="_Notes_",
+            inline=False,
+            value="`<>` are required arguments and `[]` are optional arguments."
+                  "\n__Underlined__ commands need permissions to be used. Defaults to **Administrator**, but can be set with `/slashy config`"
+                  "\nCommands starting with `slashy` are reserved for bot usage and can't be used as custom commands to prevent confusion.",
+        )
+        await ctx.send(embed=embed, ephemeral=True)
+
     async def add(
-        self,
-        ctx,
-        name: str,
-        reply: str,
-        description: str = "A command made by Slashy",
+            self,
+            ctx,
+            name: str,
+            reply: str,
+            description: str = "A command made by Slashy",
     ) -> None:
         """Handles the `/add` command.
 
@@ -257,7 +264,8 @@ class CommandHandler(Cog):
             return
 
         if await self.bot.db.check_if_command_exists(ctx.guild.id, name):
-            return await ctx.send(content="A command with that name already exists. You can use `/edit` to edit it, or `/remove` to remove it.")
+            return await ctx.send(
+                content="A command with that name already exists. You can use `/edit` to edit it, or `/remove` to remove it.")
 
         max_commands: int = await self.bot.db.get_max_commands(ctx.guild.id)
         if max_commands is None:
@@ -267,8 +275,8 @@ class CommandHandler(Cog):
         if await self.bot.db.get_number_of_commands(ctx.guild.id) >= max_commands:
             return await ctx.send(
                 content=f"You have reached the maximum number of **Slashy** commands ({max_commands}) for your server."
-                "\nPlease remove some before adding more. 🙂"
-                "\nThis limit will be increased in the future."
+                        "\nPlease remove some before adding more. 🙂"
+                        "\nThis limit will be increased in the future."
             )
         response = await ctx.guild.create_application_command(
             ApplicationCommand(
@@ -294,13 +302,15 @@ class CommandHandler(Cog):
             self.cached_commands[ctx.guild.id][name] = reply
 
         await ctx.send(content=f"The command `/{name}` has been created.")
+        if self.bot.extra_logging:
+            print(f"[New Command] {ctx.author} created command `/{name}` in {ctx.guild.id}.")
 
     async def edit(
-        self,
-        ctx,
-        name: str,
-        reply: str = None,
-        description: str = None,
+            self,
+            ctx,
+            name: str,
+            reply: str = None,
+            description: str = None,
     ) -> None:
         """Handles the `/edit` command.
 
@@ -325,7 +335,8 @@ class CommandHandler(Cog):
 
         # User ran the command without any arguments.
         if reply is None and description is None:
-            return await ctx.send(content="So, you want to edit nothing? Either supply a reply, a description, or both.")
+            return await ctx.send(
+                content="So, you want to edit nothing? Either supply a reply, a description, or both.")
 
         # The command that's being edited doesn't exist.
         if not await self.bot.db.check_if_command_exists(ctx.guild.id, name):
@@ -349,10 +360,13 @@ class CommandHandler(Cog):
             msg += f"\nNew Description: _{description}_"
 
         # Delete the command from the cache.
-        if self.cached_commands.get(ctx.guild.id) is not None and self.cached_commands[ctx.guild.id].get(name) is not None:
+        if self.cached_commands.get(ctx.guild.id) is not None and self.cached_commands[ctx.guild.id].get(
+                name) is not None:
             self.cached_commands[ctx.guild.id].pop(name, None)
 
         await ctx.send(content=msg)
+        if self.bot.extra_logging:
+            print(f"[Edited Command] {ctx.author} edited command `/{name}` in {ctx.guild.id}.")
 
     async def remove(self, ctx, name: str) -> None:
         """Handles the `/remove` command
@@ -385,11 +399,14 @@ class CommandHandler(Cog):
         await ctx.guild.delete_application_command(Object(id=command_id))
 
         # Delete the command from the cache.
-        if self.cached_commands.get(ctx.guild.id) is not None and self.cached_commands[ctx.guild.id].get(name) is not None:
+        if self.cached_commands.get(ctx.guild.id) is not None and self.cached_commands[ctx.guild.id].get(
+                name) is not None:
             self.cached_commands[ctx.guild.id].pop(name, None)
 
         # User feedback.
         await ctx.send(content=f"The command `/{name}` has been removed.")
+        if self.bot.extra_logging:
+            print(f"[Removed Command] {ctx.author} created command `/{name}` in {ctx.guild.id}.")
 
     async def list(self, ctx) -> None:
         """Handles the `/list` command.
@@ -407,7 +424,7 @@ class CommandHandler(Cog):
         # Embed template
         page: int = 1
         page_size: int = len(commands) // 20
-        embed: discord.Embed = await setup_embed(page=page, page_size=page_size)
+        embed: Embed = await setup_embed(page=page, page_size=page_size)
 
         # Create and send the embed(s).
         for fields, command in enumerate(commands):
@@ -428,10 +445,10 @@ class CommandHandler(Cog):
         Args:
             ctx (): Interaction
         """
-        embed: discord.Embed = Embed(
+        embed: Embed = Embed(
             color=0x00FF00,
             description="Just a summary of Slashy's stats."
-            + ("\nRun the command in a server to get into the specifics." if ctx.guild is None else ""),
+                        + ("\nRun the command in a server to get into the specifics." if ctx.guild is None else ""),
             title="Slashy - Stats",
             url="https://hey.imkez.com/slashy-code",
         )
@@ -445,8 +462,8 @@ class CommandHandler(Cog):
         embed.add_field(
             name="__Servers__",
             value=(
-                f"Hanging out in **{len(self.bot.guilds)}** servers, with **{sum(i.member_count for i in self.bot.guilds)}** users."
-                + ("\nYou're one of them!" if ctx.guild is not None else "")
+                    f"Hanging out in **{len(self.bot.guilds)}** servers, with **{sum(i.member_count for i in self.bot.guilds)}** users."
+                    + ("\nYou're one of them!" if ctx.guild is not None else "")
             ),
             inline=False,
         )
@@ -454,13 +471,15 @@ class CommandHandler(Cog):
         embed.add_field(
             name="__Commands__",
             value=f"Handling a total of **{await self.bot.db.get_number_of_commands()}** custom commands."
-            + (f"\n**{await self.bot.db.get_number_of_commands(ctx.guild.id)}** of them are in this server." if ctx.guild else ""),
+                  + (
+                      f"\n**{await self.bot.db.get_number_of_commands(ctx.guild.id)}** of them are in this server." if ctx.guild else ""),
             inline=False,
         )
         embed.add_field(
             name="__Uses__",
             value=f"I've ran **{await self.bot.db.get_global_command_usage()}** commands globally."
-            + (f"\n**{await self.bot.db.get_global_command_usage(ctx.guild.id)}** of them were in this server." if ctx.guild else ""),
+                  + (
+                      f"\n**{await self.bot.db.get_global_command_usage(ctx.guild.id)}** of them were in this server." if ctx.guild else ""),
             inline=False,
         )
         await ctx.send(embed=embed, ephemeral=True)
@@ -469,8 +488,7 @@ class CommandHandler(Cog):
         for key, value in iter(ctx.author.guild_permissions):
             if key == "administrator" and not value:
                 return await ctx.send(
-                    content="You don't have the required permissions to use this command (Administrator)"
-                )
+                    content="You don't have the required permissions to use this command (Administrator)")
 
         if permission is not None:
             await self.bot.db.set_permission(ctx.guild.id, permission)
@@ -485,8 +503,9 @@ class CommandHandler(Cog):
 
         # Stores a temporary copy of guild commands since I don't want to spam the database.
         # Remakes it if it's older than 60 seconds. That's enough time, right?
-        if self.commands.get(interaction.guild.id) is None or (datetime.now() - self.commands[interaction.guild.id]["edited_at"]) > timedelta(
-            minutes=1
+        if self.commands.get(interaction.guild.id) is None or (
+                datetime.now() - self.commands[interaction.guild.id]["edited_at"]) > timedelta(
+                minutes=1
         ):
             self.commands[interaction.guild.id] = {
                 "commands": await self.bot.db.get_commands(
@@ -518,7 +537,8 @@ class CommandHandler(Cog):
                     return
 
                 # Up to 20 results - revolutionary I tell you!
-                matches: list[str] = [command for command in self.commands[interaction.guild.id]["commands"] if query in command][:20]
+                matches: list[str] = [command for command in self.commands[interaction.guild.id]["commands"] if
+                                      query in command][:20]
 
                 try:
                     return await interaction.response.send_autocomplete(

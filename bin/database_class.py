@@ -1,39 +1,41 @@
-from json import load
 from logging import warning
 from warnings import filterwarnings
 import aiomysql
 
 filterwarnings("ignore", category=aiomysql.Warning)
 
-DB_CONFIG: dict = load(open("config.json"))["DATABASE_SETTINGS"]["PRODUCTION"]
-
 
 # noinspection SqlInjection // SQL injection is not possible here because we are using prepared statements.
-class Database:
+class DB:
     """
     Database methods.
     """
 
-    def __init__(self):
-        self.__host: str = DB_CONFIG["host"]
-        self.__user: str = DB_CONFIG["user"]
-        self.__database: str = DB_CONFIG["database"]
+    def __init__(self, config: dict):
+        self.config = config
+        self.__host: str = self.config["host"]
+        self.__user: str = self.config["user"]
+        self.__database: str = self.config["database"]
         self.started: bool = False
 
-    async def query(self, query: str) -> any:
+    async def query(self, query: str, parameters: tuple = None) -> any:
         """
         Runs a query on the database.
-        This is only used for queries that have custom user input.
+        This is only used for queries that don't have custom user input.
 
         Args:
             query (str): Query to run
+            parameters (tuple, optional): Parameters to pass to the query. Defaults to None.
 
         Returns:
             any: Result of the query
         """
         with await self.pool as con:
             async with con.cursor() as cur:
-                await cur.execute(query)
+                if parameters:
+                    await cur.execute(query, parameters)
+                else:
+                    await cur.execute(query)
                 return await cur.fetchall()
 
     async def get_permission(self, guild_id: int) -> str:
@@ -57,7 +59,7 @@ class Database:
         """
         with await self.pool as con:
             async with con.cursor() as cur:
-                await cur.execute(
+                await cur.query(
                     """
                     UPDATE guildSettings
                     SET permission = %s
@@ -100,7 +102,7 @@ class Database:
         """
         with await self.pool as con:
             async with con.cursor() as cur:
-                await cur.execute(
+                await self.query(
                     """
                     DELETE FROM guildSettings
                     WHERE guild_id = %s
@@ -171,7 +173,7 @@ class Database:
             guild_id (int, optional), : Discord server's ID
 
         Returns:
-            int: Number of times custom commands have been run
+            int: Number of times custom commands have been run in a guild, or across all guilds if guild_id is None
         """
         with await self.pool as con:
             async with con.cursor() as cur:
@@ -198,7 +200,7 @@ class Database:
             guild_id (int, optional): Discord server's ID
 
         Returns:
-            int: The number of commands in the guild
+            int: The number of commands in the guild, or across all servers if guild_id is None
         """
         with await self.pool as con:
             async with con.cursor() as cur:
@@ -242,12 +244,12 @@ class Database:
                 return (await cur.fetchone())[0] != 0
 
     async def add_new_command(
-        self,
-        command_id: int,
-        guild_id: int,
-        name: str,
-        reply: str,
-        description: str,
+            self,
+            command_id: int,
+            guild_id: int,
+            name: str,
+            reply: str,
+            description: str,
     ) -> None:
         """Adds a command to the database to the specified guild.
 
@@ -301,11 +303,11 @@ class Database:
                 return result[0]
 
     async def edit_existing_command(
-        self,
-        guild_id: int,
-        name: str,
-        reply: str = None,
-        description: str = None,
+            self,
+            guild_id: int,
+            name: str,
+            reply: str = None,
+            description: str = None,
     ) -> int | None:
         """Edits a command in the database.
         Lookup by name.
@@ -393,9 +395,9 @@ class Database:
                 return None if result is None else result[0]
 
     async def get_commands(
-        self,
-        guild_id: int,
-        name_only: bool = False,
+            self,
+            guild_id: int,
+            name_only: bool = False,
     ) -> list:
         """Returns names and descriptions of all commands in a guild.
 
@@ -440,12 +442,12 @@ class Database:
             self.pool = await aiomysql.create_pool(
                 host=self.__host,
                 user=self.__user,
-                password=DB_CONFIG["password"],
+                password=self.config["password"],
                 db=self.__database,
                 autocommit=True,
             )
         except Exception as e:
-            print(f'[Database] Failed to connect: {e}')
+            print(f"[Database] Failed to connect: {e}")
             self.started = False
             return self.started
 

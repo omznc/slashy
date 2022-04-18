@@ -1,12 +1,12 @@
 from asyncio import sleep
-
+from json import load
 from discord.ext import tasks
 from discord.ext.commands import Cog
 
-from bin.database import Database
+from bin.database_class import DB
 
 
-class DB(Cog):
+class Database(Cog):
     """
     Discord.py cog for loading database methods.
 
@@ -18,7 +18,11 @@ class DB(Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.bot.db = Database()
+        self.bot.db = DB(
+            load(open("config.json"))["DATABASE_SETTINGS"]["PRODUCTION"]
+            if self.bot.is_production
+            else load(open("config.json"))["DATABASE_SETTINGS"]["DEVELOPMENT"]
+        )
         self.ping.start()
 
     def cog_unload(self):
@@ -62,4 +66,4 @@ class DB(Cog):
 
 
 def setup(client):
-    client.add_cog(DB(client))
+    client.add_cog(Database(client))

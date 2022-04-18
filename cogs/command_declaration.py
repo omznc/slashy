@@ -1,20 +1,20 @@
 from json import load
-from logging import warning
 
-import discord
-from discord.errors import HTTPException
 from discord.ext import commands
 
-config: dict = load(open('config.json'))
+config: dict = load(open("config.json"))
 LOGO: str = config["BOT_LOGO"]
 MAX_COMMANDS_DEFAULT: str = config["MAX_COMMANDS_DEFAULT"]
 OWNER_ID: int = config["OWNER_ID"]
 
-# noinspection PyUnresolvedReferences
+
 class CommandDeclarator(commands.Cog):
-    """Cog for handling the reserved commands."""
+    """
+    This just registers the commands to be handled by Novus.
+    """
+
     def __init__(self, bot):
-        self.bot: discord.Client = bot
+        self.bot = bot
         self.commands = {}
 
     @commands.group()
@@ -75,40 +75,8 @@ class CommandDeclarator(commands.Cog):
         # If it's not a reserved command, handle the custom output.
         # If it is, pass it to Novus.
         if interaction.command_name not in self.bot.reserved_commands:
+            print(f"{interaction.command_name} was called, it's not in {self.bot.reserved_commands}.")
             return await self.bot.worker.run_user_command(interaction)
-
-    # Error handling.
-    @commands.Cog.listener()
-    async def on_command_error(self, ctx, error):
-        # Guild-only command ran in a DM.
-        if isinstance(error, commands.errors.NoPrivateMessage):
-            return await ctx.send(
-                "This command can only be run in servers.",
-                ephemeral=True,
-            )
-
-        # Discord's maximum commands limit of 100.
-        if isinstance(error, HTTPException) and error.code == 30032:
-            return await ctx.send(
-                "This server has reached the maximum number of commands allowed by Discord (100)." 
-                "\nPlease remove some before adding more.",
-                ephemeral=True,
-            )
-
-        # Everything else.
-        if not isinstance(error, commands.CommandNotFound):
-            try:
-                warning(f"{ctx.command} failed with **{error}**")
-            except KeyError:
-                warning(f"{ctx.command_name} failed with **{error}**")
-            finally:
-                await self.bot.get_user(OWNER_ID).send(
-                    f"Command failed with: **{error}**"
-                )
-                await ctx.send(
-                    "Something went wrong. We're on it!",
-                    ephemeral=True,
-                )
 
 
 def setup(client):

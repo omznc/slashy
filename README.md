@@ -1,4 +1,4 @@
-<p align="center"><img src="https://i.imgur.com/j8rrx7R.png" style="width: 8rem;border-radius: 20%;"><h1 align="center">Slashy - Your custom open-source slash-commands bot</h1></p>
+<p align="center"><img src="https://i.imgur.com/j8rrx7R.png" style="width: 8rem;border-radius: 20%;"><h1 align="center">Slashy - Your open-source custom  slash-commands bot</h1></p>
 <p align="center"><a href="https://top.gg/bot/928089024252506173"><img src="https://img.shields.io/badge/top.gg-Slashy-blue?style=for-the-badge"></a> <a href="https://hey.imkez.com/slashy-invite"><img src="https://img.shields.io/badge/Invite%20Me%20to-Discord-blue?style=for-the-badge&logo=discord"></a> <a href="https://radial-earthquake-f92.notion.site/Slashy-5170195d1860408392dd1db537bca0ea"><img src="https://img.shields.io/badge/Roadmap-blue?style=for-the-badge&logo=notion"></a></p>
 
 

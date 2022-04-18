@@ -1,6 +1,6 @@
 ## Changelog
 
-### The Localisation Update 1 - 18. Apr, 2022
+### The Localization Update 1 - 18. Apr, 2022
 
 - Renamed some cogs, made it nice and cute.
 - Added support for command localization.

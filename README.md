@@ -14,22 +14,6 @@ Click [right here](https://hey.imkez.com/slashy-invite) to add Slashy to your se
 
 ## Changes
 Check [CHANGELOG.md](https://github.com/omznc/Slashy/blob/main/CHANGELOG.md) for all changes.
-The latest update is as follows:
-
-### The Localization Update 1 - 18. Apr, 2022
-
-- Renamed some cogs, made it nice and cute.
-- Added support for command localization.
-   - These only work on slashy's commands (`/slashy add`, `/slashy edit` etc.)
-   - English and Croatian are the only ones supported right now.
-   - As of the release of this update, Discord hasn't fully released localisation to everyone. 
-   - You can help translate the commands to your own (discord-supported) language by editing `localizations.json`.
-- Changine from development to production mode is as simple as changing a boolean in `main.py`.
-- Added an extra logging option in `main.py` that prints out any command modification.
-- Moved all error handling to a separate cog.
-   - Also sends the error to whoever's ID is set as the `OWNER_ID` in `config.json`
-- Updated aiomysql to 0.1.0, and cryptography to 36.0.1
-- Fixed some uneccessary imports.
 
 ## Help
 Below are all the commands you can currently use.
@@ -79,5 +63,6 @@ This project is licensed under the [GNU General Public License v3.0](https://www
 This was built using some code from [LiveLaunch](https://github.com/juststephen/LiveLaunch), which is licensed under the same license.
 
 ## Notes
-This repository isn't and won't be updated with the realtime production code the bot is using, and will usually be a version or so late. I honestly don't have the time to push every single tiny change every time.
+This repository is an open-source version of my Slashy bot that I will not be actively maintaining. 
+The actual bot is written in Typescript, and I might release that later down the line.
 

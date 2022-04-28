@@ -18,17 +18,17 @@ Check [CHANGELOG.md](https://github.com/omznc/Slashy/blob/main/CHANGELOG.md) for
 ## Help
 Below are all the commands you can currently use.
 
-<u>Underlined</u> commands mean that only members with a set permission can use them. Defaults to `Administrator`. Set with `/slashy config <permission>` which is always restricted to the `Administrator` permission..
+<u>Underlined</u> commands mean that only members with a set permission can use them. Defaults to owner-only.. Set with `/slashy config <role>` which is always restricted to the owner permission..
 
 <> are required arguments and [] are optional arguments.
 
 You can't create commands with names that start with `slashy` as I've reserved those for the bot.
 | Command 	| Usage 	| Description 	|
 |---	|---	|---	|
-| <ins>add</ins> 	| `/slashy add <name> <reply> [description]` 	| Add new slash commands.<br>The description field is optional, with the bot using **A command made by Slashy** by default. 	|
+| <ins>add</ins> 	| `/slashy add <name> <reply> [description] [ephemeral]` 	| Add new slash commands.<br>The description field is optional, with the bot using **A command made by Slashy** by default. 	|
 | <ins>remove</ins> 	| `/slashy remove <name>` 	| Remove existing slash commands. 	|
-| <ins>edit</ins> 	| `/slashy edit <name> [new-reply] [new-description]` 	| Edit an existing command's reply, description, or both. 	|
-| <ins>config</ins> 	| `/slashy config <permission>` 	| Set the permission required to manage slash commands. Can only be run by users with the `Administrator` permission. 	|
+| <ins>edit</ins> 	| `/slashy edit <name> [new-reply] [new-description] [new-ephemeral]` 	| Edit an existing command's reply, description, or both. 	|
+| <ins>config</ins> 	| `/slashy config <role>` 	| Set the role required to manage slash commands. Can only be run by the server owner. 	|
 | list 	| `/slashy list` 	| List all of your server's commands. 	|
 | stats 	| `/slashy stats` 	| Display some Slashy statistics.<br>Different outputs whether you run it in a server or a DM. 	|
 | help 	| `/slashy help` 	| You guessed it, shows you this, but in Discord! 	|

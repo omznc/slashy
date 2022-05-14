@@ -46,6 +46,8 @@ Feel free to open an issue to suggest any new ones.
 | `[[user]]` 	| Mentions the user who ran the command. 	|
 | `[[user.id]] `	| The user ID of the user who ran the command. 	|
 | `[[user.name]] `	| The username of the user who ran the command. 	|
+| `[[owner]]` 	| Mentions the server owner. 	|
+| `[[owner.id]] `	| The user ID of the server owner. 	|
 | `[[user.avatar]]` 	| The avatar URL of the user who ran the command. 	|
 | `[[server]] `	| The server name. 	|
 | `[[server.id]] `	| The server's ID. 	|

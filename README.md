@@ -8,6 +8,10 @@ The code for this bot exists because I like the open-source community, so feel f
 
 You can get help on using the bot with the `/slashy help` command in any of the servers Slashy is in, or in Slashy's DM-s.
 
+## Disclaimer
+
+The text below refers to the current production code that is running as the Slashy bot, it does not refer to the code in this repository and should not be used as help documentation for this source code. You can read [my note](https://github.com/omznc/Slashy/edit/main/README.md#notes) at the bottom of this page.
+
 ## Invite
 
 Click [right here](https://hey.imkez.com/slashy-invite) to add Slashy to your server.
@@ -25,10 +29,10 @@ Below are all the commands you can currently use.
 You can't create commands with names that start with `slashy` as I've reserved those for the bot.
 | Command 	| Usage 	| Description 	|
 |---	|---	|---	|
-| <ins>add</ins> 	| `/slashy add <name> <reply> [description] [ephemeral]` 	| Add new slash commands.<br>The description field is optional, with the bot using **A command made by Slashy** by default. 	|
-| <ins>remove</ins> 	| `/slashy remove <name>` 	| Remove existing slash commands. 	|
-| <ins>edit</ins> 	| `/slashy edit <name> [new-reply] [new-description] [new-ephemeral]` 	| Edit an existing command's reply, description, or both. 	|
-| <ins>config</ins> 	| `/slashy config <role>` 	| Set the role required to manage slash commands. Can only be run by the server owner. 	|
+| <ins>add</ins> 	| `/slashy add` `name` `reply` *`description`* *`ephemeral`* 	| Add new slash commands.<br>Description and Ephemeral (hidden reply) fields  are optional.<br>Default Description: `A command made by Slashy`<br>Default Ephemeral status: `False`|
+| <ins>remove</ins> 	| `/slashy remove` `name` 	| Remove existing slash commands. 	|
+| <ins>edit</ins> 	| `/slashy edit` `name` *`new-reply`* *`new-description`* *`new-ephemeral`* 	| Edit an existing command's reply, description, ephemeral status, or all of the above at once. 	|
+| <ins>config</ins> 	| `/slashy config` `role` 	| Set the role required to manage slash commands. Can only be run by the server owner. 	|
 | list 	| `/slashy list` 	| List all of your server's commands. 	|
 | stats 	| `/slashy stats` 	| Display some Slashy statistics.<br>Different outputs whether you run it in a server or a DM. 	|
 | help 	| `/slashy help` 	| You guessed it, shows you this, but in Discord! 	|
@@ -66,5 +70,7 @@ This was built using some code from [LiveLaunch](https://github.com/juststephen/
 
 ## Notes
 This repository is an open-source version of my Slashy bot that I will not be actively maintaining. 
-The actual bot is written in Typescript, and I might release that later down the line.
+The current bot that is in production is written in Typescript. That code is not open-source (yet). Once it is it will be replaced here, but for now 2 versions of Slashy exist:
+- Slashy Python (this source code, provided with no up-to-date documentation)
+- Slashy Typescript (production code, open-source version soon™️. If you're reading this, I'm not there yet. This README mostly applies to this bot.)
 

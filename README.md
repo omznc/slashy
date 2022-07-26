@@ -27,6 +27,7 @@ Below are all the commands you can currently use.
 <> are required arguments and [] are optional arguments.
 
 You can't create commands with names that start with `slashy` as I've reserved those for the bot.
+
 | Command 	| Usage 	| Description 	|
 |---	|---	|---	|
 | <ins>add</ins> 	| `/slashy add` `name` `reply` *`description`* *`ephemeral`* 	| Add new slash commands.<br>Description and Ephemeral (hidden reply) fields  are optional.<br>Default Description: `A command made by Slashy`<br>Default Ephemeral status: `False`|
@@ -70,7 +71,7 @@ This was built using some code from [LiveLaunch](https://github.com/juststephen/
 
 ## Notes
 This repository is an open-source version of my Slashy bot that I will not be actively maintaining. 
-The current bot that is in production is written in Typescript. That code is not open-source (yet). Once it is it will be replaced here, but for now 2 versions of Slashy exist:
-- Slashy Python (this source code, provided with no up-to-date documentation)
-- Slashy Typescript (production code, open-source version soon™️. If you're reading this, I'm not there yet. This README mostly applies to this bot.)
+2 versions of Slashy exist:
+- Slashy Python (the python branch)
+- Slashy Typescript (production code, this branch.)
 

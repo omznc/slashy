@@ -1,0 +1,32 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+  binaryTargets   = ["native", "linux-musl", "debian-openssl-1.1.x"]
+}
+
+datasource db {
+  provider             = "mysql"
+  url                  = "dburl"
+  referentialIntegrity = "prisma"
+}
+
+model Guild {
+  id          String    @id @unique
+  premium     Boolean   @default(false)
+  banned      Boolean   @default(false)
+  joinedAt    DateTime  @default(now())
+  maxCommands Int       @default(30)
+  permission  String    @default("OWNER")
+  commands    Command[]
+}
+
+model Command {
+  id          String  @id @unique
+  guild       Guild   @relation(references: [id], fields: [guildId], onDelete: Cascade)
+  guildId     String
+  name        String
+  reply       String  @db.Text
+  description String  @default("A command made by Slashy.")
+  uses        Int     @default(0)
+  ephemeral   Boolean @default(false)
+}

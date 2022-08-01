@@ -1,9 +1,10 @@
 ## Changelog
 
-### The TS Update
+### The TS Update - 26. Jul, 2022
 
 - Rewritten the entire Python bot into Typescript.
 - Nothing should be different on the client side.
+
 ### The Localization Update 1 - 18. Apr, 2022
 
 - Renamed some cogs, made it nice and cute.

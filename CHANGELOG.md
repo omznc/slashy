@@ -5,6 +5,9 @@
 - Rewritten the entire Python bot into Typescript.
 - Nothing should be different on the client side.
 
+<details>
+   <summary><h3>Slashy Python (legacy)</h3></summary>
+   
 ### The Localization Update 1 - 18. Apr, 2022
 
 - Renamed some cogs, made it nice and cute.
@@ -43,3 +46,4 @@
    - Added auto-completion support for command names when using /edit and /remove.
    - No longer using raw HTTP requests to manage your commands.
 - Cleaned up a lot of unnecessary code.
+</details>

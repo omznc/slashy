@@ -21,7 +21,7 @@ You can self-host Slashy with Docker. You can find the Dockerfile in the reposit
 It's also accessible on [Docker Hub](https://hub.docker.com/r/omznc/slashy).
 You can run it using 
 ```shell
-docker pull omznc/slashy
+docker run omznc/slashy:latest
 ```
 You need to provide the following environment variables:
 - `DISCORD_TOKEN` - Your Discord bot token

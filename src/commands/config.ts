@@ -28,13 +28,14 @@ export const config = async (
 					await interaction.editReply({
 						embeds: [
 							new EmbedBuilder()
-								.setTitle(`${interaction.guild!.name}'s Configuration`)
+								.setTitle(`${ interaction.guild!.name }'s Configuration`)
 								.setThumbnail(_config.LOGO)
 								.setColor(_config.COLOR)
 								.addFields([
 									{
 										name: "Permissions",
-										value: oldRole === 'OWNER' ? messages.CommandConfigPermissionIsOwner : messages.CommandConfigPermissionIsRole.replace("{oldRole}", oldRole),
+										value: oldRole ===
+										'OWNER' ? messages.CommandConfigPermissionIsOwner : messages.CommandConfigPermissionIsRole.replace("{oldRole}", oldRole),
 									},
 									{
 										name: "Command Limits",
@@ -50,7 +51,7 @@ export const config = async (
 				default:
 					await SetGuildPermission(interaction.guildId!, role)
 						.then(async () => {
-							await interaction.editReply(messages.CommandConfigSuccess.replace("{role}", `<@&${role}>`));
+							await interaction.editReply(messages.CommandConfigSuccess.replace("{role}", `<@&${ role }>`));
 						})
 					break;
 			}

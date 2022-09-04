@@ -19,6 +19,7 @@ module.exports = {
 
 		// Handle slash commands
 		if (interaction.isCommand())
-			await (interaction.options.data.length != 0 ? handleGlobalCommand(interaction) : handleUserCommand(interaction))
+			await (interaction.options.data.length !=
+			0 ? handleGlobalCommand(interaction) : handleUserCommand(interaction))
 	},
 };

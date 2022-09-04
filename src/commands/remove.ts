@@ -28,7 +28,7 @@ export const remove = async (
 					await RemoveGuildCommandAPI(interaction.guildId!, commandId)
 						.then(async () => {
 							await interaction.editReply(messages.CommandRemoved);
-							if (config.EXTRA_LOGGING) logger.info(`[COMMAND] Removed ${name} from guild ${interaction.guildId}`);
+							if (config.EXTRA_LOGGING) logger.info(`[COMMAND] Removed ${ name } from guild ${ interaction.guildId }`);
 						})
 				});
 		})

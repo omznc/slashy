@@ -8,7 +8,7 @@ module.exports = {
 	name: 'guildDelete',
 	once: false,
 	async execute(guild: Guild) {
-		if (config.EXTRA_LOGGING) logger.info(`[GUILD] Left ${guild.name} (${guild.id})`);
+		if (config.EXTRA_LOGGING) logger.info(`[GUILD] Left ${ guild.name } (${ guild.id })`);
 
 		await RemoveGuilds([ guild.id ])
 			.catch(error => logger.error(error));

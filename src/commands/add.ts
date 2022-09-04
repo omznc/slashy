@@ -23,14 +23,16 @@ export const add = async (
 		.then(async () => {
 			await GetGuildCommandLimitInfo(interaction.guildId!)
 				.then(([ max, current ]) => {
-					if (current >= max) return Promise.reject(messages.CommandLimitReachedSlashy.replace("{max}", max.toString()));
+					if (current >=
+						max) return Promise.reject(messages.CommandLimitReachedSlashy.replace("{max}", max.toString()));
 				})
 		})
 		.then(async () => {
 
 			// Name Validation
 			const name: string = options.get("name").replace(/ /g, "_").toLowerCase().trim();
-			if (!isValidCommandName(name) || await DoesCommandExist(interaction.guildId!, name)) return Promise.reject(messages.CommandNameInvalidError)
+			if (!isValidCommandName(name) ||
+				await DoesCommandExist(interaction.guildId!, name)) return Promise.reject(messages.CommandNameInvalidError)
 
 			// Reply Validation
 			const reply: string = options.get("reply");
@@ -61,7 +63,7 @@ export const add = async (
 					)
 						.then(async () => {
 							await interaction.editReply(messages.CommandAdded);
-							if (config.EXTRA_LOGGING) logger.info(`[COMMAND] Added ${name} to guild ${interaction.guildId}`);
+							if (config.EXTRA_LOGGING) logger.info(`[COMMAND] Added ${ name } to guild ${ interaction.guildId }`);
 						})
 						.catch(async (error) => {
 							await RemoveGuildCommandAPI(interaction.guildId!, command.id);
@@ -69,7 +71,8 @@ export const add = async (
 						});
 				})
 				.catch((err: DiscordAPIError | Error) => {
-					if (err instanceof DiscordAPIError) if (err.code === 30032) return Promise.reject(messages.CommandLimitReachedDiscord);
+					if (err instanceof DiscordAPIError) if (err.code ===
+						30032) return Promise.reject(messages.CommandLimitReachedDiscord);
 					logger.error(err);
 					return Promise.reject(messages.UnspecifiedError);
 				});

@@ -7,14 +7,14 @@ module.exports = {
 	name: 'guildCreate',
 	once: false,
 	async execute(guild: Guild) {
-		if (config.EXTRA_LOGGING) logger.info(`[GUILD] Joined ${guild.name} (${guild.id})`);
+		if (config.EXTRA_LOGGING) logger.info(`[GUILD] Joined ${ guild.name } (${ guild.id })`);
 
 		await guild.fetchOwner()
 			.then(async owner => {
 				const content = {
 					embeds: [
 						new EmbedBuilder()
-							.setTitle(`Welcome to Slashy, **${guild.name}** 👋`)
+							.setTitle(`Welcome to Slashy, **${ guild.name }** 👋`)
 							.setDescription("Thanks for letting me be a part of your community! You can run `/slashy help` anywhere to get a list of commands and how to use them, but here\'s a quickstart guide just in case.")
 							.setFooter({ text: "If you need any help, you can always run /slashy help, or join the support server." })
 							.addFields([

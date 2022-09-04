@@ -15,11 +15,11 @@ export const list = async (interaction: CommandInteraction): Promise<void> => {
 			await GetGuildCommands(interaction.guildId!)
 				.then(async (commands) => {
 					if (commands.length === 0) return Promise.reject(messages.CommandListNoCommandsError);
-					const commandsInfo: string[] = commands.map(command => `\`/${command.name}\` (${command.uses} uses): ${command.description}`);
+					const commandsInfo: string[] = commands.map(command => `\`/${ command.name }\` (${ command.uses } uses): ${ command.description }`);
 
 					for (let i = 0; i < commandsInfo.length; i += 30) {
 						const embed = new EmbedBuilder()
-							.setTitle(`${interaction.guild?.name}'s Commands`)
+							.setTitle(`${ interaction.guild?.name }'s Commands`)
 							.setThumbnail(config.LOGO)
 							.setDescription(commandsInfo.slice(i, i + 30).join("\n"))
 							.setColor(config.COLOR);

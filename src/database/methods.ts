@@ -349,7 +349,8 @@ export const SetGuildBanned = async (guildId: string, banned: boolean): Promise<
  * @param {string} guildId The ID of the guild.
  * @returns {Promise<boolean>} Whether the guild is premium.
  */
-export const GetGuildPremium = async (guildId: string): Promise<boolean> => GetGuildAndCommands(guildId).then(guild => guild?.premium ?? false);
+export const GetGuildPremium = async (guildId: string): Promise<boolean> => GetGuildAndCommands(guildId).then(guild => guild?.premium ??
+	false);
 
 /**
  * Sets the premium guild attribute of a guild.

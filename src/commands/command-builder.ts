@@ -118,7 +118,7 @@ const SlashyCommands = new Commands(
 );
 
 const subcommands: string[] = [];
-SlashyCommands.command.options.forEach((option: any) => subcommands.push(`slashy ${option.name}`));
+SlashyCommands.command.options.forEach((option: any) => subcommands.push(`slashy ${ option.name }`));
 
 export default SlashyCommands;
 export { subcommands };

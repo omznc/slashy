@@ -6,11 +6,11 @@ const config = require('../utils/config').getConfigs([ 'ACTIVITIES', 'EXTRA_LOGG
 // This task simply updates the now playing status.
 module.exports = {
 	name: 'updateActivity',
-	frequency: `*/${config.ACTIVITIES_FREQUENCY_MINUTES} * * * *`,
+	frequency: `*/${ config.ACTIVITIES_FREQUENCY_MINUTES } * * * *`,
 	async execute() {
 		const activity = config.ACTIVITIES[Math.floor(Math.random() * config.ACTIVITIES.length)];
 		Client.user!.setActivity(activity);
 
-		if (config.EXTRA_LOGGING) logger.info(`Updated activity to ${activity.name}`);
+		if (config.EXTRA_LOGGING) logger.info(`Updated activity to ${ activity.name }`);
 	},
 };

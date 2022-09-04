@@ -53,7 +53,8 @@ async function hasPermission(interaction: CommandInteraction): Promise<boolean> 
 	const roleId = await GetGuildPermission(interaction.guildId!);
 	let result: boolean;
 	if (interaction.guild!.ownerId == interaction.member!.user.id) return true;
-	result = roleId == "OWNER" ? interaction.member!.user.id == interaction.guild!.ownerId : (interaction.member!.roles as GuildMemberRoleManager).cache.has(roleId);
+	result = roleId == "OWNER" ? interaction.member!.user.id ==
+		interaction.guild!.ownerId : (interaction.member!.roles as GuildMemberRoleManager).cache.has(roleId);
 
 	if (!result) await interaction.editReply(messages.CommandNoPermissionError);
 	return result;
@@ -83,7 +84,7 @@ function getPlaceholders(interaction: CommandInteraction): { [key: string]: stri
 		"[[user]]": interaction.user.toString(),
 		"[[user.id]]": interaction.user.id,
 		"[[user.name]]": interaction.user.username,
-		"[[owner]]": `<@${interaction.guild!.ownerId}>`,
+		"[[owner]]": `<@${ interaction.guild!.ownerId }>`,
 		"[[owner.id]]": interaction.guild!.ownerId,
 		"[[server]]": interaction.guild!.name,
 		"[[user.avatar]]": interaction.user.avatarURL({ forceStatic: true }) ?? "",
@@ -131,7 +132,8 @@ export const handleAutocomplete = async (interaction: AutocompleteInteraction): 
 	}
 
 	// Send up to 25 command names that include the input
-	await interaction.respond(guildCommandNames.filter(name => name.includes(interaction.options.data[0].options?.[0].value as string ?? ""))
+	await interaction.respond(guildCommandNames.filter(name => name.includes(interaction.options.data[0].options?.[0].value as string ??
+			""))
 		.map(name => ({
 			name: name,
 			value: name

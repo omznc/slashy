@@ -29,11 +29,18 @@ export const edit = async (
 
 			// Description Validation
 			const description: string | undefined = options.get("description");
-			if (description != undefined && !isValidDescription(description)) return Promise.reject(messages.CommandDescriptionInvalidError);
+			if (description !=
+				undefined &&
+				!isValidDescription(description)) return Promise.reject(messages.CommandDescriptionInvalidError);
 
 			const ephemeral: boolean | undefined = options.get("ephemeral");
 
-			if (reply == undefined && description == undefined && ephemeral == undefined) return Promise.reject(messages.CommandOptionEditNoArguments);
+			if (reply ==
+				undefined &&
+				description ==
+				undefined &&
+				ephemeral ==
+				undefined) return Promise.reject(messages.CommandOptionEditNoArguments);
 
 			// All validations passed, edit the command
 			else await EditGuildCommand(
@@ -52,7 +59,7 @@ export const edit = async (
 					)
 						.then(async () => {
 							await interaction.editReply(messages.CommandEdited);
-							if (config.EXTRA_LOGGING) logger.info(`[COMMAND] Edited ${name} in guild ${interaction.guildId}`);
+							if (config.EXTRA_LOGGING) logger.info(`[COMMAND] Edited ${ name } in guild ${ interaction.guildId }`);
 						})
 						.catch(async (error: Error) => {
 							logger.error(error);

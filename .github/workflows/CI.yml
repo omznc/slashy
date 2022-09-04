@@ -39,4 +39,4 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: omznc/slashy:${{ steps.vars.outputs.tag }}, omznc/slashy:latest
+          tags: omznc/slashy:latest

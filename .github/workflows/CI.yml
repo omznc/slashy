@@ -39,4 +39,4 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: omznc/slashy:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/slashy:${{ steps.vars.outputs.tag }}, ${{ secrets.DOCKERHUB_USERNAME }}/slashy:latest

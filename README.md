@@ -46,7 +46,7 @@ Please do not list this bot on top.gg or any other bot listing site, as it is me
 ## Help
 Below are all the commands you can currently use.
 
-<u>Underlined</u> commands mean that only members with a set permission can use them. Defaults to owner-only.. Set with `/slashy config <role>` which is always restricted to the owner permission..
+<u>Underlined</u> commands mean that only members with a set permission can use them. Defaults to owner-only. Set with `/slashy config <role>` which is always restricted to the owner permission.
 
 <> are required arguments and [] are optional arguments.
 
@@ -90,8 +90,6 @@ Feel free to open an issue or pull request if you have any suggestions or bug re
 ## License
 
 This project is licensed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html), so you can do a lot of things with it, as long as your code is open-source as well. Would be cool of you to link back to this project, but it's not required.
-
-This was built using some code from [LiveLaunch](https://github.com/juststephen/LiveLaunch), which is licensed under the same license.
 
 ## Notes
 You might notice a python branch. That's the old version of this bot and it's no longer maintained. I'm keeping it there for archival purposes.

@@ -4,12 +4,9 @@
   "description": "",
   "main": "dist/bot.js",
   "scripts": {
-    "clean": "rimraf dist/",
-    "build": "npm run clean && tsc --project tsconfig.json",
-    "start": "npm run clean && tsc --project tsconfig.json && node dist/bot.js --log-to-file --production",
-    "start:dev": "npm run clean && tsc --project tsconfig.json && node dist/bot.js | pino-pretty -i pid,hostname -t yyyy-mm-dd HH:MM:ss",
-    "start:publish": "npm run clean && tsc --project tsconfig.json && node dist/bot.js --publish-commands",
-    "start:clear": "npm run clean && tsc --project tsconfig.json && node dist/bot.js --clear-commands"
+    "migrate": "npx prisma db push",
+    "start": "rimraf dist/ && tsc --project tsconfig.json && node dist/bot.js",
+    "start:docker": "npx prisma db push && node dist/bot.js | pino-pretty -i pid,hostname -t yyyy-mm-dd HH:MM:ss"
   },
   "keywords": [],
   "author": "Omar Zunic",
@@ -19,7 +16,7 @@
     "@prisma/client": "^3.12.0",
     "croner": "^4.3.9",
     "discord-api-types": "^0.31.2",
-    "discord.js": "^14.0.1",
+    "discord.js": "^14.1.2",
     "pino": "^7.0.0-rc.9",
     "pino-pretty": "^7.6.1",
     "prisma": "^3.12.0",

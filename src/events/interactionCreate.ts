@@ -1,7 +1,7 @@
-import { Interaction, InteractionType } from "discord.js";
+import { Interaction } from "discord.js";
 import { handleAutocomplete, handleGlobalCommand, handleUserCommand } from "../commands/command-handler";
 
-const config = require('../utils/config').getConfigs([ 'CLIENT_ID' ]);
+const config = require('../utils/config').getConfigs([ 'DISCORD_CLIENT_ID' ]);
 
 module.exports = {
 	name: 'interactionCreate',
@@ -9,15 +9,16 @@ module.exports = {
 	async execute(interaction: Interaction) {
 
 		// Only handle bot interactions
-		if (interaction.applicationId != config.CLIENT_ID) return;
+		if (interaction.applicationId != config.DISCORD_CLIENT_ID) return;
 
 		// Handle autocomplete
-		if (interaction.type === InteractionType.ApplicationCommandAutocomplete) {
+		if (interaction.isAutocomplete()) {
 			await handleAutocomplete(interaction);
 			return;
 		}
 
-		if (interaction.type === InteractionType.ApplicationCommand)
+		// Handle slash commands
+		if (interaction.isCommand())
 			await (interaction.options.data.length != 0 ? handleGlobalCommand(interaction) : handleUserCommand(interaction))
 	},
 };

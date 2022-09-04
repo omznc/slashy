@@ -1,6 +1,7 @@
 import { CommandInteraction, EmbedBuilder } from "discord.js";
 import { GetGuildBanned, GetGuildCommandLimitInfo, GetGuildPermission, SetGuildPermission } from "../database/methods";
 import { messages } from "../text/messages";
+import { logger } from "../utils/logger";
 
 const _config = require('../utils/config').getConfigs([ 'LOGO', 'COLOR' ]);
 
@@ -55,6 +56,7 @@ export const config = async (
 			}
 		})
 		.catch(async (error) => {
-			await interaction.editReply(error);
+			await interaction.editReply(error ?? messages.UnspecifiedError);
+			logger.error(error);
 		});
 };

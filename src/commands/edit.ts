@@ -61,7 +61,8 @@ export const edit = async (
 				})
 		})
 		.catch(async (error) => {
-			await interaction.editReply(error);
+			await interaction.editReply(error ?? messages.UnspecifiedError);
+			logger.error(error);
 		});
 
 

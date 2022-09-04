@@ -30,7 +30,7 @@ export const list = async (interaction: CommandInteraction): Promise<void> => {
 				})
 		})
 		.catch(async error => {
-			await interaction.editReply(messages.UnspecifiedError);
+			await interaction.editReply(error ?? messages.UnspecifiedError);
 			logger.error(error);
 		});
 };

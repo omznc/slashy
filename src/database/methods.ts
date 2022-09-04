@@ -1,3 +1,5 @@
+// noinspection JSUnusedGlobalSymbols
+
 import prisma from '.';
 import { Command, Guild } from '@prisma/client';
 import { cache } from './cache';
@@ -213,7 +215,6 @@ export const RemoveGuilds = async (guildIds: string[]): Promise<void> => {
 		})
 	]);
 	for (const guildId of guildIds) cache.remove(guildId);
-
 };
 
 /**
@@ -238,7 +239,6 @@ export const RemoveGuildCommand = async (guildId: string, name: string): Promise
 			}
 			return command.id;
 		})
-
 };
 
 /**
@@ -342,7 +342,6 @@ export const SetGuildBanned = async (guildId: string, banned: boolean): Promise<
 			});
 			cache.get(guild.id)!.banned = banned;
 		})
-
 };
 
 /**

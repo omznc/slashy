@@ -3,8 +3,8 @@ import { ApplicationCommand } from "discord.js";
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 
-const config = require('./config').getConfigs([ 'TOKEN', 'CLIENT_ID' ])
-const rest = new REST({ version: '9' }).setToken(config.TOKEN);
+const config = require('./config').getConfigs([ 'DISCORD_TOKEN', 'DISCORD_CLIENT_ID' ])
+const rest = new REST({ version: '9' }).setToken(config.DISCORD_TOKEN);
 
 /**
  * Registers a Guild command. Uses an API call.
@@ -18,7 +18,7 @@ export const RegisterGuildCommandAPI = async (
 ):
 	Promise<ApplicationCommand> => {
 	return rest.post(
-			Routes.applicationGuildCommands(config.CLIENT_ID, guildId),
+			Routes.applicationGuildCommands(config.DISCORD_CLIENT_ID, guildId),
 			{ body: command },
 		)
 		.then((response: ApplicationCommand) => response);
@@ -38,7 +38,7 @@ export const EditGuildCommandAPI = async (
 	ephemeral?: boolean
 ): Promise<void> => {
 	return rest.patch(
-		Routes.applicationGuildCommand(config.CLIENT_ID, guildId, commandId),
+		Routes.applicationGuildCommand(config.DISCORD_CLIENT_ID, guildId, commandId),
 		{ body: { description, ephemeral } }
 	)
 }
@@ -53,7 +53,7 @@ export const RemoveGuildCommandAPI = async (
 	commandId: string
 ): Promise<void> => {
 	return rest.delete(
-		Routes.applicationGuildCommand(config.CLIENT_ID, guildId, commandId),
+		Routes.applicationGuildCommand(config.DISCORD_CLIENT_ID, guildId, commandId),
 	)
 }
 

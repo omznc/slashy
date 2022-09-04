@@ -9,9 +9,9 @@ import { logger } from "../utils/logger";
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
-const config = require('../utils/config').getConfigs([ 'CLIENT_ID', 'TOKEN' ]);
+const config = require('../utils/config').getConfigs([ 'DISCORD_CLIENT_ID', 'DISCORD_TOKEN' ]);
 
-const rest = new REST({ version: '9' }).setToken(config.TOKEN);
+const rest = new REST({ version: '9' }).setToken(config.DISCORD_TOKEN);
 
 const options = {
 	name: (required: boolean = true, autocomplete: boolean = false) => (option: SlashCommandStringOption) => option.setName('name').setDescription('The name of the command.').setRequired(required).setAutocomplete(autocomplete),
@@ -28,22 +28,27 @@ class Commands {
 		this.command = data;
 	}
 
-	// Clears all commands from Discord. Uses API call.
+	// Clears all commands from Discord. Uses an API call.
 	async clear() {
-		await rest.put(Routes.applicationCommands(config.CLIENT_ID),
+		await rest.put(Routes.applicationCommands(config.DISCORD_CLIENT_ID),
 				{ body: [] })
 			.then(() => logger.info('Cleared Global (/) Commands'))
 			.catch((err: Error) => logger.error(err));
 	}
 
-	// Publishes all commands to Discord. Uses API call.
+	// Publishes all commands to Discord. Uses an API call.
 	async publish() {
 		await rest.put(
-				Routes.applicationCommands(config.CLIENT_ID),
+				Routes.applicationCommands(config.DISCORD_CLIENT_ID),
 				{ body: [ this.command ] },
 			)
 			.then(() => logger.info("Published Global (/) Commands"))
 			.catch((err: Error) => logger.error(err));
+	}
+
+	// Clears then publishes all commands to Discord. Uses an API call.
+	async refresh() {
+		await Promise.all([ this.clear(), this.publish() ])
 	}
 }
 

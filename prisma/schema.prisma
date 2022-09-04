@@ -5,8 +5,8 @@ generator client {
 }
 
 datasource db {
-  provider             = "mysql"
-  url                  = "dburl"
+  provider             = "postgresql"
+  url                  = env("DATABASE_URL")
   referentialIntegrity = "prisma"
 }
 

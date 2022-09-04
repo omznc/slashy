@@ -1,13 +1,7 @@
 {
-  "TOKEN": {
-    "DEV": "",
-    "PROD": ""
-  },
-  "CLIENT_ID": {
-    "DEV": "",
-    "PROD": ""
-  },
-  "TOPGG_TOKEN": "",
+  "DISCORD_TOKEN": null,
+  "DISCORD_CLIENT_ID": null,
+  "TOPGG_TOKEN": null,
   "LOGO": "https://i.imgur.com/OpKkRY0.png",
   "COLOR": "#277ce2",
   "EXTRA_LOGGING": true,

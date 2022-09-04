@@ -1,0 +1,33 @@
+services:
+    database:
+        image: postgres:latest
+        container_name: slashy-database
+        restart: unless-stopped
+        environment:
+            - POSTGRES_USER=slashy
+            - POSTGRES_PASSWORD=slashy
+            - POSTGRES_DB=slashy
+        volumes:
+            - slashy-data:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U slashy"]
+            interval: 5s
+            retries: 3
+
+    bot:
+        image: omznc/slashy:latest
+        container_name: slashy-bot
+        restart: unless-stopped
+        environment:
+            - DISCORD_TOKEN=
+            - DISCORD_CLIENT_ID=
+            - DATABASE_URL=postgresql://slashy:slashy@database/slashy
+        volumes:
+            -   slashy-config:/config
+        depends_on:
+            database:
+                condition: service_healthy
+
+volumes:
+    slashy-config:
+    slashy-data:

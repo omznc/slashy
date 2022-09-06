@@ -20,8 +20,13 @@ Check [CHANGELOG.md](https://github.com/omznc/Slashy/blob/main/CHANGELOG.md) for
 
 ## Self-hosting with Docker
 
-You can self-host Slashy with Docker. You can find the Dockerfile in the repository if you'd like to build it yourself.
+Slashy was written with Docker in mind, and fully supports it - it even has its own health-check.
+You can find the Dockerfile in the repository if you'd like to build it yourself.
 It's also accessible on [Docker Hub](https://hub.docker.com/r/omznc/slashy).
+
+Slashy's Dockerfile comes in two flavors - PostgreSQL (`omznc/slashy:latest`) and MySQL (`omznc/slashy:mysql-latest`). 
+
+The rest of this assumes you're using the default PostgreSQL version.
 You can run it using 
 ```shell
 docker run omznc/slashy:latest
@@ -31,11 +36,11 @@ You need to provide the following environment variables:
 - `DISCORD_CLIENT_ID` - Your Discord bot client ID
 - `DATABASE_URL` - A valid PostgreSQL connection string
 
-### Using docker-compose
+### Using Docker Compose
 I provided a [docker-compose.yml](https://github.com/omznc/Slashy/blob/main/docker-compose.yml) file for you to use.
 It will set up a **persistent database** and a **volume for the config file** automatically, and you only need to provide the `DISCORD_TOKEN` and `DISCORD_CLIENT_ID` environment variables.
 
-After you've set up the environment variables, you can run the bot using
+After you've set up the environment variables, you can run the bot using 
 ```shell
 docker compose up -d
 ```
@@ -96,4 +101,6 @@ This project is licensed under the [GNU General Public License v3.0](https://www
 
 ## Notes
 You might notice a python branch. That's the old version of this bot and it's no longer maintained. I'm keeping it there for archival purposes.
+
+Ephemeral means that the reply can only be seen by the person who originally ran the command.
 

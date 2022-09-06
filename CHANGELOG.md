@@ -1,5 +1,10 @@
 ## Changelog
 
+### The Dockerisation Update - 9. Sep, 2022
+
+- Added Docker support.
+- Added Docker healthchecks.
+
 ### The TS Update - 26. Jul, 2022
 
 - Rewritten the entire Python bot into Typescript.

@@ -31,7 +31,6 @@ services:
             database:
                 condition: service_healthy
 
-
 #    Uncomment this if you'd like Slashy to always be up-to-date.
 #    watchtower:
 #        image: containrrr/watchtower
@@ -46,7 +45,6 @@ services:
 #        depends_on:
 #            bot:
 #                condition: service_healthy
-
 
 volumes:
     slashy-config:

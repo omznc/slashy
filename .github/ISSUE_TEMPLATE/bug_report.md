@@ -1,7 +1,7 @@
 ---
 name: Bug report
 about: Create a report to improve Slashy.
-title: "[BUG]["
+title: "[BUG]"
 labels: ''
 assignees: omznc
 

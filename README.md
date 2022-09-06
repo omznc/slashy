@@ -102,7 +102,7 @@ Feel free to open an issue to suggest any new ones.
   
 
 ## Contributing
-Feel free to open an issue or pull request if you have any suggestions or bug reports.
+Read more at [CONTRIBUTING.md](https://github.com/omznc/Slashy/blob/main/CONTRIBUTING.md).
 
 ## License
 

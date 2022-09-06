@@ -51,10 +51,11 @@ After you've set up the environment variables, you can run the bot using
 docker compose up -d
 ```
 
-I've included [watchtower](https://github.com/containrrr/watchtower) which you can uncomment to keep the bot up-to-date.
+
+I've included [watchtower](https://github.com/containrrr/watchtower) to keep the bot up-to-date.
+If you already have your own watchtower instance, or don't want automatic updates, feel free to comment or delete that bit out.
 
 You can ignore the `TOPGG_TOKEN` variable. 
-
 Please do not list this bot on top.gg or any other bot listing site, as it is meant to be self-hosted privately, and unless you're using the live version, you have no need for this. 
 
 **If you do list it, you're directly breaking the license.**

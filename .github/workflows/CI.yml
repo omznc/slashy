@@ -29,15 +29,4 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: omznc/slashy:postgresql
-      -
-        name: Replace MySQL with PostgreSQL
-        run: |
-          ls -l
-          sed -ie 's/postgresql/mysql/g' prisma/schema.prisma
-      -
-        name: Build and push
-        uses: docker/build-push-action@v3
-        with:
-          push: true
-          tags: omznc/slashy:mysql
+          tags: omznc/slashy:latest

@@ -29,7 +29,8 @@ Slashy was written with Docker in mind, and fully supports it - it even has its 
 You can find the Dockerfile in the repository if you'd like to build it yourself.
 It's also accessible on [Docker Hub](https://hub.docker.com/r/omznc/slashy).
 
-Slashy's Dockerfile comes in two flavors - PostgreSQL (`omznc/slashy:latest`) and MySQL (`omznc/slashy:mysql-latest`). 
+Slashy's Dockerfile comes in two flavors - PostgreSQL (`omznc/slashy:latest`) and MySQL (`omznc/slashy:mysql-latest`).
+I've included the MySQL version because I'm using it right now, but I plan on switching the production version of the bot to PostgreSQL.
 
 The rest of this assumes you're using the default PostgreSQL version.
 You can run it using 

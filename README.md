@@ -18,6 +18,11 @@ Click [right here](https://hey.imkez.com/slashy-invite) to add Slashy to your se
 ## Changes
 Check [CHANGELOG.md](https://github.com/omznc/Slashy/blob/main/CHANGELOG.md) for all changes.
 
+### Versioning
+Any version released before 9. Sep, 2022 is considered Beta, and the Python version being considered Alpha. 
+
+There will be no official 'versioning' as the bot will always be running edge code after my internal testing. Feel free to keep your own versions.
+
 ## Self-hosting with Docker
 
 Slashy was written with Docker in mind, and fully supports it - it even has its own health-check.

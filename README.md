@@ -1,5 +1,8 @@
 <p align="center"><img src="https://i.imgur.com/j8rrx7R.png" style="width: 8rem;border-radius: 20%;"><h1 align="center">Slashy - Your open-source custom  slash-commands bot</h1></p>
-<p align="center"><a href="https://top.gg/bot/928089024252506173"><img src="https://img.shields.io/badge/top.gg-Slashy-blue?style=for-the-badge"></a> <a href="https://hey.imkez.com/slashy-invite"><img src="https://img.shields.io/badge/Invite%20Me%20to-Discord-blue?style=for-the-badge&logo=discord"></a> <a href="https://radial-earthquake-f92.notion.site/Slashy-5170195d1860408392dd1db537bca0ea"><img src="https://img.shields.io/badge/Roadmap-blue?style=for-the-badge&logo=notion"></a></p>
+<p align="center">
+<a href="https://top.gg/bot/928089024252506173"><img src="https://img.shields.io/badge/top.gg-Slashy-blue?style=for-the-badge"></a>
+<a href="https://hey.imkez.com/slashy-invite"><img src="https://img.shields.io/badge/Invite%20Me%20to-Discord-blue?style=for-the-badge&logo=discord"></a> 
+<a href="https://hub.docker.com/repository/docker/omznc/slashy"><img src="https://img.shields.io/badge/DockerHub-white?style=for-the-badge&logo=docker"></a></p>
 
 
 ## Hey, I'm Slashy - your friendly neighborhood custom-command bot!
@@ -15,10 +18,20 @@ Click [right here](https://hey.imkez.com/slashy-invite) to add Slashy to your se
 ## Changes
 Check [CHANGELOG.md](https://github.com/omznc/Slashy/blob/main/CHANGELOG.md) for all changes.
 
+### Versioning
+Any version released before 9. Sep, 2022 is considered Beta, and the Python version being considered Alpha. 
+
+There will be no official 'versioning' as the bot will always be running edge code after my internal testing. Feel free to keep your own versions.
+
 ## Self-hosting with Docker
 
-You can self-host Slashy with Docker. You can find the Dockerfile in the repository if you'd like to build it yourself.
+Slashy was written with Docker in mind, and fully supports it - it even has its own health-check.
+You can find the Dockerfile in the repository if you'd like to build it yourself.
 It's also accessible on [Docker Hub](https://hub.docker.com/r/omznc/slashy).
+
+Slashy's Dockerfile comes in two flavors - PostgreSQL (`omznc/slashy:latest`) and MySQL (`omznc/slashy:mysql-latest`). 
+
+The rest of this assumes you're using the default PostgreSQL version.
 You can run it using 
 ```shell
 docker run omznc/slashy:latest
@@ -28,11 +41,11 @@ You need to provide the following environment variables:
 - `DISCORD_CLIENT_ID` - Your Discord bot client ID
 - `DATABASE_URL` - A valid PostgreSQL connection string
 
-### Using docker-compose
+### Using Docker Compose
 I provided a [docker-compose.yml](https://github.com/omznc/Slashy/blob/main/docker-compose.yml) file for you to use.
 It will set up a **persistent database** and a **volume for the config file** automatically, and you only need to provide the `DISCORD_TOKEN` and `DISCORD_CLIENT_ID` environment variables.
 
-After you've set up the environment variables, you can run the bot using
+After you've set up the environment variables, you can run the bot using 
 ```shell
 docker compose up -d
 ```
@@ -93,4 +106,6 @@ This project is licensed under the [GNU General Public License v3.0](https://www
 
 ## Notes
 You might notice a python branch. That's the old version of this bot and it's no longer maintained. I'm keeping it there for archival purposes.
+
+Ephemeral means that the reply can only be seen by the person who originally ran the command.
 

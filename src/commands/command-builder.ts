@@ -14,11 +14,11 @@ const config = require('../utils/config').getConfigs([ 'DISCORD_CLIENT_ID', 'DIS
 const rest = new REST({ version: '9' }).setToken(config.DISCORD_TOKEN);
 
 const options = {
-	name: (required: boolean = true, autocomplete: boolean = false) => (option: SlashCommandStringOption) => option.setName('name').setDescription('The name of the command.').setRequired(required).setAutocomplete(autocomplete),
-	description: (required: boolean = true) => (option: SlashCommandStringOption) => option.setName('description').setDescription('The response of the command.').setRequired(required),
-	reply: (required: boolean = true) => (option: SlashCommandStringOption) => option.setName('reply').setDescription('The response of the command.').setRequired(required),
-	ephemeral: (required: boolean = true) => (option: SlashCommandBooleanOption) => option.setName('ephemeral').setDescription('Will the reply be invisible to everyone else?').setRequired(required),
-	role: (required: boolean = false) => (option: SlashCommandRoleOption) => option.setName('role').setDescription('Role required to manage Slashy.').setRequired(required),
+	name: (required = true, autocomplete = false) => (option: SlashCommandStringOption) => option.setName('name').setDescription('The name of the command.').setRequired(required).setAutocomplete(autocomplete),
+	description: (required = true) => (option: SlashCommandStringOption) => option.setName('description').setDescription('The response of the command.').setRequired(required),
+	reply: (required = true) => (option: SlashCommandStringOption) => option.setName('reply').setDescription('The response of the command.').setRequired(required),
+	ephemeral: (required = true) => (option: SlashCommandBooleanOption) => option.setName('ephemeral').setDescription('Will the reply be invisible to everyone else?').setRequired(required),
+	role: (required = false) => (option: SlashCommandRoleOption) => option.setName('role').setDescription('Role required to manage Slashy.').setRequired(required),
 }
 
 class Commands {

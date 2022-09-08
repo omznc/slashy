@@ -26,6 +26,26 @@ export const GetTotalCommandsRunInAllServers = async (): Promise<number> => {
 };
 
 /**
+ * Gets the sum of all uses of all commands in a guild
+ * @param guildId The guild to get the sum of all uses of all commands in
+ * @returns {Promise<number>} The sum of all uses of all commands in a guild
+ */
+export const GetTotalCommandsRunInGuild = async (guildId: string): Promise<number> => {
+	return prisma.command.aggregate({
+			where: {
+				guildId
+			},
+			_sum: {
+				uses: true
+			}
+		})
+		.then((result) => {
+			return result._sum.uses ?? 0;
+		})
+}
+
+
+/**
  * Removes all guilds that's ID isn't in the provided list
  * @param {string[]} whitelistedGuilds The list of guild IDs to keep
  */

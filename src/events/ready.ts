@@ -13,10 +13,11 @@ module.exports = {
 		if (process.argv.includes('--clear-commands')) await SlashyCommands.clear().then(() => process.exit(0));
 		if (process.argv.includes('--refresh-commands')) await SlashyCommands.refresh().then(() => process.exit(0));
 
-		await SlashyCommands.initialPublish();
-
-		await RemoveLeftGuilds(client.guilds.cache.map(guild => guild.id))
-			.then(() => logger.info('Removed inactive guilds from database.'))
+		await Promise.all([
+			SlashyCommands.initialPublish(),
+			RemoveLeftGuilds(client.guilds.cache.map(guild => guild.id))
+		])
+			.then(() => logger.info('Ready!'))
 			.catch(err => logger.error(err));
 	},
 };

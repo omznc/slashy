@@ -1,5 +1,9 @@
 import { CommandInteraction, EmbedBuilder } from "discord.js";
-import { GetTotalCommandsInAllServers, GetTotalCommandsRunInAllServers } from "../database/methods";
+import {
+	GetTotalCommandsInAllServers,
+	GetTotalCommandsRunInAllServers,
+	GetTotalCommandsRunInGuild
+} from "../database/methods";
 import { logger } from "../utils/logger";
 import { messages } from "../text/messages";
 
@@ -21,11 +25,13 @@ export const stats = async (interaction: CommandInteraction): Promise<void> => {
 						{
 							name: 'Users',
 							value: `That\'s a total of **${ interaction.client.guilds.cache.reduce((acc, guild) => acc +
-								guild.memberCount, 0) }** users... crazy right!?`
+								guild.memberCount, 0) }** users... crazy right!?${ interaction.inGuild() ? '\nYour server\'s got **' + interaction.guild?.memberCount + '** of them.' : '' }`
 						},
 						{
 							name: 'Commands',
-							value: `I manage **${ await GetTotalCommandsInAllServers() }** commands, and I ran **${ await GetTotalCommandsRunInAllServers() }** commands in total.`
+							value: `I manage **${ await GetTotalCommandsInAllServers() }** commands, and I ran **${ await GetTotalCommandsRunInAllServers() }** commands in total. ${ 
+								interaction.inGuild() ? '\nYou\'ve run **' + (await GetTotalCommandsRunInGuild(interaction?.guildId)) + '** of them.' : ''
+							}`
 						}
 					])
 			]

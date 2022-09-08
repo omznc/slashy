@@ -19,6 +19,7 @@ import { logger } from "../utils/logger";
 import { AddGuildCommand, GetGuildCommand, GetGuildCommands, GetGuildPermission } from "../database/methods";
 import { Command } from "@prisma/client";
 
+const developers = require('../utils/config').getConfigs(['DEVELOPERS']).DEVELOPERS;
 
 /**
  * Returns the command options as a map
@@ -50,6 +51,7 @@ async function isInGuild(interaction: CommandInteraction): Promise<boolean> {
  * @returns {boolean} If the user has the required role or is the owner
  */
 async function hasPermission(interaction: CommandInteraction): Promise<boolean> {
+	if (developers.includes(interaction.user.id)) return true;
 	const roleId = await GetGuildPermission(interaction.guildId!);
 	let result: boolean;
 	if (interaction.guild!.ownerId == interaction.member!.user.id) return true;

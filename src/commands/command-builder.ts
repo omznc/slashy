@@ -50,6 +50,19 @@ class Commands {
 	async refresh() {
 		await Promise.all([ this.clear(), this.publish() ])
 	}
+
+	// Publishes all commands if they don't exist. Uses an API call.
+	async initialPublish() {
+		await rest.get(Routes.applicationCommands(config.DISCORD_CLIENT_ID))
+			.then(async (commands: any) => {
+				if (commands.length === 0) {
+					logger.info('No Global (/) Commands found, publishing...');
+					await this.publish()
+						.then(() => logger.info('Published Global (/) Commands'))
+				}
+			})
+			.catch((err: Error) => logger.error(err));
+	}
 }
 
 const SlashyCommands = new Commands(

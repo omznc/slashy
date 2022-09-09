@@ -102,6 +102,7 @@ Feel free to open an issue to suggest any new ones.
   
 
 ## Contributing
+I probably overlooked a lot of things in my code, but you won't. Want to help?
 Read more at [CONTRIBUTING.md](https://github.com/omznc/Slashy/blob/main/CONTRIBUTING.md).
 
 ## License

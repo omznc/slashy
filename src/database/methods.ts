@@ -60,6 +60,23 @@ export const RemoveLeftGuilds = async (whitelistedGuilds: string[]): Promise<voi
 	);
 }
 
+
+/**
+ * Adds guilds that aren't in the database.
+ * @param guildIds The list of guild IDs to add
+ */
+export const AddNewGuilds = async (guildIds: string[]): Promise<void> => {
+	// Adds new guilds if they don't exist
+	await prisma.guild.createMany({
+		data: guildIds.map((guildId) => {
+			return {
+				id: guildId
+			}
+		}),
+		skipDuplicates: true
+	});
+}
+
 /**
  * Gets all commands in a guild
  * @param {string} guildId The ID of the guild to get the commands from

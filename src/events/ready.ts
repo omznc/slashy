@@ -1,7 +1,7 @@
 import { Client } from 'discord.js';
 import SlashyCommands from "../commands/command-builder";
 import { logger } from "../utils/logger";
-import { RemoveLeftGuilds } from "../database/methods";
+import { AddNewGuilds, RemoveLeftGuilds } from "../database/methods";
 
 module.exports = {
 	name: 'ready',
@@ -15,7 +15,8 @@ module.exports = {
 
 		await Promise.all([
 			SlashyCommands.initialPublish(),
-			RemoveLeftGuilds(client.guilds.cache.map(guild => guild.id))
+			RemoveLeftGuilds(client.guilds.cache.map(guild => guild.id)),
+			AddNewGuilds(client.guilds.cache.map(guild => guild.id))
 		])
 			.then(() => logger.info('Ready!'))
 			.catch(err => logger.error(err));

@@ -110,3 +110,6 @@ You might notice a python branch. That's the old version of this bot and it's no
 
 Ephemeral means that the reply can only be seen by the person who originally ran the command.
 
+---
+[![CI](https://github.com/omznc/slashy/actions/workflows/CI.yml/badge.svg)](https://github.com/omznc/slashy/actions/workflows/CI.yml)
+

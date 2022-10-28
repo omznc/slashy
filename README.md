@@ -40,7 +40,7 @@ You need to provide the following environment variables:
 
 ### Using Docker Compose
 I provided a [docker-compose.yml](https://github.com/omznc/Slashy/blob/main/docker-compose.yml) file for you to use.
-It will set up a **persistent database** and a **volume for the config file** automatically, and you only need to provide the `DISCORD_TOKEN` and `DISCORD_CLIENT_ID` environment variables.
+It will set up a **persistent PostgreSQL database** and a **volume for the config file** automatically. You only need to provide the `DISCORD_TOKEN` and `DISCORD_CLIENT_ID` environment variables in.
 
 After you've set up the environment variables, you can run the bot using 
 ```shell

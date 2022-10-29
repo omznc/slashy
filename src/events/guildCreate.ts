@@ -1,7 +1,8 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Guild } from 'discord.js';
 import { logger } from "../utils/logger";
+import { ConfigTypes } from "../utils/configTypes";
 
-const config = require('../utils/config').getConfigs([ 'EXTRA_LOGGING' ]);
+const config = require('../utils/config').getConfigs([ ConfigTypes.EXTRA_LOGGING ]);
 
 module.exports = {
 	name: 'guildCreate',

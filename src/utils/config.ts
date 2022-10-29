@@ -1,4 +1,6 @@
 // This module loads config.json and provides its values for importing
+import { ConfigTypes } from "./configTypes";
+
 let config = require('../../config/config.json');
 
 config.DISCORD_TOKEN = process.env.DISCORD_TOKEN || config.DISCORD_TOKEN;
@@ -7,22 +9,12 @@ config.TOPGG_TOKEN = process.env.TOPGG_TOKEN || config.TOPGG_TOKEN;
 
 /**
  * Gets the requested config values.
- * @param {string[]} neededConfigs The config values to get.
- * @returns {{ string: any }} The config values as an object - configName: configValue.
+ * @param {ConfigTypes[]} requestedConfigs The config values to get.
+ * @returns {Object} The requested config values in an object where the keys are the config types.
  */
-export const getConfigs = (neededConfigs: string[]): { [p: string]: any } => {
-	return neededConfigs.reduce((configs, configName) => {
+export const getConfigs = (requestedConfigs: ConfigTypes[]): { [key in ConfigTypes]: any } => {
+	return requestedConfigs.reduce((configs, configName) => {
 		configs[configName] = config[configName];
 		return configs;
-	}, {} as { [key: string]: any });
-}
-
-/**
- * Sets a config value.
- * @param configName The config name to set.
- * @param configValue The value to set the config value to.
- */
-export const setConfig = (configName: string, configValue: any): void => {
-	config[configName] = configValue;
-	require('fs').writeFileSync('./config/config.json', JSON.stringify(config, null, 4));
+	}, {} as { [key in ConfigTypes]: any });
 }

@@ -1,8 +1,9 @@
 import { Guild } from 'discord.js';
 import { RemoveGuilds } from "../database/methods";
 import { logger } from "../utils/logger";
+import { ConfigTypes } from "../utils/configTypes";
 
-const config = require('../utils/config').getConfigs([ 'EXTRA_LOGGING' ]);
+const config = require('../utils/config').getConfigs([ ConfigTypes.EXTRA_LOGGING ]);
 
 module.exports = {
 	name: 'guildDelete',

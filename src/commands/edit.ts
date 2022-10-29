@@ -5,8 +5,9 @@ import { isValidDescription, isValidReply } from "../utils/helpers";
 import { messages } from "../text/messages";
 import { Command } from "@prisma/client";
 import { logger } from "../utils/logger";
+import { ConfigTypes } from "../utils/configTypes";
 
-const config = require('../utils/config').getConfigs([ 'EXTRA_LOGGING' ]);
+const config = require('../utils/config').getConfigs([ ConfigTypes.EXTRA_LOGGING ]);
 
 
 // Handler for /slashy edit <name:str> [reply:str] [description:str] [ephemeral:bool]

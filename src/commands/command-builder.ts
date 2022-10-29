@@ -5,11 +5,12 @@ import {
 	SlashCommandSubcommandBuilder
 } from "@discordjs/builders";
 import { logger } from "../utils/logger";
+import { ConfigTypes } from "../utils/configTypes";
 
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
-const config = require('../utils/config').getConfigs([ 'DISCORD_CLIENT_ID', 'DISCORD_TOKEN' ]);
+const config = require('../utils/config').getConfigs([ ConfigTypes.DISCORD_CLIENT_ID, ConfigTypes.DISCORD_TOKEN]);
 
 const rest = new REST({ version: '9' }).setToken(config.DISCORD_TOKEN);
 

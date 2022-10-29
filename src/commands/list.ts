@@ -2,8 +2,9 @@ import { CommandInteraction, EmbedBuilder } from "discord.js";
 import { GetGuildBanned, GetGuildCommands } from "../database/methods";
 import { messages } from "../text/messages";
 import { logger } from "../utils/logger";
+import { ConfigTypes } from "../utils/configTypes";
 
-const config = require('../utils/config').getConfigs([ 'EXTRA_LOGGING', 'COLOR', 'LOGO' ]);
+const config = require('../utils/config').getConfigs([ ConfigTypes.EXTRA_LOGGING, ConfigTypes.COLOR, ConfigTypes.LOGO ]);
 
 // Handler for /slashy list
 export const list = async (interaction: CommandInteraction): Promise<void> => {

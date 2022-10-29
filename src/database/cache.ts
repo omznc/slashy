@@ -15,14 +15,6 @@ class Cache {
 	public remove(key: string): void {
 		this.cache.delete(key);
 	}
-
-	public clear(): void {
-		this.cache.clear();
-	}
-
-	public size(): number {
-		return this.cache.size;
-	}
 }
 
 export const cache = new Cache();

@@ -2,8 +2,9 @@ import { CommandInteraction, EmbedBuilder } from "discord.js";
 import { GetGuildBanned, GetGuildCommandLimitInfo, GetGuildPermission, SetGuildPermission } from "../database/methods";
 import { messages } from "../text/messages";
 import { logger } from "../utils/logger";
+import { ConfigTypes } from "../utils/configTypes";
 
-const _config = require('../utils/config').getConfigs([ 'LOGO', 'COLOR' ]);
+const _config = require('../utils/config').getConfigs([ ConfigTypes.LOGO, ConfigTypes.COLOR ]);
 
 // Handler for /slashy config [role:role]
 export const config = async (

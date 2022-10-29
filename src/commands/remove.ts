@@ -3,8 +3,9 @@ import { DoesCommandExist, GetGuildBanned, RemoveGuildCommand } from "../databas
 import { messages } from "../text/messages";
 import { RemoveGuildCommandAPI } from "../utils/commands-api";
 import { logger } from "../utils/logger";
+import { ConfigTypes } from "../utils/configTypes";
 
-const config = require('../utils/config').getConfigs([ 'EXTRA_LOGGING' ]);
+const config = require('../utils/config').getConfigs([ ConfigTypes.EXTRA_LOGGING ]);
 
 // Handler for /slashy remove <name:str>
 export const remove = async (

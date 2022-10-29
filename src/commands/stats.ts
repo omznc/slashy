@@ -6,8 +6,9 @@ import {
 } from "../database/methods";
 import { logger } from "../utils/logger";
 import { messages } from "../text/messages";
+import { ConfigTypes } from "../utils/configTypes";
 
-const config = require('../utils/config').getConfigs([ 'COLOR', 'LOGO' ]);
+const config = require('../utils/config').getConfigs([ ConfigTypes.COLOR, ConfigTypes.LOGO ]);
 
 export const stats = async (interaction: CommandInteraction): Promise<void> => {
 	await interaction.editReply({

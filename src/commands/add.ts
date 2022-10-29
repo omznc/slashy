@@ -5,8 +5,9 @@ import { RegisterGuildCommandAPI, RemoveGuildCommandAPI } from "../utils/command
 import { messages } from "../text/messages";
 import { DiscordAPIError } from "@discordjs/rest";
 import { logger } from "../utils/logger";
+import { ConfigTypes } from "../utils/configTypes";
 
-const config = require('../utils/config').getConfigs([ 'EXTRA_LOGGING' ]);
+const config = require('../utils/config').getConfigs([ ConfigTypes.EXTRA_LOGGING ]);
 
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const DefaultDescription = "A command made by Slashy."

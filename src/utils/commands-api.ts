@@ -1,9 +1,10 @@
 import { ApplicationCommand } from "discord.js";
+import { ConfigTypes } from "./configTypes";
 
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 
-const config = require('./config').getConfigs([ 'DISCORD_TOKEN', 'DISCORD_CLIENT_ID' ])
+const config = require('./config').getConfigs([ ConfigTypes.DISCORD_TOKEN, ConfigTypes.DISCORD_CLIENT_ID ])
 const rest = new REST({ version: '9' }).setToken(config.DISCORD_TOKEN);
 
 /**

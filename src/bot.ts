@@ -2,11 +2,12 @@ import { Client } from './utils/discord';
 import { readdirSync } from 'fs';
 import { logger } from "./utils/logger";
 import Cron from "croner";
+import { ConfigTypes } from "./utils/configTypes";
 
 const { AutoPoster } = require('topgg-autoposter')
 const path = require('path');
 
-const config = require('./utils/config').getConfigs([ 'IS_PROD', 'DISCORD_TOKEN', 'DISCORD_CLIENT_ID', 'TOPGG_TOKEN', 'EXTRA_LOGGING' ]);
+const config = require('./utils/config').getConfigs([ ConfigTypes.DISCORD_TOKEN, ConfigTypes.DISCORD_CLIENT_ID, ConfigTypes.TOPGG_TOKEN, ConfigTypes.EXTRA_LOGGING ]);
 
 if (config.DISCORD_TOKEN === undefined) throw new Error('No Discord Token provided.');
 if (config.DISCORD_CLIENT_ID === undefined) throw new Error('No Discord Client ID provided.');

@@ -1,7 +1,8 @@
 import { logger } from "../utils/logger";
 import { Client } from '../utils/discord';
+import { ConfigTypes } from "../utils/configTypes";
 
-const config = require('../utils/config').getConfigs([ 'ACTIVITIES', 'EXTRA_LOGGING', 'ACTIVITIES_FREQUENCY_MINUTES' ]);
+const config = require('../utils/config').getConfigs([ ConfigTypes.ACTIVITIES, ConfigTypes.EXTRA_LOGGING, ConfigTypes.ACTIVITIES_FREQUENCY_MINUTES ]);
 
 // This task simply updates the now playing status.
 module.exports = {

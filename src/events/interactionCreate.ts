@@ -1,7 +1,8 @@
 import { Interaction } from "discord.js";
 import { handleAutocomplete, handleGlobalCommand, handleUserCommand } from "../commands/command-handler";
+import { ConfigTypes } from "../utils/configTypes";
 
-const config = require('../utils/config').getConfigs([ 'DISCORD_CLIENT_ID' ]);
+const config = require('../utils/config').getConfigs([ ConfigTypes.DISCORD_CLIENT_ID ]);
 
 module.exports = {
 	name: 'interactionCreate',

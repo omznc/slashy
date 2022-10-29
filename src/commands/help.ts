@@ -1,8 +1,9 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, CommandInteraction, EmbedBuilder } from "discord.js";
 import { logger } from "../utils/logger";
 import { messages } from "../text/messages";
+import { ConfigTypes } from "../utils/configTypes";
 
-const config = require('../utils/config').getConfigs([ 'COLOR', 'LOGO' ]);
+const config = require('../utils/config').getConfigs([ ConfigTypes.COLOR, ConfigTypes.LOGO ]);
 
 
 // Handler for /slashy help

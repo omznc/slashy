@@ -6,8 +6,7 @@ COPY prisma prisma
 RUN npx prisma generate
 
 COPY src src
-RUN npx tsc --project tsconfig.json
-RUN rm -rf src
+RUN npx tsc --project tsconfig.json && rm -rf src
 COPY config config
 
 FROM node:18-alpine as run

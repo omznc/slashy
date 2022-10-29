@@ -25,7 +25,7 @@ export const remove = async (
 			// Remove the command
 			else await RemoveGuildCommand(interaction.guildId!, name)
 				.then(async (commandId) => {
-					if (commandId == null) return Promise.reject(messages.UnspecifiedError);
+					if (commandId === null) return Promise.reject(messages.UnspecifiedError);
 					await RemoveGuildCommandAPI(interaction.guildId!, commandId)
 						.then(async () => {
 							await interaction.editReply(messages.CommandRemoved);

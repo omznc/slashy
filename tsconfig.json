@@ -8,9 +8,7 @@
     "target": "es6",
     "strictPropertyInitialization": true,
     "strictNullChecks": true,
-    "lib": [
-      "esnext"
-    ],
+    "lib": ["esnext"],
     "moduleResolution": "Node",
     "esModuleInterop": true,
     "module": "CommonJS",

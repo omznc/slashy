@@ -1,6 +1,7 @@
 FROM --platform=linux/amd64 node:18-alpine AS install
 WORKDIR /app
 COPY *.json ./
+RUN apk add --update --no-cache openssl1.1-compat
 RUN npm ci --omit=dev
 COPY prisma prisma
 RUN npx prisma generate

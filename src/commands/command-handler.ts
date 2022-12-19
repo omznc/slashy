@@ -20,7 +20,7 @@ import { AddGuildCommand, GetGuildCommand, GetGuildCommands, GetGuildPermission 
 import { Command } from "@prisma/client";
 import { ConfigTypes } from "../utils/configTypes";
 
-const _config = require('../utils/config').getConfigs([ConfigTypes.DEVELOPERS]);
+const _config = require('../utils/config').getConfigs([ ConfigTypes.DEVELOPERS ]);
 
 /**
  * Returns the command options as a map

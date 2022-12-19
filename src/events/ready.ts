@@ -14,10 +14,10 @@ module.exports = {
 		if (process.argv.includes('--refresh-commands')) await SlashyCommands.refresh().then(() => process.exit(0));
 
 		await Promise.all([
-			SlashyCommands.initialPublish(),
-			RemoveLeftGuilds(client.guilds.cache.map(guild => guild.id)),
-			AddNewGuilds(client.guilds.cache.map(guild => guild.id))
-		])
+				SlashyCommands.initialPublish(),
+				RemoveLeftGuilds(client.guilds.cache.map(guild => guild.id)),
+				AddNewGuilds(client.guilds.cache.map(guild => guild.id))
+			])
 			.then(() => logger.info('Ready!'))
 			.catch(err => logger.error(err));
 	},

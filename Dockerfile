@@ -3,8 +3,8 @@ WORKDIR /app
 COPY *.json ./
 COPY prisma prisma
 
-RUN apk add --update --no-cache openssl1.1-compat \
-    npm ci --omit=dev \
+RUN apk add --update --no-cache openssl1.1-compat && \
+    npm ci --omit=dev && \
     npx prisma generate
 
 COPY src src

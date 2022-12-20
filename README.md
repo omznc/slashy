@@ -103,7 +103,15 @@ Read more at [CONTRIBUTING.md](https://github.com/omznc/Slashy/blob/main/CONTRIB
 
 ## License
 
-This project is licensed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html), so you can do a lot of things with it, as long as your code is open-source as well. Would be cool of you to link back to this project, but it's not required.
+This project is licensed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html), so you can do a lot of things with it, as long as your code is open-source as well. I have a few additions to that license. These additions take precendence if the license mentions anything similar, and they are as follows:
+- if you are using the bot for commercial or public use, or re-using it with a different brand or name, I do require attribution in the form of the "Powered by [Slashy](https://github.com/omznc/slashy)" notice that appears in certain commands.
+
+An example would be you hosting Slashy, then charging users access to it. You MAY remove the notice ONLY IF you're hosting the bot for any non-commercial usage, be it public or private.
+
+### A non-legally binding TL;DR
+- Charging money for the bot > Attribution required
+- Using the bot in a different open-source program/fork > Attribution required
+- Using the bot's code in a closed-source program/fork > Forbidden
 
 ## Notes
 You might notice a python branch. That's the old version of this bot and it's no longer maintained. I'm keeping it there for archival purposes.

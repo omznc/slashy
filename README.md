@@ -54,9 +54,7 @@ I've included [watchtower](https://github.com/containrrr/watchtower) to keep the
 If you already have your own watchtower instance, or don't want automatic updates, feel free to comment out or delete that bit.
 
 You can ignore the `TOPGG_TOKEN` variable. 
-Please do not list this bot on top.gg or any other bot listing site, as it is meant to be self-hosted privately, and unless you're using the live version, you have no need for this. 
-
-**If you do list it, you're directly breaking the license.**
+I'd like it if you didn't list your bot on top.gg or any other bot listing site, but feel free to use it in any way that covers the license paragraph at the bottom. Yes the licence allows you to do so, but it's just an L move.
 
 ## Help
 Below are all the commands you can currently use.

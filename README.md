@@ -5,6 +5,8 @@
 <a href="https://hub.docker.com/repository/docker/omznc/slashy"><img src="https://img.shields.io/badge/DockerHub-white?style=for-the-badge&logo=docker"></a></p>
 
 
+<p align="center"><img src="https://i.imgur.com/yt8Gbmt.png"/></p>
+
 ## Hey, I'm Slashy - your friendly neighborhood custom-command bot!
 
 The code for this bot exists because I like the open-source community, so feel free to run it yourself, or submit pull requests to improve it.

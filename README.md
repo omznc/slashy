@@ -61,7 +61,7 @@ Below are all the commands you can currently use.
 
 <u>Underlined</u> commands mean that only members with a set permission can use them. Defaults to owner-only. Set with `/slashy config <role>` which is always restricted to the owner permission.
 
-<> are required arguments and [] are optional arguments.
+*Italicized* arguments are optional.
 
 You can't create commands with names that start with `slashy` as I've reserved those for the bot.
 

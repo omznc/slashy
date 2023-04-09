@@ -5,7 +5,6 @@
 <a href="https://hey.imkez.com/slashy-invite"><img src="https://img.shields.io/badge/Invite%20Me%20to-Discord-blue?style=for-the-badge&logo=discord"></a> 
 <a href="https://hub.docker.com/repository/docker/omznc/slashy"><img src="https://img.shields.io/badge/DockerHub-white?style=for-the-badge&logo=docker"></a></p>
 
-
 <p align="center"><img src="https://i.imgur.com/yt8Gbmt.png"/></p>
 
 ## Hey, I'm Slashy - your friendly neighborhood custom-command bot!
@@ -23,10 +22,11 @@ Click [right here](https://hey.imkez.com/slashy-invite) to add Slashy to your se
 You can find everything mentioned on [Slashy's website](https://slashy.omarzunic.com/).
 
 ## Notes
+
 You might notice a python branch. That's the old version of this bot and it's no longer maintained. I'm keeping it there for archival purposes.
 
 Ephemeral means that the reply can only be seen by the person who originally ran the command.
 
 ---
-[![CI](https://github.com/omznc/slashy/actions/workflows/CI.yml/badge.svg)](https://github.com/omznc/slashy/actions/workflows/CI.yml)
 
+[![CI](https://github.com/omznc/slashy/actions/workflows/CI.yml/badge.svg)](https://github.com/omznc/slashy/actions/workflows/CI.yml)

@@ -20,12 +20,14 @@
     "pino": "^8.8.0",
     "pino-pretty": "^9.1.1",
     "prisma": "^4.7.1",
+    "redis": "^4.6.7",
     "rimraf": "^3.0.2",
     "topgg-autoposter": "^2.0.1",
     "typescript": "^4.9.4"
   },
   "devDependencies": {
     "nodemon": "^2.0.20",
+    "prettier": "2.8.8",
     "ts-node": "^10.9.1"
   }
 }

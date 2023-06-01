@@ -1,43 +1,29 @@
 {
-    "compilerOptions": {
-        "sourceMap": true,
-        "outDir": "dist/",
-        "rootDir": "src/",
-        "allowSyntheticDefaultImports": true,
-        "strict": true,
-        "target": "esnext",
-        "strictPropertyInitialization": true,
-        "strictNullChecks": true,
-        "lib": [
-            "esnext"
-        ],
-        "moduleResolution": "Node",
-        "esModuleInterop": true,
-        "module": "esnext",
-        "removeComments": true,
-        "forceConsistentCasingInFileNames": true,
-        "noUnusedLocals": true,
-        "noImplicitAny": true,
-        "baseUrl": "./src",
-        "paths": {
-            "@/*": [
-                "*"
-            ],
-            "@commands/*": [
-                "commands/*"
-            ],
-            "@events/*": [
-                "events/*"
-            ],
-            "@utils/*": [
-                "utils/*"
-            ],
-            "@text/*": [
-                "text/*"
-            ],
-            "@database/*": [
-                "database/*"
-            ]
-        }
+  "compilerOptions": {
+    "sourceMap": true,
+    "outDir": "dist/",
+    "rootDir": "src/",
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "target": "esnext",
+    "strictPropertyInitialization": true,
+    "strictNullChecks": true,
+    "lib": ["esnext"],
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "module": "esnext",
+    "removeComments": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": true,
+    "noImplicitAny": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["*"],
+      "@commands/*": ["commands/*"],
+      "@events/*": ["events/*"],
+      "@utils/*": ["utils/*"],
+      "@text/*": ["text/*"],
+      "@database/*": ["database/*"]
     }
+  }
 }

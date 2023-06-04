@@ -13,7 +13,7 @@
         ],
         "moduleResolution": "Node",
         "esModuleInterop": true,
-        "module": "esnext",
+        "module": "commonjs",
         "removeComments": true,
         "forceConsistentCasingInFileNames": true,
         "noUnusedLocals": true,

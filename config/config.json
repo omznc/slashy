@@ -5,9 +5,7 @@
   "LOGO": "https://i.imgur.com/OpKkRY0.png",
   "COLOR": "#277ce2",
   "EXTRA_LOGGING": true,
-  "DEVELOPERS": [
-    "135754868810973184"
-  ],
+  "DEVELOPERS": ["135754868810973184"],
   "ACTIVITIES": [
     {
       "name": "/slashy help",

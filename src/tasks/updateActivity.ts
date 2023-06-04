@@ -1,5 +1,5 @@
 import { logger } from "@utils/logger";
-import { Client } from "@utils/discordClient";
+import Client from "@utils/discordClient";
 import { ConfigTypes } from "@utils/types";
 
 const config = require("@utils/configLoader").getConfigs([

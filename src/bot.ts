@@ -1,4 +1,4 @@
-import Client from "@utils/discordClient";
+import Client from "./utils/discordClient";
 import { readdirSync } from "fs";
 import { logger } from "@utils/logger";
 import Cron from "croner";

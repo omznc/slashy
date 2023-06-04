@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/bot.js",
-  "type": "module",
   "scripts": {
     "migrate": "npx prisma db push",
     "start": "rimraf dist/ && tsc --project tsconfig.json && node dist/bot.js",

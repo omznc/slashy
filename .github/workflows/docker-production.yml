@@ -1,10 +1,9 @@
-name: "CI"
+name: Docker - Production"
 
 on:
   push:
     branches:
       - 'main'
-      - 'development' # Added 'development' branch
     paths-ignore:
       - '**.md'
       - '**.toml'
@@ -28,22 +27,14 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
-        name: Build and push latest production
+        name: Build and push latest
         uses: docker/build-push-action@v3
         with:
           push: true
           tags: omznc/slashy:latest
-        if: github.ref == 'refs/heads/main' # Only push latest when on the 'main' branch
       -
         name: Build and push with commit hash
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: omznc/slashy:${{ github.sha }} # Use commit hash as the tag
-        if: github.ref == 'refs/heads/main' # Only push with commit hash when on the 'main' branch
-      -
-        name: Build and push development
-        uses: docker/build-push-action@v3
-        with:
-          push: true
-          tags: omznc/slashy:development # Push with 'development' tag for the 'development' branch
+          tags: omznc/slashy:${{ github.sha }}

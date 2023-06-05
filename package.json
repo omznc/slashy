@@ -1,31 +1,31 @@
 {
-  "name": "slashy",
-  "version": "1.0.0",
-  "description": "",
-  "main": "dist/bot.js",
-  "scripts": {
-    "migrate": "npx prisma db push",
-    "start": "rimraf dist/ && tsc --project tsconfig.json && node dist/bot.js",
-    "start:docker": "npx prisma db push && node dist/bot.js | pino-pretty -i pid,hostname -t yyyy-mm-dd HH:MM:ss"
-  },
-  "keywords": [],
-  "author": "Omar Zunic",
-  "license": "ISC",
-  "dependencies": {
-    "@discordjs/rest": "^1.5.0",
-    "@prisma/client": "^4.7.1",
-    "croner": "^5.3.5",
-    "discord-api-types": "^0.37.24",
-    "discord.js": "^14.7.1",
-    "pino": "^8.8.0",
-    "pino-pretty": "^9.1.1",
-    "prisma": "^4.7.1",
-    "rimraf": "^3.0.2",
-    "topgg-autoposter": "^2.0.1",
-    "typescript": "^4.9.4"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.20",
-    "ts-node": "^10.9.1"
-  }
+    "name": "slashy",
+    "version": "1.0.0",
+    "description": "",
+    "main": "dist/bot.js",
+    "scripts": {
+        "migrate": "npx prisma db push",
+        "start": "rimraf dist/ && tsc --project tsconfig.json && node dist/bot.js",
+        "start:docker": "npx prisma db push && node dist/bot.js | pino-pretty -i pid,hostname -t yyyy-mm-dd HH:MM:ss"
+    },
+    "keywords": [],
+    "author": "Omar Zunic",
+    "license": "ISC",
+    "dependencies": {
+        "@discordjs/rest": "^1.5.0",
+        "@prisma/client": "^4.7.1",
+        "croner": "^5.3.5",
+        "discord-api-types": "^0.37.24",
+        "discord.js": "^14.7.1",
+        "pino": "^8.8.0",
+        "pino-pretty": "^9.1.1",
+        "prisma": "^4.7.1",
+        "rimraf": "^3.0.2",
+        "topgg-autoposter": "^2.0.1",
+        "typescript": "^4.9.4"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.20",
+        "ts-node": "^10.9.1"
+    }
 }

@@ -9,9 +9,11 @@
 
 ## Hey, I'm Slashy - your friendly neighborhood custom-command bot!
 
-The code for this bot exists because I like the open-source community, so feel free to run it yourself, or submit pull requests to improve it.
+The code for this bot exists because I like the open-source community, so feel free to run it yourself, or submit pull
+requests to improve it.
 
-You can get help on using the bot with the `/slashy help` command in any of the servers Slashy is in, or in Slashy's DM-s.
+You can get help on using the bot with the `/slashy help` command in any of the servers Slashy is in, or in Slashy's
+DM-s.
 
 ## Invite
 
@@ -23,7 +25,8 @@ You can find everything mentioned on [Slashy's website](https://slashy.omarzunic
 
 ## Notes
 
-You might notice a python branch. That's the old version of this bot and it's no longer maintained. I'm keeping it there for archival purposes.
+You might notice a python branch. That's the old version of this bot and it's no longer maintained. I'm keeping it there
+for archival purposes.
 
 Ephemeral means that the reply can only be seen by the person who originally ran the command.
 

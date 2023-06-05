@@ -1,22 +1,22 @@
 {
-  "DISCORD_TOKEN": null,
-  "DISCORD_CLIENT_ID": null,
-  "TOPGG_TOKEN": null,
-  "LOGO": "https://i.imgur.com/OpKkRY0.png",
-  "COLOR": "#277ce2",
-  "EXTRA_LOGGING": true,
-  "DEVELOPERS": [
-    "135754868810973184"
-  ],
-  "ACTIVITIES": [
-    {
-      "name": "/slashy help",
-      "type": "WATCHING"
-    },
-    {
-      "name": "/slashy stats",
-      "type": "WATCHING"
-    }
-  ],
-  "ACTIVITIES_FREQUENCY_MINUTES": 10
+    "DISCORD_TOKEN": null,
+    "DISCORD_CLIENT_ID": null,
+    "TOPGG_TOKEN": null,
+    "LOGO": "https://i.imgur.com/OpKkRY0.png",
+    "COLOR": "#277ce2",
+    "EXTRA_LOGGING": true,
+    "DEVELOPERS": [
+        "135754868810973184"
+    ],
+    "ACTIVITIES": [
+        {
+            "name": "/slashy help",
+            "type": "WATCHING"
+        },
+        {
+            "name": "/slashy stats",
+            "type": "WATCHING"
+        }
+    ],
+    "ACTIVITIES_FREQUENCY_MINUTES": 10
 }

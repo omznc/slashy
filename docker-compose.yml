@@ -10,7 +10,7 @@ services:
         volumes:
             - slashy-data:/var/lib/postgresql/data
         healthcheck:
-            test: ["CMD-SHELL", "pg_isready -U slashy"]
+            test: [ "CMD-SHELL", "pg_isready -U slashy" ]
             interval: 5s
             retries: 3
 
@@ -23,7 +23,7 @@ services:
             - DISCORD_CLIENT_ID=
             - DATABASE_URL=postgresql://slashy:slashy@database/slashy
         volumes:
-            -   slashy-config:/config
+            - slashy-config:/config
         labels:
             - "com.centurylinklabs.watchtower.enable=true"
 

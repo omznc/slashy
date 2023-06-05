@@ -13,9 +13,9 @@ COPY config config
 
 FROM node:18-alpine AS run
 
-RUN apk add --update --no-cache openssl1.1-compat \
-    addgroup -S nonroot \
-    && adduser -S nonroot -G nonroot
+RUN apk add --update --no-cache openssl1.1-compat && \
+    addgroup -S nonroot && \
+    adduser -S nonroot -G nonroot
 
 COPY --from=install /app /
 

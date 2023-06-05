@@ -16,8 +16,7 @@ RUN npx prisma generate
 # Copy source code, compile TypeScript, and remove unnecessary files
 COPY src src
 COPY config config
-RUN npx tsc --project tsconfig.json && \
-    rm -rf src
+RUN npx tsc --project tsconfig.json
 
 # Stage 2: Run stage
 FROM --platform=$TARGETPLATFORM node:18-alpine AS run

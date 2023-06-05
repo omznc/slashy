@@ -5,7 +5,7 @@
         "rootDir": "src/",
         "allowSyntheticDefaultImports": true,
         "strict": true,
-        "target": "es6",
+        "target": "esnext",
         "strictPropertyInitialization": true,
         "strictNullChecks": true,
         "lib": [

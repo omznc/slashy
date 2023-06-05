@@ -1,26 +1,38 @@
-FROM --platform=linux/amd64 node:18-alpine AS install
+# Stage 1: Build stage
+FROM --platform=$BUILDPLATFORM node:18-alpine AS build
 WORKDIR /app
-COPY *.json ./
+
+# Install necessary packages
+RUN apk add --update --no-cache openssl1.1-compat
+
+# Copy package.json and package-lock.json for dependency installation
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+
+# Copy Prisma schema and generate Prisma client
 COPY prisma prisma
+RUN npx prisma generate
 
-RUN apk add --update --no-cache openssl1.1-compat && \
-    npm ci --omit=dev --ignore-scripts && \
-    npx prisma generate
-
+# Copy source code, compile TypeScript, and remove unnecessary files
 COPY src src
-RUN npx tsc --project tsconfig.json && rm -rf src
 COPY config config
+RUN npx tsc --project tsconfig.json && \
+    rm -rf src
 
-FROM node:18-alpine AS run
+# Stage 2: Run stage
+FROM --platform=$TARGETPLATFORM node:18-alpine AS run
+# Install necessary packages
+RUN apk add --update --no-cache openssl1.1-compat
 
-RUN apk add --update --no-cache openssl1.1-compat && \
-    addgroup -S nonroot && \
-    adduser -S nonroot -G nonroot
+# Create a non-root user
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
 
-COPY --from=install /app /
+# Copy build artifacts from the previous stage
+COPY --from=build --chown=appuser /app /
 
+# Healthcheck command
 HEALTHCHECK --interval=5s --timeout=3s --start-period=10s --retries=3 CMD [ "node", "dist/healthcheck.js" ]
 
-USER nonroot
-
+# Set the entrypoint command
 ENTRYPOINT ["npm", "run", "start:docker"]

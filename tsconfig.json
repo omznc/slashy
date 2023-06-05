@@ -5,11 +5,11 @@
         "rootDir": "src/",
         "allowSyntheticDefaultImports": true,
         "strict": true,
-        "target": "es2020",
+        "target": "esnext",
         "strictPropertyInitialization": true,
         "strictNullChecks": true,
         "lib": [
-            "es2020"
+            "esnext"
         ],
         "moduleResolution": "Node",
         "esModuleInterop": true,
@@ -17,9 +17,6 @@
         "removeComments": true,
         "forceConsistentCasingInFileNames": true,
         "noUnusedLocals": true,
-        "noImplicitAny": true,
-        "ts-node": {
-            "esm": true
-        }
+        "noImplicitAny": true
     }
 }

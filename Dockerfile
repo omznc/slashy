@@ -6,7 +6,7 @@ WORKDIR /app
 RUN apk add --update --no-cache openssl1.1-compat
 
 # Copy package.json and package-lock.json for dependency installation
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json tsconfig.json ./
 RUN npm ci --omit=dev
 
 # Copy Prisma schema and generate Prisma client

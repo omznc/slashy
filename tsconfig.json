@@ -1,22 +1,49 @@
 {
-    "compilerOptions": {
-        "sourceMap": true,
-        "outDir": "dist/",
-        "rootDir": "src/",
-        "allowSyntheticDefaultImports": true,
-        "strict": true,
-        "target": "ES2020",
-        "strictPropertyInitialization": true,
-        "strictNullChecks": true,
-        "lib": [
-            "esnext"
-        ],
-        "moduleResolution": "Node",
-        "esModuleInterop": true,
-        "module": "CommonJS",
-        "removeComments": true,
-        "forceConsistentCasingInFileNames": true,
-        "noUnusedLocals": true,
-        "noImplicitAny": true
+  "compilerOptions": {
+    "sourceMap": true,
+    "outDir": "dist/",
+    "rootDir": "src/",
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "target": "ES2020",
+    "strictPropertyInitialization": true,
+    "strictNullChecks": true,
+    "lib": [
+      "esnext"
+    ],
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "module": "CommonJS",
+    "removeComments": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": true,
+    "noImplicitAny": true,
+    "baseUrl": "./",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ],
+      "@commands/*": [
+        "src/commands/*"
+      ],
+      "@database/*": [
+        "src/database/*"
+      ],
+      "@events/*": [
+        "src/events/*"
+      ],
+      "@utils/*": [
+        "src/utils/*"
+      ],
+      "@tasks/*": [
+        "src/tasks/*"
+      ],
+      "@text/*": [
+        "src/text/*"
+      ],
+      "@config": [
+        "src/utils/config"
+      ]
     }
+  }
 }

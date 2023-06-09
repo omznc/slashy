@@ -4,12 +4,12 @@
  * @returns {boolean} Whether the command name is valid.
  */
 export const isValidCommandName = (name: string): boolean =>
-  !(
-    name == "slashy" ||
-    name.length < 3 ||
-    name.length > 32 ||
-    !/^[\P{Lu}\p{N}_-]+$/u.test(name)
-  );
+	!(
+		name == "slashy" ||
+		name.length < 3 ||
+		name.length > 32 ||
+		!/^[\P{Lu}\p{N}_-]+$/u.test(name)
+	);
 
 /**
  * Validates the command reply.
@@ -24,4 +24,4 @@ export const isValidReply = (reply: string): boolean => reply.length <= 2000;
  * @returns {boolean} Whether the command description is valid.
  */
 export const isValidDescription = (description: string): boolean =>
-  !(description.length < 1 || description.length > 100);
+	!(description.length < 1 || description.length > 100);

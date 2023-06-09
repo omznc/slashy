@@ -1,13 +1,9 @@
 import { ApplicationCommand } from "discord.js";
-import { ConfigTypes } from "./configTypes";
+import config from "@config";
 
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 
-const config = require("./config").getConfigs([
-  ConfigTypes.DISCORD_TOKEN,
-  ConfigTypes.DISCORD_CLIENT_ID,
-]);
 const rest = new REST({ version: "9" }).setToken(config.DISCORD_TOKEN);
 
 /**
@@ -17,14 +13,17 @@ const rest = new REST({ version: "9" }).setToken(config.DISCORD_TOKEN);
  * @returns {Promise<ApplicationCommand>} The command that was registered.
  */
 export const RegisterGuildCommandAPI = async (
-  guildId: string,
-  command: ApplicationCommand
+	guildId: string,
+	command: ApplicationCommand
 ): Promise<ApplicationCommand> => {
-  return rest
-    .post(Routes.applicationGuildCommands(config.DISCORD_CLIENT_ID, guildId), {
-      body: command,
-    })
-    .then((response: ApplicationCommand) => response);
+	return rest
+		.post(
+			Routes.applicationGuildCommands(config.DISCORD_CLIENT_ID, guildId),
+			{
+				body: command,
+			}
+		)
+		.then((response: ApplicationCommand) => response);
 };
 
 /**
@@ -35,19 +34,19 @@ export const RegisterGuildCommandAPI = async (
  * @param {boolean | null} ephemeral Whether the command will be ephemeral or not. If null, the current setting will be kept.
  */
 export const EditGuildCommandAPI = async (
-  guildId: string,
-  commandId: string,
-  description?: string,
-  ephemeral?: boolean
+	guildId: string,
+	commandId: string,
+	description?: string,
+	ephemeral?: boolean
 ): Promise<void> => {
-  return rest.patch(
-    Routes.applicationGuildCommand(
-      config.DISCORD_CLIENT_ID,
-      guildId,
-      commandId
-    ),
-    { body: { description, ephemeral } }
-  );
+	return rest.patch(
+		Routes.applicationGuildCommand(
+			config.DISCORD_CLIENT_ID,
+			guildId,
+			commandId
+		),
+		{ body: { description, ephemeral } }
+	);
 };
 
 /**
@@ -56,10 +55,14 @@ export const EditGuildCommandAPI = async (
  * @param {string} commandId commandId The ID of the command to remove.
  */
 export const RemoveGuildCommandAPI = async (
-  guildId: string,
-  commandId: string
+	guildId: string,
+	commandId: string
 ): Promise<void> => {
-  return rest.delete(
-    Routes.applicationGuildCommand(config.DISCORD_CLIENT_ID, guildId, commandId)
-  );
+	return rest.delete(
+		Routes.applicationGuildCommand(
+			config.DISCORD_CLIENT_ID,
+			guildId,
+			commandId
+		)
+	);
 };

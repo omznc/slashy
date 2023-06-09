@@ -9,22 +9,22 @@ import { cache } from "./cache";
  * @returns {Promise<number>} The number of commands in all servers
  */
 export const GetTotalCommandsInAllServers = async (): Promise<number> =>
-  prisma.command.count();
+	prisma.command.count();
 
 /**
  * Gets the sum of all uses of all commands in all guilds
  * @returns {Promise<number>} The sum of all uses of all commands in all guilds
  */
 export const GetTotalCommandsRunInAllServers = async (): Promise<number> => {
-  return prisma.command
-    .aggregate({
-      _sum: {
-        uses: true,
-      },
-    })
-    .then((result) => {
-      return result._sum.uses ?? 0;
-    });
+	return prisma.command
+		.aggregate({
+			_sum: {
+				uses: true,
+			},
+		})
+		.then((result) => {
+			return result._sum.uses ?? 0;
+		});
 };
 
 /**
@@ -33,20 +33,20 @@ export const GetTotalCommandsRunInAllServers = async (): Promise<number> => {
  * @returns {Promise<number>} The sum of all uses of all commands in a guild
  */
 export const GetTotalCommandsRunInGuild = async (
-  guildId: string
+	guildId: string
 ): Promise<number> => {
-  return prisma.command
-    .aggregate({
-      where: {
-        guildId,
-      },
-      _sum: {
-        uses: true,
-      },
-    })
-    .then((result) => {
-      return result._sum.uses ?? 0;
-    });
+	return prisma.command
+		.aggregate({
+			where: {
+				guildId,
+			},
+			_sum: {
+				uses: true,
+			},
+		})
+		.then((result) => {
+			return result._sum.uses ?? 0;
+		});
 };
 
 /**
@@ -54,15 +54,15 @@ export const GetTotalCommandsRunInGuild = async (
  * @param {string[]} whitelistedGuilds The list of guild IDs to keep
  */
 export const RemoveLeftGuilds = async (
-  whitelistedGuilds: string[]
+	whitelistedGuilds: string[]
 ): Promise<void> => {
-  await prisma.guild.deleteMany({
-    where: {
-      id: {
-        notIn: whitelistedGuilds,
-      },
-    },
-  });
+	await prisma.guild.deleteMany({
+		where: {
+			id: {
+				notIn: whitelistedGuilds,
+			},
+		},
+	});
 };
 
 /**
@@ -70,15 +70,15 @@ export const RemoveLeftGuilds = async (
  * @param guildIds The list of guild IDs to add
  */
 export const AddNewGuilds = async (guildIds: string[]): Promise<void> => {
-  // Adds new guilds if they don't exist
-  await prisma.guild.createMany({
-    data: guildIds.map((guildId) => {
-      return {
-        id: guildId,
-      };
-    }),
-    skipDuplicates: true,
-  });
+	// Adds new guilds if they don't exist
+	await prisma.guild.createMany({
+		data: guildIds.map((guildId) => {
+			return {
+				id: guildId,
+			};
+		}),
+		skipDuplicates: true,
+	});
 };
 
 /**
@@ -87,30 +87,30 @@ export const AddNewGuilds = async (guildIds: string[]): Promise<void> => {
  * @returns {Promise<Command[]>} The commands in the guild
  */
 export const FetchGuildAndCommands = async (
-  guildId: string
+	guildId: string
 ): Promise<Guild & { commands: Command[] }> => {
-  return prisma.guild
-    .findFirst({
-      where: {
-        id: guildId,
-      },
-      include: {
-        commands: true,
-      },
-    })
-    .then(async (result) => {
-      if (!result) {
-        return prisma.guild.create({
-          data: {
-            id: guildId,
-          },
-          include: {
-            commands: true,
-          },
-        });
-      }
-      return result;
-    });
+	return prisma.guild
+		.findFirst({
+			where: {
+				id: guildId,
+			},
+			include: {
+				commands: true,
+			},
+		})
+		.then(async (result) => {
+			if (!result) {
+				return prisma.guild.create({
+					data: {
+						id: guildId,
+					},
+					include: {
+						commands: true,
+					},
+				});
+			}
+			return result;
+		});
 };
 
 /**
@@ -120,14 +120,14 @@ export const FetchGuildAndCommands = async (
  * @returns {Promise<Command>} The command
  */
 export const GetGuildCommand = async (
-  guildId: string,
-  name: string
+	guildId: string,
+	name: string
 ): Promise<Command> => {
-  const command = await GetGuildAndCommands(guildId).then(
-    (guild) => guild.commands.find((c) => c.name === name)!
-  );
-  await IncrementCommandUses(command);
-  return command;
+	const command = await GetGuildAndCommands(guildId).then(
+		(guild) => guild.commands.find((c) => c.name === name)!
+	);
+	await IncrementCommandUses(command);
+	return command;
 };
 
 /**
@@ -137,13 +137,13 @@ export const GetGuildCommand = async (
  * @returns {Promise<boolean>} Whether the command exists
  */
 export const DoesCommandExist = async (
-  guildId: string,
-  name: string
+	guildId: string,
+	name: string
 ): Promise<boolean> => {
-  const command = await GetGuildAndCommands(guildId).then((guild) =>
-    guild.commands.find((c) => c.name === name)
-  );
-  return command !== undefined;
+	const command = await GetGuildAndCommands(guildId).then((guild) =>
+		guild.commands.find((c) => c.name === name)
+	);
+	return command !== undefined;
 };
 
 /**
@@ -151,19 +151,19 @@ export const DoesCommandExist = async (
  * @param {Command} command The command to increment the uses of
  */
 export const IncrementCommandUses = async (command: Command): Promise<void> => {
-  await prisma.command.update({
-    where: {
-      id: command.id,
-    },
-    data: {
-      uses: command.uses + 1,
-    },
-  });
-  // Do it in the cache too
-  GetGuildAndCommands(command.guildId).then((guild) => {
-    const index = guild.commands.findIndex((c) => c.id === command.id);
-    guild.commands[index].uses++;
-  });
+	await prisma.command.update({
+		where: {
+			id: command.id,
+		},
+		data: {
+			uses: command.uses + 1,
+		},
+	});
+	// Do it in the cache too
+	GetGuildAndCommands(command.guildId).then((guild) => {
+		const index = guild.commands.findIndex((c) => c.id === command.id);
+		guild.commands[index].uses++;
+	});
 };
 
 /**
@@ -172,9 +172,9 @@ export const IncrementCommandUses = async (command: Command): Promise<void> => {
  * @returns {Promise<Command[]>} The commands
  */
 export const GetGuildCommands = async (guildId: string): Promise<Command[]> => {
-  return GetGuildAndCommands(guildId).then((guild) => {
-    return [...guild.commands].sort((a, b) => b.uses - a.uses);
-  });
+	return GetGuildAndCommands(guildId).then((guild) => {
+		return [...guild.commands].sort((a, b) => b.uses - a.uses);
+	});
 };
 
 /**
@@ -183,12 +183,12 @@ export const GetGuildCommands = async (guildId: string): Promise<Command[]> => {
  * @returns {Promise<{ max: number, current: number }>} The max and current commands
  */
 export const GetGuildCommandLimitInfo = async (
-  guildId: string
+	guildId: string
 ): Promise<[number, number]> => {
-  return GetGuildAndCommands(guildId).then((guild) => [
-    guild.maxCommands,
-    guild.commands.length,
-  ]);
+	return GetGuildAndCommands(guildId).then((guild) => [
+		guild.maxCommands,
+		guild.commands.length,
+	]);
 };
 
 /**
@@ -197,7 +197,7 @@ export const GetGuildCommandLimitInfo = async (
  * @returns {Promise<string>} The Role ID
  */
 export const GetGuildPermission = async (guildId: string): Promise<string> => {
-  return GetGuildAndCommands(guildId).then((guild) => guild.permission);
+	return GetGuildAndCommands(guildId).then((guild) => guild.permission);
 };
 
 /**
@@ -206,20 +206,22 @@ export const GetGuildPermission = async (guildId: string): Promise<string> => {
  * @param {string} roleId The ID of the role to set the permission to
  */
 export const SetGuildPermission = async (
-  guildId: string,
-  roleId: string
+	guildId: string,
+	roleId: string
 ): Promise<void> => {
-  await Promise.all([
-    prisma.guild.update({
-      where: {
-        id: guildId,
-      },
-      data: {
-        permission: roleId,
-      },
-    }),
-    GetGuildAndCommands(guildId).then((guild) => (guild.permission = roleId)),
-  ]);
+	await Promise.all([
+		prisma.guild.update({
+			where: {
+				id: guildId,
+			},
+			data: {
+				permission: roleId,
+			},
+		}),
+		GetGuildAndCommands(guildId).then(
+			(guild) => (guild.permission = roleId)
+		),
+	]);
 };
 
 /**
@@ -228,15 +230,15 @@ export const SetGuildPermission = async (
  * @returns {Promise<(Guild & { commands: Command[] })>} The guild and its commands
  */
 export const GetGuildAndCommands = async (
-  guildId: string
+	guildId: string
 ): Promise<Guild & { commands: Command[] }> => {
-  const cachedGuild = cache.get(guildId);
-  if (cachedGuild) return cachedGuild;
+	const cachedGuild = cache.get(guildId);
+	if (cachedGuild) return cachedGuild;
 
-  return FetchGuildAndCommands(guildId).then((guild) => {
-    cache.set(guildId, guild);
-    return guild;
-  });
+	return FetchGuildAndCommands(guildId).then((guild) => {
+		cache.set(guildId, guild);
+		return guild;
+	});
 };
 
 /**
@@ -244,38 +246,38 @@ export const GetGuildAndCommands = async (
  * @param {string[]} guildIds The guilds to remove
  */
 export const RemoveGuilds = async (guildIds: string[]): Promise<void> => {
-  await Promise.all([
-    await prisma.guild.deleteMany({
-      where: {
-        id: {
-          in: guildIds,
-        },
-        banned: false,
-        premium: false,
-      },
-    }),
-    await prisma.command.deleteMany({
-      where: {
-        guild: {
-          id: {
-            in: guildIds,
-          },
-          banned: true,
-        },
-      },
-    }),
-    await prisma.command.deleteMany({
-      where: {
-        guild: {
-          id: {
-            in: guildIds,
-          },
-          premium: true,
-        },
-      },
-    }),
-  ]);
-  for (const guildId of guildIds) cache.remove(guildId);
+	await Promise.all([
+		await prisma.guild.deleteMany({
+			where: {
+				id: {
+					in: guildIds,
+				},
+				banned: false,
+				premium: false,
+			},
+		}),
+		await prisma.command.deleteMany({
+			where: {
+				guild: {
+					id: {
+						in: guildIds,
+					},
+					banned: true,
+				},
+			},
+		}),
+		await prisma.command.deleteMany({
+			where: {
+				guild: {
+					id: {
+						in: guildIds,
+					},
+					premium: true,
+				},
+			},
+		}),
+	]);
+	for (const guildId of guildIds) cache.remove(guildId);
 };
 
 /**
@@ -285,23 +287,25 @@ export const RemoveGuilds = async (guildIds: string[]): Promise<void> => {
  * @returns {Promise<string | null>} The command ID if it exists, null otherwise
  */
 export const RemoveGuildCommand = async (
-  guildId: string,
-  name: string
+	guildId: string,
+	name: string
 ): Promise<string | null> => {
-  return GetGuildCommand(guildId, name).then(async (command) => {
-    if (!command) return null;
-    await prisma.command.delete({
-      where: {
-        id: command.id,
-      },
-    });
-    const guildCommands = cache.get(guildId)?.commands;
-    if (guildCommands) {
-      let index = guildCommands.findIndex((c: Command) => c.name === name);
-      if (index !== -1) guildCommands.splice(index, 1);
-    }
-    return command.id;
-  });
+	return GetGuildCommand(guildId, name).then(async (command) => {
+		if (!command) return null;
+		await prisma.command.delete({
+			where: {
+				id: command.id,
+			},
+		});
+		const guildCommands = cache.get(guildId)?.commands;
+		if (guildCommands) {
+			let index = guildCommands.findIndex(
+				(c: Command) => c.name === name
+			);
+			if (index !== -1) guildCommands.splice(index, 1);
+		}
+		return command.id;
+	});
 };
 
 /**
@@ -314,32 +318,32 @@ export const RemoveGuildCommand = async (
  * @param {boolean} ephemeral Whether the command is ephemeral
  */
 export const AddGuildCommand = async (
-  guildId: string,
-  id: string,
-  name: string,
-  reply: string,
-  description: string | undefined,
-  ephemeral: boolean
+	guildId: string,
+	id: string,
+	name: string,
+	reply: string,
+	description: string | undefined,
+	ephemeral: boolean
 ): Promise<void> => {
-  await GetGuildAndCommands(guildId).then(async (guild) => {
-    if (guild.banned) return;
-    await prisma.command
-      .create({
-        data: {
-          id,
-          name,
-          reply,
-          description,
-          ephemeral,
-          guild: {
-            connect: {
-              id: guild.id,
-            },
-          },
-        },
-      })
-      .then((command) => cache.get(guild.id)!.commands.push(command));
-  });
+	await GetGuildAndCommands(guildId).then(async (guild) => {
+		if (guild.banned) return;
+		await prisma.command
+			.create({
+				data: {
+					id,
+					name,
+					reply,
+					description,
+					ephemeral,
+					guild: {
+						connect: {
+							id: guild.id,
+						},
+					},
+				},
+			})
+			.then((command) => cache.get(guild.id)!.commands.push(command));
+	});
 };
 
 /**
@@ -352,29 +356,29 @@ export const AddGuildCommand = async (
  * @returns {Promise<Command>} The edited command
  */
 export const EditGuildCommand = async (
-  guildId: string,
-  name: string,
-  reply?: string,
-  description?: string,
-  ephemeral?: boolean
+	guildId: string,
+	name: string,
+	reply?: string,
+	description?: string,
+	ephemeral?: boolean
 ): Promise<Command> => {
-  return GetGuildCommand(guildId, name).then(async (command) => {
-    command = await prisma.command.update({
-      where: {
-        id: command.id,
-      },
-      data: {
-        reply: reply ?? command.reply,
-        description: description ?? command.description,
-        ephemeral: ephemeral ?? command.ephemeral,
-      },
-    });
-    let guildCommands = cache.get(guildId)!.commands;
-    guildCommands[
-      guildCommands.findIndex((c: Command) => c.id === command.id)
-    ] = command!;
-    return command;
-  });
+	return GetGuildCommand(guildId, name).then(async (command) => {
+		command = await prisma.command.update({
+			where: {
+				id: command.id,
+			},
+			data: {
+				reply: reply ?? command.reply,
+				description: description ?? command.description,
+				ephemeral: ephemeral ?? command.ephemeral,
+			},
+		});
+		let guildCommands = cache.get(guildId)!.commands;
+		guildCommands[
+			guildCommands.findIndex((c: Command) => c.id === command.id)
+		] = command!;
+		return command;
+	});
 };
 
 /**
@@ -383,7 +387,7 @@ export const EditGuildCommand = async (
  * @returns {Promise<boolean>} Whether the guild is banned
  */
 export const GetGuildBanned = async (guildId: string): Promise<boolean> => {
-  return GetGuildAndCommands(guildId).then((guild) => guild?.banned ?? false);
+	return GetGuildAndCommands(guildId).then((guild) => guild?.banned ?? false);
 };
 
 //// UNUSED FUNCTIONS THAT WILL BE USED LATER ////
@@ -394,20 +398,20 @@ export const GetGuildBanned = async (guildId: string): Promise<boolean> => {
  * @param {boolean} banned Whether the guild is banned
  */
 export const SetGuildBanned = async (
-  guildId: string,
-  banned: boolean
+	guildId: string,
+	banned: boolean
 ): Promise<void> => {
-  await GetGuildAndCommands(guildId).then(async (guild) => {
-    await prisma.guild.update({
-      where: {
-        id: guild.id,
-      },
-      data: {
-        banned,
-      },
-    });
-    cache.get(guild.id)!.banned = banned;
-  });
+	await GetGuildAndCommands(guildId).then(async (guild) => {
+		await prisma.guild.update({
+			where: {
+				id: guild.id,
+			},
+			data: {
+				banned,
+			},
+		});
+		cache.get(guild.id)!.banned = banned;
+	});
 };
 
 /**
@@ -416,7 +420,7 @@ export const SetGuildBanned = async (
  * @returns {Promise<boolean>} Whether the guild is premium.
  */
 export const GetGuildPremium = async (guildId: string): Promise<boolean> =>
-  GetGuildAndCommands(guildId).then((guild) => guild?.premium ?? false);
+	GetGuildAndCommands(guildId).then((guild) => guild?.premium ?? false);
 
 /**
  * Sets the premium guild attribute of a guild.
@@ -424,18 +428,18 @@ export const GetGuildPremium = async (guildId: string): Promise<boolean> =>
  * @param {boolean} premium Whether the guild is premium.
  */
 export const SetGuildPremium = async (
-  guildId: string,
-  premium: boolean
+	guildId: string,
+	premium: boolean
 ): Promise<void> => {
-  await GetGuildAndCommands(guildId).then(async (guild) => {
-    await prisma.guild.update({
-      where: {
-        id: guild.id,
-      },
-      data: {
-        premium,
-      },
-    });
-    cache.get(guild.id)!.premium = premium;
-  });
+	await GetGuildAndCommands(guildId).then(async (guild) => {
+		await prisma.guild.update({
+			where: {
+				id: guild.id,
+			},
+			data: {
+				premium,
+			},
+		});
+		cache.get(guild.id)!.premium = premium;
+	});
 };

@@ -3,17 +3,13 @@ import {
   DoesCommandExist,
   EditGuildCommand,
   GetGuildBanned,
-} from "../database/methods";
-import { EditGuildCommandAPI } from "../utils/commands-api";
-import { isValidDescription, isValidReply } from "../utils/helpers";
-import { messages } from "../text/messages";
+} from "@database/methods";
+import { EditGuildCommandAPI } from "@utils/commands-api";
+import { isValidDescription, isValidReply } from "@utils/helpers";
+import { messages } from "@text/messages";
 import { Command } from "@prisma/client";
-import { logger } from "../utils/logger";
-import { ConfigTypes } from "../utils/configTypes";
-
-const config = require("../utils/config").getConfigs([
-  ConfigTypes.EXTRA_LOGGING,
-]);
+import { logger } from "@utils/logger";
+import config from "@config";
 
 // Handler for /slashy edit <name:str> [reply:str] [description:str] [ephemeral:bool]
 export const edit = async (

@@ -5,6 +5,8 @@ export type Env = {
 	DISCORD_TOKEN: string;
 	DISCORD_APP_ID: string;
 	SLASHY_SECRET?: string;
+	POSTHOG_KEY?: string;
+	POSTHOG_HOST?: string;
 	DB: D1Database;
 };
 

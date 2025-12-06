@@ -43,8 +43,10 @@ const routeAutocomplete: AutocompleteRoute = async (interaction, context) => {
 		ensureBaseCommand({ rest: context.rest, appId: context.env.DISCORD_APP_ID }).catch((error) =>
 			console.error("ensureBaseCommand", error),
 		);
+
 		return handleSlashyAutocomplete(interaction, context);
 	}
+
 	return jsonResponse({
 		type: InteractionResponseType.ApplicationCommandAutocompleteResult,
 		data: { choices: [] },
@@ -56,17 +58,21 @@ const routeApplicationCommand: ApplicationCommandRoute = async (interaction, con
 		ensureBaseCommand({ rest: context.rest, appId: context.env.DISCORD_APP_ID }).catch((error) =>
 			console.error("ensureBaseCommand", error),
 		);
+
 		return handleSlashy(interaction, context);
 	}
+
 	return handleDynamic(interaction, context);
 };
 
 export const routeInteraction: InteractionRoute = async (interaction, context) => {
 	if (interaction.type === InteractionType.Ping) return jsonResponse({ type: InteractionResponseType.Pong });
+
 	if (isAutocompleteInteraction(interaction)) return routeAutocomplete(interaction, context);
 	if (isApplicationCommandInteraction(interaction)) return routeApplicationCommand(interaction, context);
 	if (isModalSubmitInteraction(interaction) && interaction.data.custom_id === "slashy:add")
 		return handleModal(interaction, context);
+
 	return jsonResponse({
 		type: InteractionResponseType.ChannelMessageWithSource,
 		data: { content: "Unsupported interaction.", flags: MessageFlags.Ephemeral },

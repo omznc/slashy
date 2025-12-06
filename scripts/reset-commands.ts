@@ -62,8 +62,10 @@ async function resetGuild(guildId: string) {
 			description?: string;
 			type?: number;
 		}[];
+
 		const recreated = existing.filter((cmd) => cmd.name !== "slashy" && cmd.type === 1).map(mapGuildCommand);
 		await rest.put(Routes.applicationGuildCommands(appId, guildId), { body: recreated });
+
 		console.log(
 			`guild ${guildId}: deleted ${existing.length} commands (${existing
 				.map((c) => c.name)
@@ -83,9 +85,11 @@ async function resetGuild(guildId: string) {
 
 async function main() {
 	await resetGlobal();
+
 	for (const gid of guildIds) {
 		await resetGuild(gid);
 	}
+
 	console.log("slashy reset: global updated, guild commands refreshed");
 }
 

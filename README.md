@@ -1,10 +1,8 @@
 <p align="center"><img src="https://i.imgur.com/j8rrx7R.png" style="width: 8rem;border-radius: 20%;"><h1 align="center">Slashy – Create custom slash commands on Discord</h1></p>
 <p align="center" style="display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;">
-    <a href="hhttps://discord.com/api/oauth2/authorize?client_id=928089024252506173&scope=applications.commands%20bot&permissions=0"><img src="invite-to-discord-button.svg" alt="Invite to Discord" style="height:42px;display:block;"></a>
+    <a href="hhttps://discord.com/api/oauth2/authorize?client_id=928089024252506173&scope=applications.commands%20bot&permissions=0"><img src="media/invite-to-discord-button.svg" alt="Invite to Discord" style="height:42px;display:block;"></a>
   <a href="https://deploy.workers.cloudflare.com/?url=https://github.com/omznc/slashy"><img src="https://deploy.workers.cloudflare.com/button" alt="Deploy to Cloudflare" style="height:42px;display:block;"></a>
 </p>
-
-
 
 ## Commands
 - `/slashy add` opens a modal for adding commands.
@@ -31,7 +29,7 @@ Inside replies you can use:
 2) `router` handles ping, autocomplete, modal submit, `/slashy` subcommands, or dynamic commands.
 3) `/slashy` requests run `ensureBaseCommand` to keep the root command in sync.
 4) Modal submit sanitizes name, enforces Manage Server, guild limits, saves to D1, registers/patches the guild command, replies ephemeral.
-5) Dynamic handler fetches the command row, increments `uses`, applies placeholders, replies public or ephemeral per row.
+5) Dynamic handler fetches the command row, increments `uses`, applies placeholders, replies public or ephemeral per row. If `POSTHOG_KEY` is set, PostHog captures command lifecycle events (create, delete, list, run).
 
 ## Weird branches
 You might've noticed that this repository has 2 weird branches: `legacy` and `legacy-legacy`. 
@@ -55,6 +53,7 @@ The current Slashy version (and hopefully final) runs in Cloudflare Workers off 
 - `DISCORD_TOKEN`, `DISCORD_APP_ID`, `DISCORD_PUBLIC_KEY` secrets in Wrangler.
 - `DB` D1 binding name must match `wrangler.toml`.
 - `SLASHY_SECRET` for admin endpoints (optional; auto-generated if absent).
+- Optional: `POSTHOG_KEY` to enable analytics; `POSTHOG_HOST` defaults to `https://eu.i.posthog.com`.
 - Optional: `GUILD_ID` when running register/reset scripts for scoped testing.
 - Copy `.dev.vars.example` to `.dev.vars` (or set secrets in dashboard) so the deploy button prompts for them.
 

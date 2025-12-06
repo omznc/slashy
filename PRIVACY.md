@@ -7,6 +7,7 @@ Effective: 2025-12-06
 - Stored in D1: command definitions (name, reply text, description, visibility flag, usage count, timestamps) and guild metadata (premium flag, bans, max_commands, permission, joined_at).
 - Admin secrets for `/admin` endpoints; a secret may be generated on first run and logged to your environment.
 - Minimal debug logs may record interaction types, guild IDs, and errors for troubleshooting.
+- Optional: if `POSTHOG_KEY` is set, command lifecycle events (create, delete, list, run) are sent to PostHog with guild ID, command name/id, visibility, response text, description length, and user ID involved in the action.
 
 ## How Data Is Used
 - To verify request signatures, route interactions, create/manage guild commands, enforce limits, and reply to users.
@@ -19,6 +20,7 @@ Effective: 2025-12-06
 
 ## Sharing
 - Data is sent to and from Discord APIs to register and execute commands.
+- If PostHog is enabled, command lifecycle events are sent to PostHog at the host you configure (default `https://eu.i.posthog.com`).
 - No selling or ad-based sharing. Data may be disclosed if required by law or to investigate abuse.
 
 ## Security

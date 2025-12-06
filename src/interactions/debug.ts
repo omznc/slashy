@@ -15,11 +15,13 @@ const extractInteractionData = (interaction: APIInteraction): InteractionDataSha
 	if ("data" in interaction && interaction.data && typeof interaction.data === "object") {
 		return interaction.data as InteractionDataShape;
 	}
+
 	return undefined;
 };
 
 export const getInteractionDebug = (interaction: APIInteraction): InteractionDebug => {
 	const data = extractInteractionData(interaction);
+
 	return {
 		type: interaction.type,
 		name: typeof data?.name === "string" ? data.name : undefined,

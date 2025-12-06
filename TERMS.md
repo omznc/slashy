@@ -27,6 +27,7 @@ Slashy lets Discord server admins create and manage custom slash commands throug
 
 ## Third-Party Services
 - Slashy depends on Discord APIs and Cloudflare; their outages or policy changes may affect the service.
+- Optional analytics are sent to PostHog if you configure `POSTHOG_KEY` (and optional `POSTHOG_HOST`).
 
 ## Open Source
 - Slashy is released under GPL-3.0. Your use of the source is governed by that license in addition to these terms for any hosted instance you run.

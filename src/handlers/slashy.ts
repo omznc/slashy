@@ -15,6 +15,7 @@ import { listCommands, removeCommand } from "../db/commands";
 import { deleteGuildCommand } from "../discord/registration";
 import type { HandlerContext } from "../types";
 import { hasManageGuild, sanitizeName } from "../utils/interaction";
+import { captureEvent } from "../utils/posthog";
 import { jsonResponse } from "../utils/responses";
 
 type DeleteInput = {
@@ -114,6 +115,13 @@ const handleList = async (guildId: string, context: HandlerContext) => {
 		(row) => `/${row.name} — ${row.description} (${row.uses} uses${row.ephemeral ? ", ephemeral" : ""})`,
 	);
 	const content = lines.join("\n").slice(0, 1900) || "No custom commands yet.";
+
+	await captureEvent(context.env, {
+		distinctId: guildId,
+		event: "command_list",
+		properties: { count: commands.length },
+	});
+
 	return jsonResponse({
 		type: InteractionResponseType.ChannelMessageWithSource,
 		data: { content, flags: MessageFlags.Ephemeral },
@@ -121,8 +129,16 @@ const handleList = async (guildId: string, context: HandlerContext) => {
 };
 
 const handleDelete = async ({ guildId, name, context }: DeleteInput) => {
-	await removeCommand(guildId, name, context.env);
-	await deleteGuildCommand({ rest: context.rest, appId: context.env.DISCORD_APP_ID, guildId, name });
+	await Promise.all([
+		removeCommand(guildId, name, context.env),
+		deleteGuildCommand({ rest: context.rest, appId: context.env.DISCORD_APP_ID, guildId, name }),
+	]);
+	await captureEvent(context.env, {
+		distinctId: guildId,
+		event: "command_deleted",
+		properties: { name },
+	});
+
 	return jsonResponse({
 		type: InteractionResponseType.ChannelMessageWithSource,
 		data: { content: `Removed /${name}`, flags: MessageFlags.Ephemeral },
@@ -151,21 +167,28 @@ export const handleSlashy = async (interaction: APIApplicationCommandInteraction
 			type: InteractionResponseType.ChannelMessageWithSource,
 			data: { content: "Use this in a server.", flags: MessageFlags.Ephemeral },
 		});
+
 	if (interaction.data.type !== ApplicationCommandType.ChatInput)
 		return jsonResponse({
 			type: InteractionResponseType.ChannelMessageWithSource,
 			data: { content: "Use chat input commands.", flags: MessageFlags.Ephemeral },
 		});
+
 	if (!hasManageGuild(interaction.member?.permissions))
 		return jsonResponse({
 			type: InteractionResponseType.ChannelMessageWithSource,
 			data: { content: "Manage Server required.", flags: MessageFlags.Ephemeral },
 		});
+
 	const data = interaction.data as APIChatInputApplicationCommandInteractionData;
 	const option = getSubcommand(data.options);
+
 	if (!option || option.type !== ApplicationCommandOptionType.Subcommand) return modalResponse();
+
 	if (option.name === "add") return modalResponse();
+
 	if (option.name === "list") return handleList(guildId, context);
+
 	if (option.name === "delete") {
 		const nameOption = option.options?.find((candidate) => candidate.name === "name");
 		const name = sanitizeName(typeof nameOption?.value === "string" ? nameOption.value : "");
@@ -185,11 +208,14 @@ export const handleSlashyAutocomplete = async (
 ) => {
 	const guildId = interaction.guild_id;
 	if (!guildId) return autocompleteResponse([]);
+
 	const subcommand = getSubcommand(interaction.data.options);
 	if (!subcommand || subcommand.name !== "delete") return autocompleteResponse([]);
+
 	const focusedValue = findFocusedValue(subcommand.options as AutocompleteOption[] | undefined);
 	const query = sanitizeName(focusedValue);
 	const commands = await listCommands(guildId, context.env);
+
 	const choices = commands
 		.filter(({ name }) => (!query ? true : name.includes(query)))
 		.slice(0, 25)

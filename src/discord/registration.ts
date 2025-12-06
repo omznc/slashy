@@ -50,20 +50,25 @@ export type GuildCommandRegistrationInput = {
 
 export const registerGuildCommand = async (input: GuildCommandRegistrationInput) => {
 	const { rest, appId, guildId, name, description } = input;
+
 	const commands = (await rest.get(
 		Routes.applicationGuildCommands(appId, guildId),
 	)) as RESTGetAPIApplicationGuildCommandsResult;
+
 	const existing = commands.find((command) => command.name === name);
 	const desc = (description || "A command made by Slashy.").slice(0, 100);
+
 	const payload: RESTPostAPIChatInputApplicationCommandsJSONBody = {
 		name,
 		description: desc,
 		type: 1,
 	};
+
 	if (existing) {
 		await rest.patch(Routes.applicationGuildCommand(appId, guildId, existing.id), { body: payload });
 		return;
 	}
+
 	await rest.post(Routes.applicationGuildCommands(appId, guildId), { body: payload });
 };
 
@@ -76,10 +81,13 @@ export type DeleteGuildCommandInput = {
 
 export const deleteGuildCommand = async (input: DeleteGuildCommandInput) => {
 	const { rest, appId, guildId, name } = input;
+
 	const commands = (await rest.get(
 		Routes.applicationGuildCommands(appId, guildId),
 	)) as RESTGetAPIApplicationGuildCommandsResult;
+
 	const target = commands.find((command) => command.name === name);
 	if (!target) return;
+
 	await rest.delete(Routes.applicationGuildCommand(appId, guildId, target.id));
 };

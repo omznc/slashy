@@ -5,6 +5,7 @@ import { ensureGuild, guildCommandCount } from "../db/guilds";
 import { registerGuildCommand } from "../discord/registration";
 import type { HandlerContext } from "../types";
 import { collectFields, hasManageGuild, parseVisibility, sanitizeName } from "../utils/interaction";
+import { captureEvent } from "../utils/posthog";
 import { jsonResponse } from "../utils/responses";
 
 type RegisterResult = {
@@ -44,35 +45,45 @@ export const handleModal = async (interaction: APIModalSubmitInteraction, contex
 			type: InteractionResponseType.ChannelMessageWithSource,
 			data: { content: "Manage Server required.", flags: MessageFlags.Ephemeral },
 		});
+
 	const fields = collectFields(interaction);
+
 	const name = sanitizeName(fields.name ?? "");
 	if (!name)
 		return jsonResponse({
 			type: InteractionResponseType.ChannelMessageWithSource,
 			data: { content: "Invalid name.", flags: MessageFlags.Ephemeral },
 		});
+
 	const reply = (fields.reply ?? "").trim().slice(0, 2000);
 	if (!reply.length)
 		return jsonResponse({
 			type: InteractionResponseType.ChannelMessageWithSource,
 			data: { content: "Reply is required.", flags: MessageFlags.Ephemeral },
 		});
+
 	const rawDescription = (fields.description ?? "").trim();
 	const description = (rawDescription || "A command made by Slashy.").slice(0, 100);
+
 	const visibilityParsed = parseVisibility(fields.visibility_select ?? fields.visibility ?? fields.ephemeral);
 	if (visibilityParsed === undefined)
 		return jsonResponse({
 			type: InteractionResponseType.ChannelMessageWithSource,
 			data: { content: "Invalid visibility. Use public or ephemeral.", flags: MessageFlags.Ephemeral },
 		});
+
 	const ephemeral = visibilityParsed;
-	const guild = await ensureGuild(guildId, context.env);
+
+	const [guild, count] = await Promise.all([
+		ensureGuild(guildId, context.env),
+		guildCommandCount(guildId, context.env),
+	]);
 	if (guild.banned)
 		return jsonResponse({
 			type: InteractionResponseType.ChannelMessageWithSource,
 			data: { content: "This server is banned.", flags: MessageFlags.Ephemeral },
 		});
-	const count = await guildCommandCount(guildId, context.env);
+
 	if (!guild.premium && count >= guild.maxCommands)
 		return jsonResponse({
 			type: InteractionResponseType.ChannelMessageWithSource,
@@ -81,9 +92,12 @@ export const handleModal = async (interaction: APIModalSubmitInteraction, contex
 				flags: MessageFlags.Ephemeral,
 			},
 		});
+
 	const id = crypto.randomUUID();
-	await upsertCommand({ id, guildId, name, reply, description, ephemeral }, context.env);
-	const registration = await registerWithDiscord(name, description, guildId, context);
+	const [registration] = await Promise.all([
+		registerWithDiscord(name, description, guildId, context),
+		upsertCommand({ id, guildId, name, reply, description, ephemeral }, context.env),
+	]);
 	if (!registration.success)
 		return jsonResponse({
 			type: InteractionResponseType.ChannelMessageWithSource,
@@ -92,6 +106,17 @@ export const handleModal = async (interaction: APIModalSubmitInteraction, contex
 				flags: MessageFlags.Ephemeral,
 			},
 		});
+
+	await captureEvent(context.env, {
+		distinctId: guildId,
+		event: "command_created",
+		properties: {
+			name,
+			ephemeral,
+			descriptionLength: description.length,
+		},
+	});
+
 	return jsonResponse({
 		type: InteractionResponseType.ChannelMessageWithSource,
 		data: { content: `/${name} added.`, flags: MessageFlags.Ephemeral },

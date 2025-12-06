@@ -4,7 +4,9 @@ const encoder = new TextEncoder();
 
 const hexToUint8 = (hex: string) => {
 	const bytes = new Uint8Array(hex.length / 2);
+
 	for (let i = 0; i < bytes.length; i++) bytes[i] = Number.parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+
 	return bytes;
 };
 
@@ -15,6 +17,8 @@ export const verifySignature = (
 	publicKey: string,
 ) => {
 	if (!signature || !timestamp) return false;
+
 	const message = encoder.encode(timestamp + body);
+
 	return nacl.sign.detached.verify(message, hexToUint8(signature), hexToUint8(publicKey));
 };

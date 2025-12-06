@@ -10,21 +10,29 @@ import { verifySignature } from "./utils/verify";
 export default {
 	async fetch(request: Request, env: Env): Promise<Response> {
 		primeAdminSecret(env);
+
 		const adminResponse = await handleAdmin(request, env);
 		if (adminResponse) return adminResponse;
+
 		if (request.method === "GET") return new Response("ok");
+
 		const signature = request.headers.get("x-signature-ed25519");
 		const timestamp = request.headers.get("x-signature-timestamp");
 		const body = await request.text();
+
 		if (!verifySignature(body, signature, timestamp, env.DISCORD_PUBLIC_KEY))
 			return new Response("invalid request", { status: 401 });
+
 		const interaction = JSON.parse(body) as APIInteraction;
 		logInteractionDebug(interaction);
+
 		const context = createHandlerContext(env);
+
 		try {
 			return await routeInteraction(interaction, context);
 		} catch (error) {
 			console.error("dispatch error", error);
+
 			return jsonResponse({
 				type: InteractionResponseType.ChannelMessageWithSource,
 				data: { content: "Error, try again.", flags: MessageFlags.Ephemeral },

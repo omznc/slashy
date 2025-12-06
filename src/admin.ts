@@ -10,16 +10,20 @@ let loggedGenerated = false;
 
 const resolveSecret = (env: Env) => {
 	if (cachedSecret) return cachedSecret;
+
 	const existing = env.SLASHY_SECRET?.trim();
 	if (existing) {
 		cachedSecret = existing;
 		return cachedSecret;
 	}
+
 	cachedSecret = crypto.randomUUID();
+
 	if (!loggedGenerated) {
 		console.log("[slashy] generated admin secret", cachedSecret);
 		loggedGenerated = true;
 	}
+
 	return cachedSecret;
 };
 
@@ -28,6 +32,7 @@ export const primeAdminSecret = (env: Env) => resolveSecret(env);
 const getBearer = (authorization: string | null) => {
 	if (!authorization) return "";
 	if (authorization.toLowerCase().startsWith("bearer ")) return authorization.slice(7).trim();
+
 	return authorization.trim();
 };
 
@@ -37,6 +42,7 @@ const authorized = (request: Request, env: Env) => {
 	const header = getBearer(request.headers.get("authorization"));
 	const xHeader = request.headers.get("x-slashy-secret")?.trim();
 	const query = url.searchParams.get("secret")?.trim();
+
 	return secret && (header === secret || xHeader === secret || query === secret);
 };
 
@@ -66,6 +72,7 @@ const resetGlobal = async (rest: REST, appId: string) => {
 const resetGuild = async (rest: REST, appId: string, guildId: string) => {
 	const existing = (await rest.get(Routes.applicationGuildCommands(appId, guildId))) as GuildCommandShape[];
 	const recreated = existing.filter((cmd) => cmd.name !== "slashy" && cmd.type === 1).map(mapGuildCommand);
+
 	await rest.put(Routes.applicationGuildCommands(appId, guildId), { body: recreated });
 	return recreated.length;
 };
@@ -73,13 +80,17 @@ const resetGuild = async (rest: REST, appId: string, guildId: string) => {
 export const handleAdmin = async (request: Request, env: Env) => {
 	const url = new URL(request.url);
 	if (!url.pathname.startsWith("/admin")) return undefined;
+
 	const secret = resolveSecret(env);
 	if (!authorized(request, env)) return json({ error: "unauthorized" }, 401);
+
 	const rest = createRestClient(env.DISCORD_TOKEN);
+
 	if (url.pathname === "/admin/register-base") {
 		await ensureBaseCommand({ rest, appId: env.DISCORD_APP_ID });
 		return json({ ok: true });
 	}
+
 	if (url.pathname === "/admin/reset-commands") {
 		const guildParam = url.searchParams.get("guildId") ?? url.searchParams.get("guild");
 		const guildIds = guildParam
@@ -88,9 +99,12 @@ export const handleAdmin = async (request: Request, env: Env) => {
 					.map((s) => s.trim())
 					.filter(Boolean)
 			: [];
+
 		const result: { global: string; guilds: { id: string; status: string; recreated?: number; error?: string }[] } =
 			{ global: "ok", guilds: [] };
+
 		await resetGlobal(rest, env.DISCORD_APP_ID);
+
 		for (const gid of guildIds) {
 			try {
 				const recreated = await resetGuild(rest, env.DISCORD_APP_ID, gid);

@@ -39,7 +39,9 @@ export const getCommand = async (guildId: string, name: string, env: Env): Promi
 	const row = await env.DB.prepare("SELECT id, reply, ephemeral FROM commands WHERE guild_id = ? AND name = ?")
 		.bind(guildId, name)
 		.first<CommandRow>();
+
 	if (!row) return undefined;
+
 	return { id: row.id, reply: row.reply, ephemeral: !!row.ephemeral };
 };
 
@@ -53,6 +55,7 @@ export const listCommands = async (guildId: string, env: Env): Promise<ListedCom
 	)
 		.bind(guildId)
 		.all<ListedCommandRow>();
+
 	return result.results.map((row) => ({
 		name: row.name,
 		description: row.description,
@@ -67,6 +70,7 @@ export const removeCommand = async (guildId: string, name: string, env: Env) => 
 
 export const upsertCommand = async (input: UpsertCommandInput, env: Env) => {
 	const { id, guildId, name, reply, description, ephemeral } = input;
+
 	await env.DB.prepare(
 		"INSERT INTO commands (id, guild_id, name, reply, description, ephemeral) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (guild_id, name) DO UPDATE SET reply = excluded.reply, description = excluded.description, ephemeral = excluded.ephemeral",
 	)

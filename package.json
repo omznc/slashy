@@ -23,6 +23,12 @@
 			},
 			"SLASHY_SECRET": {
 				"description": "Admin auth token for /admin endpoints; leave blank to auto-generate"
+			},
+			"POSTHOG_KEY": {
+				"description": "Optional PostHog project API key"
+			},
+			"POSTHOG_HOST": {
+				"description": "Optional PostHog host; defaults to https://eu.i.posthog.com"
 			}
 		}
 	},
@@ -36,6 +42,7 @@
 	"dependencies": {
 		"@discordjs/rest": "^2.2.1",
 		"discord-api-types": "^0.37.83",
+		"posthog-node": "^5.17.2",
 		"tweetnacl": "^1.0.3"
 	}
 }

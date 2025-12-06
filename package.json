@@ -1,0 +1,25 @@
+{
+	"name": "slashy",
+	"version": "0.1.0",
+	"type": "module",
+	"scripts": {
+		"dev": "bunx wrangler dev src/worker.ts",
+		"deploy": "bunx wrangler deploy src/worker.ts",
+		"build": "bunx wrangler deploy src/worker.ts --dry-run",
+		"register:base": "bun run scripts/register-base.ts",
+		"reset:slashy": "bun run scripts/reset-commands.ts",
+		"check": "bunx --bun @biomejs/biome check --write ."
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.3.8",
+		"@cloudflare/workers-types": "^4.20241218.0",
+		"@types/node": "^22.7.5",
+		"typescript": "^5.6.3",
+		"wrangler": "^4.53.0"
+	},
+	"dependencies": {
+		"@discordjs/rest": "^2.2.1",
+		"discord-api-types": "^0.37.83",
+		"tweetnacl": "^1.0.3"
+	}
+}

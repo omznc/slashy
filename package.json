@@ -29,6 +29,9 @@
 			},
 			"POSTHOG_HOST": {
 				"description": "Optional PostHog host; defaults to https://eu.i.posthog.com"
+			},
+			"MAX_COMMANDS": {
+				"description": "Optional default per-guild command cap (default 50)"
 			}
 		}
 	},

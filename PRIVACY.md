@@ -4,7 +4,7 @@ Effective: 2025-12-06
 
 ## What Slashy Processes
 - Interaction payloads from Discord to handle slash commands. Payloads may include user IDs, guild IDs, channel IDs, command names, options, and message metadata.
-- Stored in D1: command definitions (name, reply text, description, visibility flag, usage count, timestamps) and guild metadata (premium flag, bans, max_commands, permission, joined_at).
+- Stored in D1: command definitions (name, reply text, description, visibility flag, usage count, timestamps) and guild metadata (bans, max_commands, permission, joined_at).
 - Admin secrets for `/admin` endpoints; a secret may be generated on first run and logged to your environment.
 - Minimal debug logs may record interaction types, guild IDs, and errors for troubleshooting.
 - Optional: if `POSTHOG_KEY` is set, command lifecycle events (create, delete, list, run) are sent to PostHog with guild ID, command name/id, visibility, response text, description length, and user ID involved in the action.

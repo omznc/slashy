@@ -17,7 +17,7 @@ Slashy lets Discord server admins create and manage custom slash commands throug
 - You are responsible for the content of commands and replies you create.
 
 ## Data
-- Stored in D1: command definitions (name, reply text, description, visibility flag, usage count, timestamps), guild metadata (premium flag, bans, max_commands, permission, joined_at).
+- Stored in D1: command definitions (name, reply text, description, visibility flag, usage count, timestamps), guild metadata (bans, max_commands, permission, joined_at).
 - Processed but not persisted: interaction payloads from Discord (may include user, guild, channel, and message metadata) except for usage counts and saved command definitions.
 - Admin secrets may be generated on first run and logged to your environment; keep them secure.
 

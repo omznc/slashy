@@ -7,6 +7,7 @@ export type Env = {
 	SLASHY_SECRET?: string;
 	POSTHOG_KEY?: string;
 	POSTHOG_HOST?: string;
+	MAX_COMMANDS?: string;
 	DB: D1Database;
 };
 

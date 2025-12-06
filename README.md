@@ -38,7 +38,7 @@ The current Slashy version (and hopefully final) runs in Cloudflare Workers off 
 
 
 ## Persistence
-- D1 tables: `commands` (reply, description, ephemeral, uses), `guilds` (premium, banned, max_commands). Non-premium servers are capped at 30 commands by default.
+- D1 tables: `commands` (reply, description, ephemeral, uses), `guilds` (max_commands, banned). Guilds default to 50 commands; raise the default with `MAX_COMMANDS`.
 
 ## Maintenance scripts
 - `bun run scripts/register-base.ts` registers the base `/slashy` command globally or for `GUILD_ID=...`.
@@ -54,6 +54,7 @@ The current Slashy version (and hopefully final) runs in Cloudflare Workers off 
 - `DB` D1 binding name must match `wrangler.toml`.
 - `SLASHY_SECRET` for admin endpoints (optional; auto-generated if absent).
 - Optional: `POSTHOG_KEY` to enable analytics; `POSTHOG_HOST` defaults to `https://eu.i.posthog.com`.
+- Optional: `MAX_COMMANDS` to change the default per-guild cap (default 50).
 - Optional: `GUILD_ID` when running register/reset scripts for scoped testing.
 - Copy `.dev.vars.example` to `.dev.vars` (or set secrets in dashboard) so the deploy button prompts for them.
 
@@ -65,7 +66,7 @@ The current Slashy version (and hopefully final) runs in Cloudflare Workers off 
 
 ## Data model
 - `commands`: `id`, `guild_id`, `name` (unique per guild), `reply`, `description` (<=100), `ephemeral` (0/1), `uses`, timestamps.
-- `guilds`: `id`, `premium`, `banned`, `max_commands` (default 30), `permission`, `joined_at`.
+- `guilds`: `id`, `banned`, `max_commands` (default 50, override with `MAX_COMMANDS`), `permission`, `joined_at`.
 
 ## Notes
 - Lint/format: `bun run check` (Biome).

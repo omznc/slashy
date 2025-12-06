@@ -13,7 +13,8 @@ type GuildRow = {
 };
 
 export const ensureGuild = async (guildId: string, env: Env): Promise<GuildInfo> => {
-	await env.DB.prepare("INSERT OR IGNORE INTO guilds (id) VALUES (?)").bind(guildId).run();
+	const defaultMax = Number.isFinite(Number(env.MAX_COMMANDS)) ? Number(env.MAX_COMMANDS) : 50;
+	await env.DB.prepare("INSERT OR IGNORE INTO guilds (id, max_commands) VALUES (?, ?)").bind(guildId, defaultMax).run();
 
 	const row = await env.DB.prepare("SELECT premium, banned, max_commands AS maxCommands FROM guilds WHERE id = ?")
 		.bind(guildId)
@@ -22,7 +23,7 @@ export const ensureGuild = async (guildId: string, env: Env): Promise<GuildInfo>
 	return {
 		premium: !!row?.premium,
 		banned: !!row?.banned,
-		maxCommands: row?.maxCommands ?? 30,
+		maxCommands: row?.maxCommands ?? defaultMax,
 	};
 };
 

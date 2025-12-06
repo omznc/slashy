@@ -23,7 +23,7 @@ export const tasks: { name: string; job: Cron }[] = [];
 
 // Event Handler
 for (const file of readdirSync(path.resolve(__dirname, "./events")).filter(
-  (fileName) => fileName.endsWith(".js")
+  (fileName) => fileName.endsWith(".js"),
 )) {
   const event = require(`./events/${file}`);
   if (event.once) Client.once(event.name, (...args) => event.execute(...args));
@@ -32,7 +32,7 @@ for (const file of readdirSync(path.resolve(__dirname, "./events")).filter(
 
 // Task Handler
 for (const file of readdirSync(path.resolve(__dirname, "./tasks")).filter(
-  (fileName) => fileName.endsWith(".js")
+  (fileName) => fileName.endsWith(".js"),
 )) {
   const task = require(`./tasks/${file}`);
   tasks.push({
@@ -52,15 +52,15 @@ if (config.TOPGG_TOKEN) {
   const poster = AutoPoster(config.TOPGG_TOKEN, Client);
   if (config.EXTRA_LOGGING) {
     poster.on("posted", (stats: TopGgStats) =>
-      logger.info(`Updated 'top.gg' listing | ${stats.serverCount} servers.`)
+      logger.info(`Updated 'top.gg' listing | ${stats.serverCount} servers.`),
     );
     poster.on("error", () =>
-      logger.error("The 'top.gg' listing update failed.")
+      logger.error("The 'top.gg' listing update failed."),
     );
   }
 } else
   logger.info(
-    "No Top.gg token provided, skipping Top.gg listing status handler."
+    "No Top.gg token provided, skipping Top.gg listing status handler.",
   );
 
 Client.login(config.DISCORD_TOKEN).catch((err) => {

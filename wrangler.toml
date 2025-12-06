@@ -5,5 +5,3 @@ compatibility_date = "2025-12-06"
 [[d1_databases]]
 binding = "DB"
 database_name = "slashy"
-database_id = "de9deaa4-72ba-4bc5-b4ef-d5dbeb6ffa7c"
-

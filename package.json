@@ -10,6 +10,22 @@
 		"reset:slashy": "bun run scripts/reset-commands.ts",
 		"check": "bunx --bun @biomejs/biome check --write ."
 	},
+	"cloudflare": {
+		"bindings": {
+			"DISCORD_TOKEN": {
+				"description": "Discord bot token from the Dev Portal"
+			},
+			"DISCORD_APP_ID": {
+				"description": "Discord application/client ID"
+			},
+			"DISCORD_PUBLIC_KEY": {
+				"description": "Discord public key (for signature verify)"
+			},
+			"SLASHY_SECRET": {
+				"description": "Admin auth token for /admin endpoints; leave blank to auto-generate"
+			}
+		}
+	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.8",
 		"@cloudflare/workers-types": "^4.20241218.0",

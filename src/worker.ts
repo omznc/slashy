@@ -1,4 +1,5 @@
 import { type APIInteraction, InteractionResponseType, MessageFlags } from "discord-api-types/v10";
+import { handleAdmin, primeAdminSecret } from "./admin";
 import { createHandlerContext } from "./context";
 import { logInteractionDebug } from "./interactions/debug";
 import { routeInteraction } from "./router";
@@ -8,6 +9,9 @@ import { verifySignature } from "./utils/verify";
 
 export default {
 	async fetch(request: Request, env: Env): Promise<Response> {
+		primeAdminSecret(env);
+		const adminResponse = await handleAdmin(request, env);
+		if (adminResponse) return adminResponse;
 		if (request.method === "GET") return new Response("ok");
 		const signature = request.headers.get("x-signature-ed25519");
 		const timestamp = request.headers.get("x-signature-timestamp");

@@ -7,13 +7,8 @@ import type { Env } from "./types";
 import { jsonResponse } from "./utils/responses";
 import { verifySignature } from "./utils/verify";
 
-type FetchInput = {
-	request: Request;
-	env: Env;
-};
-
 export default {
-	async fetch({ request, env }: FetchInput): Promise<Response> {
+	async fetch(request: Request, env: Env): Promise<Response> {
 		primeAdminSecret(env);
 
 		const adminResponse = await handleAdmin({ request, env });

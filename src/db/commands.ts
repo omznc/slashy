@@ -3,7 +3,9 @@ import type { Env } from "../types";
 export type CommandRecord = {
 	id: string;
 	reply: string;
+	description: string;
 	ephemeral: boolean;
+	uses: number;
 };
 
 export type ListedCommand = {
@@ -25,7 +27,9 @@ export type UpsertCommandInput = {
 type CommandRow = {
 	id: string;
 	reply: string;
+	description: string;
 	ephemeral: number;
+	uses: number;
 };
 
 type ListedCommandRow = {
@@ -42,13 +46,21 @@ export type GetCommandInput = {
 };
 
 export const getCommand = async ({ guildId, name, env }: GetCommandInput): Promise<CommandRecord | undefined> => {
-	const row = await env.DB.prepare("SELECT id, reply, ephemeral FROM commands WHERE guild_id = ? AND name = ?")
+	const row = await env.DB.prepare(
+		"SELECT id, reply, description, uses, ephemeral FROM commands WHERE guild_id = ? AND name = ?",
+	)
 		.bind(guildId, name)
 		.first<CommandRow>();
 
 	if (!row) return undefined;
 
-	return { id: row.id, reply: row.reply, ephemeral: !!row.ephemeral };
+	return {
+		id: row.id,
+		reply: row.reply,
+		description: row.description,
+		ephemeral: !!row.ephemeral,
+		uses: row.uses,
+	};
 };
 
 export type IncrementCommandUsesInput = {
@@ -99,5 +111,31 @@ export const upsertCommand = async (input: UpsertCommandParams) => {
 		"INSERT INTO commands (id, guild_id, name, reply, description, ephemeral) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (guild_id, name) DO UPDATE SET reply = excluded.reply, description = excluded.description, ephemeral = excluded.ephemeral",
 	)
 		.bind(id, guildId, name, reply, description, ephemeral ? 1 : 0)
+		.run();
+};
+
+export type UpdateCommandInput = {
+	guildId: string;
+	originalName: string;
+	name: string;
+	reply: string;
+	description: string;
+	ephemeral: boolean;
+	env: Env;
+};
+
+export const updateCommand = async ({
+	guildId,
+	originalName,
+	name,
+	reply,
+	description,
+	ephemeral,
+	env,
+}: UpdateCommandInput) => {
+	await env.DB.prepare(
+		"UPDATE commands SET name = ?, reply = ?, description = ?, ephemeral = ? WHERE guild_id = ? AND name = ?",
+	)
+		.bind(name, reply, description, ephemeral ? 1 : 0, guildId, originalName)
 		.run();
 };

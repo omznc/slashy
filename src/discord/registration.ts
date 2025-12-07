@@ -13,6 +13,20 @@ export const baseCommand: RESTPostAPIChatInputApplicationCommandsJSONBody = {
 	dm_permission: false,
 	options: [
 		{ type: ApplicationCommandOptionType.Subcommand, name: "add", description: "Create a custom command" },
+		{
+			type: ApplicationCommandOptionType.Subcommand,
+			name: "edit",
+			description: "Edit a custom command",
+			options: [
+				{
+					type: ApplicationCommandOptionType.String,
+					name: "name",
+					description: "Command name",
+					required: true,
+					autocomplete: true,
+				},
+			],
+		},
 		{ type: ApplicationCommandOptionType.Subcommand, name: "list", description: "List custom commands" },
 		{
 			type: ApplicationCommandOptionType.Subcommand,

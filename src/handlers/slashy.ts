@@ -11,7 +11,7 @@ import {
 	InteractionResponseType,
 	MessageFlags,
 } from "discord-api-types/v10";
-import { listCommands, removeCommand } from "../db/commands";
+import { getCommand, listCommands, removeCommand } from "../db/commands";
 import { deleteGuildCommand } from "../discord/registration";
 import type { HandlerContext } from "../types";
 import { hasManageGuild, sanitizeName } from "../utils/interaction";
@@ -42,13 +42,20 @@ const autocompleteResponse = (choices: { name: string; value: string }[]) =>
 		},
 	});
 
-const modalResponse = () =>
+type ModalCommandState = {
+	name: string;
+	reply: string;
+	description: string;
+	ephemeral: boolean;
+};
+
+const modalResponse = (command?: ModalCommandState) =>
 	jsonResponse({
 		data: {
 			type: InteractionResponseType.Modal,
 			data: {
-				custom_id: "slashy:add",
-				title: "Add command",
+				custom_id: command ? `slashy:edit:${command.name}` : "slashy:add",
+				title: command ? "Edit command" : "Add command",
 				components: [
 					{
 						type: 1,
@@ -61,6 +68,7 @@ const modalResponse = () =>
 								min_length: 1,
 								max_length: 32,
 								required: true,
+								value: command?.name,
 							},
 						],
 					},
@@ -75,6 +83,7 @@ const modalResponse = () =>
 								min_length: 1,
 								max_length: 2000,
 								required: true,
+								value: command?.reply,
 							},
 						],
 					},
@@ -89,6 +98,7 @@ const modalResponse = () =>
 								min_length: 1,
 								max_length: 100,
 								required: false,
+								value: command?.description,
 							},
 						],
 					},
@@ -103,8 +113,18 @@ const modalResponse = () =>
 							max_values: 1,
 							required: true,
 							options: [
-								{ label: "Public", value: "public", description: "Visible to everyone", default: true },
-								{ label: "Ephemeral", value: "ephemeral", description: "Visible only to you" },
+								{
+									label: "Public",
+									value: "public",
+									description: "Visible to everyone",
+									default: !command?.ephemeral,
+								},
+								{
+									label: "Ephemeral",
+									value: "ephemeral",
+									description: "Visible only to you",
+									default: !!command?.ephemeral,
+								},
 							],
 						},
 					},
@@ -213,6 +233,34 @@ export const handleSlashy = async ({ interaction, context }: HandleSlashyInput) 
 
 	if (option.name === "add") return modalResponse();
 
+	if (option.name === "edit") {
+		const nameOption = option.options?.find((candidate) => candidate.name === "name");
+		const name = sanitizeName(typeof nameOption?.value === "string" ? nameOption.value : "");
+		if (!name)
+			return jsonResponse({
+				data: {
+					type: InteractionResponseType.ChannelMessageWithSource,
+					data: { content: "Provide a valid name.", flags: MessageFlags.Ephemeral },
+				},
+			});
+
+		const command = await getCommand({ guildId, name, env: context.env });
+		if (!command)
+			return jsonResponse({
+				data: {
+					type: InteractionResponseType.ChannelMessageWithSource,
+					data: { content: "Command not found.", flags: MessageFlags.Ephemeral },
+				},
+			});
+
+		return modalResponse({
+			name,
+			reply: command.reply,
+			description: command.description,
+			ephemeral: command.ephemeral,
+		});
+	}
+
 	if (option.name === "list") return handleList({ guildId, context });
 
 	if (option.name === "delete") {
@@ -240,7 +288,7 @@ export const handleSlashyAutocomplete = async ({ interaction, context }: HandleS
 	if (!guildId) return autocompleteResponse([]);
 
 	const subcommand = getSubcommand(interaction.data.options);
-	if (!subcommand || subcommand.name !== "delete") return autocompleteResponse([]);
+	if (!subcommand || !["delete", "edit"].includes(subcommand.name)) return autocompleteResponse([]);
 
 	const focusedValue = findFocusedValue(subcommand.options as AutocompleteOption[] | undefined);
 	const query = sanitizeName(focusedValue);

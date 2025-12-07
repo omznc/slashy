@@ -82,7 +82,7 @@ export const routeInteraction: InteractionRoute = async ({ interaction, context 
 
 	if (isAutocompleteInteraction(interaction)) return routeAutocomplete({ interaction, context });
 	if (isApplicationCommandInteraction(interaction)) return routeApplicationCommand({ interaction, context });
-	if (isModalSubmitInteraction(interaction) && interaction.data.custom_id === "slashy:add")
+	if (isModalSubmitInteraction(interaction) && interaction.data.custom_id?.startsWith("slashy:"))
 		return handleModal({ interaction, context });
 
 	return jsonResponse({

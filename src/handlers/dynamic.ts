@@ -50,7 +50,20 @@ export const handleDynamic = async ({ interaction, context, ctx }: HandleDynamic
 				return;
 			}
 
-			const content = formatReply({ template: command.reply, interaction }).slice(0, 2000);
+			let content: string;
+			try {
+				content = (await formatReply({ template: command.reply, interaction })).slice(0, 2000);
+			} catch (error) {
+				console.error("formatReply error", error);
+				await editInteractionResponse({
+					appId: context.env.DISCORD_APP_ID,
+					token: interaction.token,
+					content: t(locale, "templateError"),
+					flags: MessageFlags.Ephemeral,
+					rest: context.rest,
+				});
+				return;
+			}
 			await Promise.all([
 				incrementCommandUses({ commandId: command.id, env: context.env }),
 				captureEvent({

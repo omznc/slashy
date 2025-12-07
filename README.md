@@ -39,10 +39,7 @@ https://github.com/user-attachments/assets/2ced7d0e-7fbc-4fa9-b6e9-2722d79a5863
 - Created commands become real slash commands per guild; replies honor the stored visibility flag.
 
 ## Placeholders
-Inside replies you can use:
-- `[[user]]` mention
-- `[[user.name]]`
-- `[[user.avatar]]` (empty if none)
+Command replies can have placeholders, check out the full list in [`PLACEHOLDERS.md`](./PLACEHOLDERS.md).
 
 # For developers
 

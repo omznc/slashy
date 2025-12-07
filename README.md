@@ -96,7 +96,7 @@ The current Slashy version (and hopefully final) runs in Cloudflare Workers off 
 
 ## Data model
 - `commands`: `id`, `guild_id`, `name` (unique per guild), `reply`, `description` (<=100), `ephemeral` (0/1), `uses`, timestamps.
-- `guilds`: `id`, `banned`, `max_commands` (default 50, override with `MAX_COMMANDS`), `permission`, `joined_at`.
+- `guilds`: `id`, `banned`, `max_commands` (default 50, override with `MAX_COMMANDS`), `joined_at`.
 
 ## Notes
 - Lint/format: `bun run check` (Biome).

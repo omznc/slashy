@@ -9,7 +9,7 @@ import { jsonResponse } from "./utils/responses";
 import { verifySignature } from "./utils/verify";
 
 export default {
-	async fetch(request: Request, env: Env): Promise<Response> {
+	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
 		primeAdminSecret(env);
 
 		const adminResponse = await handleAdmin({ request, env });
@@ -30,7 +30,7 @@ export default {
 		const context = createHandlerContext(env);
 
 		try {
-			return await routeInteraction({ interaction, context });
+			return await routeInteraction({ interaction, context, ctx });
 		} catch (error) {
 			console.error("dispatch error", error);
 

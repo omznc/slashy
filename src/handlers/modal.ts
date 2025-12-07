@@ -7,7 +7,7 @@ import { resolveLocale, t } from "../i18n";
 import type { HandlerContext } from "../types";
 import { collectFields, hasManageGuild, parseVisibility, sanitizeName } from "../utils/interaction";
 import { captureEvent } from "../utils/posthog";
-import { jsonResponse } from "../utils/responses";
+import { deferredResponse, editInteractionResponse, jsonResponse } from "../utils/responses";
 
 type RegisterResult = {
 	success: boolean;
@@ -44,6 +44,7 @@ const registerWithDiscord = async ({
 export type HandleModalInput = {
 	interaction: APIModalSubmitInteraction;
 	context: HandlerContext;
+	ctx: ExecutionContext;
 };
 
 const parseCustomId = (customId: string) => {
@@ -53,7 +54,7 @@ const parseCustomId = (customId: string) => {
 	return { mode: "unknown" as const };
 };
 
-export const handleModal = async ({ interaction, context }: HandleModalInput) => {
+export const handleModal = async ({ interaction, context, ctx }: HandleModalInput) => {
 	const guildId = interaction.guild_id;
 	const locale = resolveLocale(interaction);
 	if (!guildId)
@@ -163,121 +164,124 @@ export const handleModal = async ({ interaction, context }: HandleModalInput) =>
 		});
 
 	if (!isEdit) {
-		const id = crypto.randomUUID();
-		const [registration] = await Promise.all([
-			registerWithDiscord({ name, description, guildId, context }),
-			upsertCommand({ id, guildId, name, reply, description, ephemeral, env: context.env }),
-		]);
-		if (!registration.success)
-			return jsonResponse({
-				data: {
-					type: InteractionResponseType.ChannelMessageWithSource,
-					data: {
-						content: t(locale, "savedButFailedDiscord", { error: registration.error ?? "unknown" }),
+		ctx.waitUntil(
+			(async () => {
+				const id = crypto.randomUUID();
+				const [registration] = await Promise.all([
+					registerWithDiscord({ name, description, guildId, context }),
+					upsertCommand({ id, guildId, name, reply, description, ephemeral, env: context.env }),
+				]);
+
+				const content = registration.success
+					? t(locale, "addedCommand", { name })
+					: t(locale, "savedButFailedDiscord", { error: registration.error ?? "unknown" });
+
+				await Promise.all([
+					captureEvent({
+						env: context.env,
+						options: {
+							distinctId: guildId,
+							event: "command_created",
+							properties: {
+								name,
+								ephemeral,
+								descriptionLength: description.length,
+							},
+						},
+					}),
+					editInteractionResponse({
+						appId: context.env.DISCORD_APP_ID,
+						token: interaction.token,
+						content,
 						flags: MessageFlags.Ephemeral,
-					},
-				},
-			});
+						rest: context.rest,
+					}),
+				]);
+			})().catch((error) => console.error("handleModal add async error", error)),
+		);
 
-		await captureEvent({
-			env: context.env,
-			options: {
-				distinctId: guildId,
-				event: "command_created",
-				properties: {
-					name,
-					ephemeral,
-					descriptionLength: description.length,
-				},
-			},
-		});
-
-		return jsonResponse({
-			data: {
-				type: InteractionResponseType.ChannelMessageWithSource,
-				data: { content: t(locale, "addedCommand", { name }), flags: MessageFlags.Ephemeral },
-			},
-		});
+		return deferredResponse(true);
 	}
 
 	const rename = existingName !== name;
 
-	if (!rename) {
-		const [registration] = await Promise.all([
-			registerWithDiscord({ name, description, guildId, context }),
-			updateCommand({
-				guildId,
-				originalName: existingName,
-				name,
-				reply,
-				description,
-				ephemeral,
-				env: context.env,
-			}),
-		]);
-		if (!registration.success)
-			return jsonResponse({
-				data: {
-					type: InteractionResponseType.ChannelMessageWithSource,
-					data: {
-						content: t(locale, "savedButFailedDiscord", { error: registration.error ?? "unknown" }),
-						flags: MessageFlags.Ephemeral,
-					},
-				},
-			});
-	} else {
-		const registration = await registerWithDiscord({ name, description, guildId, context });
-		if (!registration.success)
-			return jsonResponse({
-				data: {
-					type: InteractionResponseType.ChannelMessageWithSource,
-					data: {
+	ctx.waitUntil(
+		(async () => {
+			let finalContent: string;
+
+			if (!rename) {
+				const [registration] = await Promise.all([
+					registerWithDiscord({ name, description, guildId, context }),
+					updateCommand({
+						guildId,
+						originalName: existingName,
+						name,
+						reply,
+						description,
+						ephemeral,
+						env: context.env,
+					}),
+				]);
+				finalContent = registration.success
+					? t(locale, "updatedCommand", { name })
+					: t(locale, "savedButFailedDiscord", { error: registration.error ?? "unknown" });
+			} else {
+				const registration = await registerWithDiscord({ name, description, guildId, context });
+				if (!registration.success) {
+					await editInteractionResponse({
+						appId: context.env.DISCORD_APP_ID,
+						token: interaction.token,
 						content: t(locale, "failedRegisterNewName", { error: registration.error ?? "unknown" }),
 						flags: MessageFlags.Ephemeral,
+						rest: context.rest,
+					});
+					return;
+				}
+
+				await updateCommand({
+					guildId,
+					originalName: existingName,
+					name,
+					reply,
+					description,
+					ephemeral,
+					env: context.env,
+				});
+				await deleteGuildCommand({
+					rest: context.rest,
+					appId: context.env.DISCORD_APP_ID,
+					guildId,
+					name: existingName,
+				}).catch((error) => console.error("deleteGuildCommand", error));
+
+				finalContent = t(locale, "updatedCommandRenamed", { name, previousName: existingName });
+			}
+
+			await Promise.all([
+				captureEvent({
+					env: context.env,
+					options: {
+						distinctId: guildId,
+						event: "command_updated",
+						properties: {
+							name,
+							previousName: existingName,
+							renamed: rename,
+							ephemeral,
+							descriptionLength: description.length,
+						},
 					},
-				},
-			});
+				}),
+				editInteractionResponse({
+					appId: context.env.DISCORD_APP_ID,
+					token: interaction.token,
+					content: finalContent,
+					flags: MessageFlags.Ephemeral,
+					rest: context.rest,
+				}),
+			]);
+		})().catch((error) => console.error("handleModal edit async error", error)),
+	);
 
-		await updateCommand({
-			guildId,
-			originalName: existingName,
-			name,
-			reply,
-			description,
-			ephemeral,
-			env: context.env,
-		});
-		await deleteGuildCommand({
-			rest: context.rest,
-			appId: context.env.DISCORD_APP_ID,
-			guildId,
-			name: existingName,
-		}).catch((error) => console.error("deleteGuildCommand", error));
-	}
-
-	await captureEvent({
-		env: context.env,
-		options: {
-			distinctId: guildId,
-			event: "command_updated",
-			properties: {
-				name,
-				previousName: existingName,
-				renamed: rename,
-				ephemeral,
-				descriptionLength: description.length,
-			},
-		},
-	});
-
-	const content = rename
-		? t(locale, "updatedCommandRenamed", { name, previousName: existingName })
-		: t(locale, "updatedCommand", { name });
-
-	return jsonResponse({
-		data: {
-			type: InteractionResponseType.ChannelMessageWithSource,
-			data: { content, flags: MessageFlags.Ephemeral },
-		},
-	});
+	return deferredResponse(true);
 };

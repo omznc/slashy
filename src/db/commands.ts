@@ -98,8 +98,22 @@ export type RemoveCommandInput = {
 	env: Env;
 };
 
-export const removeCommand = async ({ guildId, name, env }: RemoveCommandInput) => {
-	await env.DB.prepare("DELETE FROM commands WHERE guild_id = ? AND name = ?").bind(guildId, name).run();
+export const removeCommand = async ({ guildId, name, env }: RemoveCommandInput): Promise<CommandRecord | undefined> => {
+	const row = await env.DB.prepare(
+		"DELETE FROM commands WHERE guild_id = ? AND name = ? RETURNING id, reply, description, uses, ephemeral",
+	)
+		.bind(guildId, name)
+		.first<CommandRow>();
+
+	if (!row) return undefined;
+
+	return {
+		id: row.id,
+		reply: row.reply,
+		description: row.description,
+		ephemeral: !!row.ephemeral,
+		uses: row.uses,
+	};
 };
 
 export type UpsertCommandParams = UpsertCommandInput & { env: Env };

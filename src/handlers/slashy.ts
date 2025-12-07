@@ -17,13 +17,23 @@ import { resolveLocale, t } from "../i18n";
 import type { HandlerContext } from "../types";
 import { hasManageGuild, sanitizeName } from "../utils/interaction";
 import { captureEvent } from "../utils/posthog";
-import { jsonResponse } from "../utils/responses";
+import { deferredResponse, editInteractionResponse, jsonResponse } from "../utils/responses";
 
 type DeleteInput = {
 	guildId: string;
 	name: string;
 	context: HandlerContext;
 	locale: string;
+	token: string;
+	ctx: ExecutionContext;
+};
+
+type ListInput = {
+	guildId: string;
+	context: HandlerContext;
+	locale: string;
+	token: string;
+	ctx: ExecutionContext;
 };
 
 type SubcommandOptions =
@@ -135,55 +145,77 @@ const modalResponse = (locale: string, command?: ModalCommandState) =>
 		},
 	});
 
-export type HandleListInput = {
-	guildId: string;
-	context: HandlerContext;
-	locale: string;
-};
+const handleList = async ({ guildId, context, locale, token, ctx }: ListInput) => {
+	ctx.waitUntil(
+		(async () => {
+			const commands = await listCommands({ guildId, env: context.env });
+			const usesLabel = t(locale, "usesLabel");
+			const ephemeralLabel = t(locale, "ephemeralLabel");
+			const lines = commands.map(
+				(row) =>
+					`/${row.name} — ${row.description} (${row.uses} ${usesLabel}${row.ephemeral ? `, ${ephemeralLabel}` : ""})`,
+			);
+			const content = lines.join("\n").slice(0, 1900) || t(locale, "listEmpty");
 
-const handleList = async ({ guildId, context, locale }: HandleListInput) => {
-	const commands = await listCommands({ guildId, env: context.env });
-	const usesLabel = t(locale, "usesLabel");
-	const ephemeralLabel = t(locale, "ephemeralLabel");
-	const lines = commands.map(
-		(row) =>
-			`/${row.name} — ${row.description} (${row.uses} ${usesLabel}${row.ephemeral ? `, ${ephemeralLabel}` : ""})`,
+			await Promise.all([
+				captureEvent({
+					env: context.env,
+					options: {
+						distinctId: guildId,
+						event: "command_list",
+						properties: { count: commands.length },
+					},
+				}),
+				editInteractionResponse({
+					appId: context.env.DISCORD_APP_ID,
+					token,
+					content,
+					flags: MessageFlags.Ephemeral,
+					rest: context.rest,
+				}),
+			]);
+		})().catch((error) => console.error("handleList async error", error)),
 	);
-	const content = lines.join("\n").slice(0, 1900) || t(locale, "listEmpty");
 
-	await captureEvent({
-		env: context.env,
-		options: {
-			distinctId: guildId,
-			event: "command_list",
-			properties: { count: commands.length },
-		},
-	});
-
-	return jsonResponse({
-		data: {
-			type: InteractionResponseType.ChannelMessageWithSource,
-			data: { content, flags: MessageFlags.Ephemeral },
-		},
-	});
+	return deferredResponse(true);
 };
 
-const handleDelete = async ({ guildId, name, context, locale }: DeleteInput) => {
-	await Promise.all([
-		removeCommand({ guildId, name, env: context.env }),
-		deleteGuildCommand({ rest: context.rest, appId: context.env.DISCORD_APP_ID, guildId, name }),
-	]);
-	await captureEvent({
-		env: context.env,
-		options: { distinctId: guildId, event: "command_deleted", properties: { name } },
-	});
+const handleDelete = async ({ guildId, name, context, locale, token, ctx }: DeleteInput) => {
+	ctx.waitUntil(
+		(async () => {
+			const [deletedCommand] = await Promise.all([
+				removeCommand({ guildId, name, env: context.env }),
+				deleteGuildCommand({ rest: context.rest, appId: context.env.DISCORD_APP_ID, guildId, name }),
+			]);
 
-	return jsonResponse({
-		data: {
-			type: InteractionResponseType.ChannelMessageWithSource,
-			data: { content: t(locale, "removedCommand", { name }), flags: MessageFlags.Ephemeral },
-		},
-	});
+			if (!deletedCommand) {
+				await editInteractionResponse({
+					appId: context.env.DISCORD_APP_ID,
+					token,
+					content: t(locale, "commandNotFound"),
+					flags: MessageFlags.Ephemeral,
+					rest: context.rest,
+				});
+				return;
+			}
+
+			await Promise.all([
+				captureEvent({
+					env: context.env,
+					options: { distinctId: guildId, event: "command_deleted", properties: { name } },
+				}),
+				editInteractionResponse({
+					appId: context.env.DISCORD_APP_ID,
+					token,
+					content: t(locale, "removedCommand", { name }),
+					flags: MessageFlags.Ephemeral,
+					rest: context.rest,
+				}),
+			]);
+		})().catch((error) => console.error("handleDelete async error", error)),
+	);
+
+	return deferredResponse(true);
 };
 
 const getSubcommand = (options: SubcommandOptions) =>
@@ -204,9 +236,10 @@ const findFocusedValue = (options: AutocompleteOption[] | undefined): string => 
 export type HandleSlashyInput = {
 	interaction: APIApplicationCommandInteraction;
 	context: HandlerContext;
+	ctx: ExecutionContext;
 };
 
-export const handleSlashy = async ({ interaction, context }: HandleSlashyInput) => {
+export const handleSlashy = async ({ interaction, context, ctx }: HandleSlashyInput) => {
 	const guildId = interaction.guild_id;
 	const locale = resolveLocale(interaction);
 	if (!guildId)
@@ -268,7 +301,7 @@ export const handleSlashy = async ({ interaction, context }: HandleSlashyInput) 
 		});
 	}
 
-	if (option.name === "list") return handleList({ guildId, context, locale });
+	if (option.name === "list") return handleList({ guildId, context, locale, token: interaction.token, ctx });
 
 	if (option.name === "delete") {
 		const nameOption = option.options?.find((candidate) => candidate.name === "name");
@@ -280,8 +313,9 @@ export const handleSlashy = async ({ interaction, context }: HandleSlashyInput) 
 					data: { content: t(locale, "provideValidName"), flags: MessageFlags.Ephemeral },
 				},
 			});
-		return handleDelete({ guildId, name, context, locale });
+		return handleDelete({ guildId, name, context, locale, token: interaction.token, ctx });
 	}
+
 	return modalResponse(locale);
 };
 

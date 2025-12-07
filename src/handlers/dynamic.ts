@@ -8,14 +8,15 @@ import { resolveLocale, t } from "../i18n";
 import type { HandlerContext } from "../types";
 import { formatReply } from "../utils/interaction";
 import { captureEvent } from "../utils/posthog";
-import { jsonResponse } from "../utils/responses";
+import { deferredResponse, editInteractionResponse, jsonResponse } from "../utils/responses";
 
 export type HandleDynamicInput = {
 	interaction: APIApplicationCommandInteraction;
 	context: HandlerContext;
+	ctx: ExecutionContext;
 };
 
-export const handleDynamic = async ({ interaction, context }: HandleDynamicInput) => {
+export const handleDynamic = async ({ interaction, context, ctx }: HandleDynamicInput) => {
 	const guildId = interaction.guild_id;
 	const locale = resolveLocale(interaction);
 	if (!guildId)
@@ -35,39 +36,48 @@ export const handleDynamic = async ({ interaction, context }: HandleDynamicInput
 		});
 	const data = interaction.data as APIChatInputApplicationCommandInteractionData;
 
-	const command = await getCommand({ guildId, name: data.name, env: context.env });
-	if (!command)
-		return jsonResponse({
-			data: {
-				type: InteractionResponseType.ChannelMessageWithSource,
-				data: { content: t(locale, "unknownCommand"), flags: MessageFlags.Ephemeral },
-			},
-		});
+	ctx.waitUntil(
+		(async () => {
+			const command = await getCommand({ guildId, name: data.name, env: context.env });
+			if (!command) {
+				await editInteractionResponse({
+					appId: context.env.DISCORD_APP_ID,
+					token: interaction.token,
+					content: t(locale, "unknownCommand"),
+					flags: MessageFlags.Ephemeral,
+					rest: context.rest,
+				});
+				return;
+			}
 
-	const content = formatReply({ template: command.reply, interaction }).slice(0, 2000);
-	await Promise.all([
-		incrementCommandUses({ commandId: command.id, env: context.env }),
-		captureEvent({
-			env: context.env,
-			options: {
-				distinctId: guildId,
-				event: "command_run",
-				properties: {
-					commandId: command.id,
-					name: data.name,
-					response: content,
-					type: data.type,
-					visibility: command.ephemeral ? "ephemeral" : "public",
-					userId: interaction.member?.user.id ?? interaction.user?.id ?? "",
-				},
-			},
-		}),
-	]);
+			const content = formatReply({ template: command.reply, interaction }).slice(0, 2000);
+			await Promise.all([
+				incrementCommandUses({ commandId: command.id, env: context.env }),
+				captureEvent({
+					env: context.env,
+					options: {
+						distinctId: guildId,
+						event: "command_run",
+						properties: {
+							commandId: command.id,
+							name: data.name,
+							response: content,
+							type: data.type,
+							visibility: command.ephemeral ? "ephemeral" : "public",
+							userId: interaction.member?.user.id ?? interaction.user?.id ?? "",
+						},
+					},
+				}),
+				editInteractionResponse({
+					appId: context.env.DISCORD_APP_ID,
+					token: interaction.token,
+					content,
+					flags: command.ephemeral ? MessageFlags.Ephemeral : 0,
+					rest: context.rest,
+				}),
+			]);
+		})().catch((error) => console.error("handleDynamic async error", error)),
+	);
 
-	return jsonResponse({
-		data: {
-			type: InteractionResponseType.ChannelMessageWithSource,
-			data: { content, flags: command.ephemeral ? MessageFlags.Ephemeral : 0 },
-		},
-	});
+	return deferredResponse(true);
 };

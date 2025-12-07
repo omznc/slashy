@@ -15,6 +15,5 @@ CREATE TABLE IF NOT EXISTS guilds (
   banned INTEGER NOT NULL DEFAULT 0,
   joined_at TEXT NOT NULL DEFAULT (datetime('now')),
   max_commands INTEGER NOT NULL DEFAULT 50,
-  permission TEXT NOT NULL DEFAULT 'OWNER'
 );
 

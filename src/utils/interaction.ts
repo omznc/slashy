@@ -149,6 +149,11 @@ const discordTimestampTag = (date: Date, style?: string) => {
 	return `<t:${unix}:${style}>`;
 };
 
+const latexUrl = (expr: string, format: "svg" | "png" = "png") => {
+	const base = format === "png" ? "https://latex.codecogs.com/png.image?" : "https://latex.codecogs.com/svg.image?";
+	return `${base}${encodeURIComponent(expr)}`;
+};
+
 const evaluateMath = (expression: string) => {
 	const allowed = /^[0-9+\-*/%().,\sA-Za-z_]+$/;
 	if (!allowed.test(expression)) return "";
@@ -426,6 +431,24 @@ const resolvePlaceholder = async (token: string, context: PlaceholderContext, de
 	if (token.startsWith("math:")) {
 		const expr = token.slice(5);
 		return evaluateMath(expr);
+	}
+
+	if (token.startsWith("latex.inline:")) {
+		const expr = token.slice("latex.inline:".length);
+		const resolved = await applyPlaceholders(expr, context, depth + 1);
+		return `$${resolved}$`;
+	}
+
+	if (token.startsWith("latex.block:")) {
+		const expr = token.slice("latex.block:".length);
+		const resolved = await applyPlaceholders(expr, context, depth + 1);
+		return `$$${resolved}$$`;
+	}
+
+	if (token.startsWith("latex:")) {
+		const expr = token.slice(6);
+		const resolved = await applyPlaceholders(expr, context, depth + 1);
+		return latexUrl(resolved, "png");
 	}
 
 	if (token.startsWith("upper:")) {

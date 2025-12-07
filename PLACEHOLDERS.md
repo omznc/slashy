@@ -59,6 +59,13 @@ Emoji sets for `[[rand.emoji]]`:
 
 Supported pattern tokens: `%Y`, `%y`, `%m`, `%d`, `%H`, `%M`, `%S`, `%I`, `%p`, `%b`, `%B`, `%a`, `%A`, `%Z`.
 
+## LaTeX
+| Placeholder | Description | Example |
+| --- | --- | --- |
+| `[[latex.inline:E=mc^2]]` | Inline TeX (with surrounding `$`) | `$E=mc^2$` |
+| `[[latex.block:\int_0^1 x^2 dx]]` | Block TeX (with `$$`) | `$$\int_0^1 x^2 dx$$` |
+| `[[latex:E=mc^2]]` | URL to rendered PNG via latex.codecogs.com | `https://latex.codecogs.com/png.image?E%3Dmc%5E2` |
+
 ## Math
 | Placeholder | Description | Example |
 | --- | --- | --- |

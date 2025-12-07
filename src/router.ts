@@ -11,6 +11,7 @@ import { ensureBaseCommand } from "./discord/registration";
 import { handleDynamic } from "./handlers/dynamic";
 import { handleModal } from "./handlers/modal";
 import { handleSlashy, handleSlashyAutocomplete } from "./handlers/slashy";
+import { resolveLocale, t } from "./i18n";
 import type { HandlerContext } from "./types";
 import { jsonResponse } from "./utils/responses";
 
@@ -85,10 +86,12 @@ export const routeInteraction: InteractionRoute = async ({ interaction, context 
 	if (isModalSubmitInteraction(interaction) && interaction.data.custom_id?.startsWith("slashy:"))
 		return handleModal({ interaction, context });
 
+	const locale = resolveLocale(interaction);
+
 	return jsonResponse({
 		data: {
 			type: InteractionResponseType.ChannelMessageWithSource,
-			data: { content: "Unsupported interaction.", flags: MessageFlags.Ephemeral },
+			data: { content: t(locale, "unsupportedInteraction"), flags: MessageFlags.Ephemeral },
 		},
 	});
 };

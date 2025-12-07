@@ -13,6 +13,7 @@ import {
 } from "discord-api-types/v10";
 import { getCommand, listCommands, removeCommand } from "../db/commands";
 import { deleteGuildCommand } from "../discord/registration";
+import { resolveLocale, t } from "../i18n";
 import type { HandlerContext } from "../types";
 import { hasManageGuild, sanitizeName } from "../utils/interaction";
 import { captureEvent } from "../utils/posthog";
@@ -22,6 +23,7 @@ type DeleteInput = {
 	guildId: string;
 	name: string;
 	context: HandlerContext;
+	locale: string;
 };
 
 type SubcommandOptions =
@@ -49,13 +51,13 @@ type ModalCommandState = {
 	ephemeral: boolean;
 };
 
-const modalResponse = (command?: ModalCommandState) =>
+const modalResponse = (locale: string, command?: ModalCommandState) =>
 	jsonResponse({
 		data: {
 			type: InteractionResponseType.Modal,
 			data: {
 				custom_id: command ? `slashy:edit:${command.name}` : "slashy:add",
-				title: command ? "Edit command" : "Add command",
+				title: command ? t(locale, "modalTitleEdit") : t(locale, "modalTitleAdd"),
 				components: [
 					{
 						type: 1,
@@ -63,7 +65,7 @@ const modalResponse = (command?: ModalCommandState) =>
 							{
 								type: 4,
 								custom_id: "name",
-								label: "Command name",
+								label: t(locale, "modalNameLabel"),
 								style: 1,
 								min_length: 1,
 								max_length: 32,
@@ -78,7 +80,7 @@ const modalResponse = (command?: ModalCommandState) =>
 							{
 								type: 4,
 								custom_id: "reply",
-								label: "Reply",
+								label: t(locale, "modalReplyLabel"),
 								style: 2,
 								min_length: 1,
 								max_length: 2000,
@@ -93,7 +95,7 @@ const modalResponse = (command?: ModalCommandState) =>
 							{
 								type: 4,
 								custom_id: "description",
-								label: "Description",
+								label: t(locale, "modalDescriptionLabel"),
 								style: 1,
 								min_length: 1,
 								max_length: 100,
@@ -104,25 +106,25 @@ const modalResponse = (command?: ModalCommandState) =>
 					},
 					{
 						type: 18,
-						label: "Visibility",
+						label: t(locale, "modalVisibilityLabel"),
 						component: {
 							type: 3,
 							custom_id: "visibility_select",
-							placeholder: "Reply visibility",
+							placeholder: t(locale, "modalVisibilityPlaceholder"),
 							min_values: 1,
 							max_values: 1,
 							required: true,
 							options: [
 								{
-									label: "Public",
+									label: t(locale, "modalVisibilityPublicLabel"),
 									value: "public",
-									description: "Visible to everyone",
+									description: t(locale, "modalVisibilityPublicDescription"),
 									default: !command?.ephemeral,
 								},
 								{
-									label: "Ephemeral",
+									label: t(locale, "modalVisibilityEphemeralLabel"),
 									value: "ephemeral",
-									description: "Visible only to you",
+									description: t(locale, "modalVisibilityEphemeralDescription"),
 									default: !!command?.ephemeral,
 								},
 							],
@@ -136,14 +138,18 @@ const modalResponse = (command?: ModalCommandState) =>
 export type HandleListInput = {
 	guildId: string;
 	context: HandlerContext;
+	locale: string;
 };
 
-const handleList = async ({ guildId, context }: HandleListInput) => {
+const handleList = async ({ guildId, context, locale }: HandleListInput) => {
 	const commands = await listCommands({ guildId, env: context.env });
+	const usesLabel = t(locale, "usesLabel");
+	const ephemeralLabel = t(locale, "ephemeralLabel");
 	const lines = commands.map(
-		(row) => `/${row.name} — ${row.description} (${row.uses} uses${row.ephemeral ? ", ephemeral" : ""})`,
+		(row) =>
+			`/${row.name} — ${row.description} (${row.uses} ${usesLabel}${row.ephemeral ? `, ${ephemeralLabel}` : ""})`,
 	);
-	const content = lines.join("\n").slice(0, 1900) || "No custom commands yet.";
+	const content = lines.join("\n").slice(0, 1900) || t(locale, "listEmpty");
 
 	await captureEvent({
 		env: context.env,
@@ -162,7 +168,7 @@ const handleList = async ({ guildId, context }: HandleListInput) => {
 	});
 };
 
-const handleDelete = async ({ guildId, name, context }: DeleteInput) => {
+const handleDelete = async ({ guildId, name, context, locale }: DeleteInput) => {
 	await Promise.all([
 		removeCommand({ guildId, name, env: context.env }),
 		deleteGuildCommand({ rest: context.rest, appId: context.env.DISCORD_APP_ID, guildId, name }),
@@ -175,7 +181,7 @@ const handleDelete = async ({ guildId, name, context }: DeleteInput) => {
 	return jsonResponse({
 		data: {
 			type: InteractionResponseType.ChannelMessageWithSource,
-			data: { content: `Removed /${name}`, flags: MessageFlags.Ephemeral },
+			data: { content: t(locale, "removedCommand", { name }), flags: MessageFlags.Ephemeral },
 		},
 	});
 };
@@ -202,11 +208,12 @@ export type HandleSlashyInput = {
 
 export const handleSlashy = async ({ interaction, context }: HandleSlashyInput) => {
 	const guildId = interaction.guild_id;
+	const locale = resolveLocale(interaction);
 	if (!guildId)
 		return jsonResponse({
 			data: {
 				type: InteractionResponseType.ChannelMessageWithSource,
-				data: { content: "Use this in a server.", flags: MessageFlags.Ephemeral },
+				data: { content: t(locale, "useInServer"), flags: MessageFlags.Ephemeral },
 			},
 		});
 
@@ -214,7 +221,7 @@ export const handleSlashy = async ({ interaction, context }: HandleSlashyInput) 
 		return jsonResponse({
 			data: {
 				type: InteractionResponseType.ChannelMessageWithSource,
-				data: { content: "Use chat input commands.", flags: MessageFlags.Ephemeral },
+				data: { content: t(locale, "chatInputOnly"), flags: MessageFlags.Ephemeral },
 			},
 		});
 
@@ -222,16 +229,16 @@ export const handleSlashy = async ({ interaction, context }: HandleSlashyInput) 
 		return jsonResponse({
 			data: {
 				type: InteractionResponseType.ChannelMessageWithSource,
-				data: { content: "Manage Server required.", flags: MessageFlags.Ephemeral },
+				data: { content: t(locale, "manageServerRequired"), flags: MessageFlags.Ephemeral },
 			},
 		});
 
 	const data = interaction.data as APIChatInputApplicationCommandInteractionData;
 	const option = getSubcommand(data.options);
 
-	if (!option || option.type !== ApplicationCommandOptionType.Subcommand) return modalResponse();
+	if (!option || option.type !== ApplicationCommandOptionType.Subcommand) return modalResponse(locale);
 
-	if (option.name === "add") return modalResponse();
+	if (option.name === "add") return modalResponse(locale);
 
 	if (option.name === "edit") {
 		const nameOption = option.options?.find((candidate) => candidate.name === "name");
@@ -240,7 +247,7 @@ export const handleSlashy = async ({ interaction, context }: HandleSlashyInput) 
 			return jsonResponse({
 				data: {
 					type: InteractionResponseType.ChannelMessageWithSource,
-					data: { content: "Provide a valid name.", flags: MessageFlags.Ephemeral },
+					data: { content: t(locale, "provideValidName"), flags: MessageFlags.Ephemeral },
 				},
 			});
 
@@ -249,11 +256,11 @@ export const handleSlashy = async ({ interaction, context }: HandleSlashyInput) 
 			return jsonResponse({
 				data: {
 					type: InteractionResponseType.ChannelMessageWithSource,
-					data: { content: "Command not found.", flags: MessageFlags.Ephemeral },
+					data: { content: t(locale, "commandNotFound"), flags: MessageFlags.Ephemeral },
 				},
 			});
 
-		return modalResponse({
+		return modalResponse(locale, {
 			name,
 			reply: command.reply,
 			description: command.description,
@@ -261,7 +268,7 @@ export const handleSlashy = async ({ interaction, context }: HandleSlashyInput) 
 		});
 	}
 
-	if (option.name === "list") return handleList({ guildId, context });
+	if (option.name === "list") return handleList({ guildId, context, locale });
 
 	if (option.name === "delete") {
 		const nameOption = option.options?.find((candidate) => candidate.name === "name");
@@ -270,12 +277,12 @@ export const handleSlashy = async ({ interaction, context }: HandleSlashyInput) 
 			return jsonResponse({
 				data: {
 					type: InteractionResponseType.ChannelMessageWithSource,
-					data: { content: "Provide a valid name.", flags: MessageFlags.Ephemeral },
+					data: { content: t(locale, "provideValidName"), flags: MessageFlags.Ephemeral },
 				},
 			});
-		return handleDelete({ guildId, name, context });
+		return handleDelete({ guildId, name, context, locale });
 	}
-	return modalResponse();
+	return modalResponse(locale);
 };
 
 export type HandleSlashyAutocompleteInput = {

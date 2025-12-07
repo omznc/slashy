@@ -4,10 +4,33 @@
   <a href="https://deploy.workers.cloudflare.com/?url=https://github.com/omznc/slashy"><img src="https://deploy.workers.cloudflare.com/button" alt="Deploy to Cloudflare" style="height:42px;display:block;"></a>
 </p>
 
+Slashy is the first free and open-source Discord bot that allows you to create custom slash commands. It's been around since 2022 and you can track it's progress through the publicly available code.
+
+Slashy's main feature is creating slash commands without being tech savy, or if you just want an easier way to add commands to your server. It supports full command editing through a modal, and the changes are reflected instantly.
+
+Yes, I know, Slashy is a super creative name. I'm not the best at naming things, but I'm sure you'll love it anyway!
+
+Couple of cool features:
+  - command adding, editing, deleting and listing (for admins/managers)
+  - tracking the usages of each command (for admins/managers, or the bot host via PostHog)
+  - ephemeral replies (only the person that runs the command gets to see its reply)
+  - full internationalization ([all Discord locales  are supported](https://discord.com/developers/docs/reference#locales))
+  - admin endpoints (limiting the number of commands per-guild, and banning guilds)
+
+The publicly-hosted version of Slashy can be [added with this link](hhttps://discord.com/api/oauth2/authorize?client_id=928089024252506173&scope=applications.commands%20bot&permissions=0), or the button in the header. You can also (pretty easily) host it yourself if you'd like.
+
+Have fun.
+
+
+
+
+
 ## Commands
 - `/slashy add` opens a modal for adding commands.
 - `/slashy list` shows server commands (only for you).
-- `/slashy delete <name>` lets you delete commands. Has autocomplete too.
+- `/slashy delete <name>` lets you delete commands. Has autocomplete.
+- `/slashy edit <name>` edit a command. Has autocomplete too.
+
 - Created commands become real slash commands per guild; replies honor the stored visibility flag.
 
 ## Placeholders

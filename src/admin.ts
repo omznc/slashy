@@ -3,6 +3,7 @@ import { DiscordAPIError } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v10";
 import { ensureBaseCommand } from "./discord/registration";
 import { createRestClient } from "./discord/rest-client";
+import { t } from "./i18n";
 import type { Env } from "./types";
 
 let cachedSecret: string | null = null;
@@ -71,7 +72,7 @@ type GuildCommandShape = {
 
 const mapGuildCommand = (cmd: GuildCommandShape) => ({
 	name: cmd.name,
-	description: cmd.description || "A command made by Slashy.",
+	description: cmd.description || t("en", "defaultDescription"),
 	type: 1,
 });
 

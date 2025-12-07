@@ -5,38 +5,54 @@ import {
 	type RESTGetAPIApplicationGuildCommandsResult,
 	Routes,
 } from "discord-api-types/v10";
+import { localizations, t } from "../i18n";
 
 export const baseCommand: RESTPostAPIChatInputApplicationCommandsJSONBody = {
 	name: "slashy",
-	description: "Manage custom slash commands",
+	description: t("en", "slashyDescription"),
+	description_localizations: localizations("slashyDescription"),
 	default_member_permissions: "32",
 	dm_permission: false,
 	options: [
-		{ type: ApplicationCommandOptionType.Subcommand, name: "add", description: "Create a custom command" },
+		{
+			type: ApplicationCommandOptionType.Subcommand,
+			name: "add",
+			description: t("en", "slashyAddDescription"),
+			description_localizations: localizations("slashyAddDescription"),
+		},
 		{
 			type: ApplicationCommandOptionType.Subcommand,
 			name: "edit",
-			description: "Edit a custom command",
+			description: t("en", "slashyEditDescription"),
+			description_localizations: localizations("slashyEditDescription"),
 			options: [
 				{
 					type: ApplicationCommandOptionType.String,
 					name: "name",
-					description: "Command name",
+					description: t("en", "slashyNameDescription"),
+					description_localizations: localizations("slashyNameDescription"),
 					required: true,
 					autocomplete: true,
 				},
 			],
 		},
-		{ type: ApplicationCommandOptionType.Subcommand, name: "list", description: "List custom commands" },
+		{
+			type: ApplicationCommandOptionType.Subcommand,
+			name: "list",
+			description: t("en", "slashyListDescription"),
+			description_localizations: localizations("slashyListDescription"),
+		},
 		{
 			type: ApplicationCommandOptionType.Subcommand,
 			name: "delete",
-			description: "Delete a custom command",
+			description: t("en", "slashyDeleteDescription"),
+			description_localizations: localizations("slashyDeleteDescription"),
 			options: [
 				{
 					type: ApplicationCommandOptionType.String,
 					name: "name",
-					description: "Command name",
+					description: t("en", "slashyDeleteNameDescription"),
+					description_localizations: localizations("slashyDeleteNameDescription"),
 					required: true,
 					autocomplete: true,
 				},
@@ -70,13 +86,21 @@ export const registerGuildCommand = async (input: GuildCommandRegistrationInput)
 	)) as RESTGetAPIApplicationGuildCommandsResult;
 
 	const existing = commands.find((command) => command.name === name);
-	const desc = (description || "A command made by Slashy.").slice(0, 100);
+	const desc = (description || t("en", "defaultDescription")).slice(0, 100);
+	const isDefaultDescription = !description;
 
-	const payload: RESTPostAPIChatInputApplicationCommandsJSONBody = {
-		name,
-		description: desc,
-		type: 1,
-	};
+	const payload: RESTPostAPIChatInputApplicationCommandsJSONBody = isDefaultDescription
+		? {
+				name,
+				description: desc,
+				description_localizations: localizations("defaultDescription"),
+				type: 1,
+			}
+		: {
+				name,
+				description: desc,
+				type: 1,
+			};
 
 	if (existing) {
 		await rest.patch(Routes.applicationGuildCommand(appId, guildId, existing.id), { body: payload });

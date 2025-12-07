@@ -3,6 +3,7 @@ import { InteractionResponseType, MessageFlags } from "discord-api-types/v10";
 import { getCommand, updateCommand, upsertCommand } from "../db/commands";
 import { ensureGuild, guildCommandCount } from "../db/guilds";
 import { deleteGuildCommand, registerGuildCommand } from "../discord/registration";
+import { resolveLocale, t } from "../i18n";
 import type { HandlerContext } from "../types";
 import { collectFields, hasManageGuild, parseVisibility, sanitizeName } from "../utils/interaction";
 import { captureEvent } from "../utils/posthog";
@@ -54,18 +55,19 @@ const parseCustomId = (customId: string) => {
 
 export const handleModal = async ({ interaction, context }: HandleModalInput) => {
 	const guildId = interaction.guild_id;
+	const locale = resolveLocale(interaction);
 	if (!guildId)
 		return jsonResponse({
 			data: {
 				type: InteractionResponseType.ChannelMessageWithSource,
-				data: { content: "Use this in a server.", flags: MessageFlags.Ephemeral },
+				data: { content: t(locale, "useInServer"), flags: MessageFlags.Ephemeral },
 			},
 		});
 	if (!hasManageGuild(interaction.member?.permissions))
 		return jsonResponse({
 			data: {
 				type: InteractionResponseType.ChannelMessageWithSource,
-				data: { content: "Manage Server required.", flags: MessageFlags.Ephemeral },
+				data: { content: t(locale, "manageServerRequired"), flags: MessageFlags.Ephemeral },
 			},
 		});
 
@@ -74,7 +76,7 @@ export const handleModal = async ({ interaction, context }: HandleModalInput) =>
 		return jsonResponse({
 			data: {
 				type: InteractionResponseType.ChannelMessageWithSource,
-				data: { content: "Unsupported modal.", flags: MessageFlags.Ephemeral },
+				data: { content: t(locale, "unsupportedModal"), flags: MessageFlags.Ephemeral },
 			},
 		});
 
@@ -86,7 +88,7 @@ export const handleModal = async ({ interaction, context }: HandleModalInput) =>
 		return jsonResponse({
 			data: {
 				type: InteractionResponseType.ChannelMessageWithSource,
-				data: { content: "Invalid name.", flags: MessageFlags.Ephemeral },
+				data: { content: t(locale, "invalidName"), flags: MessageFlags.Ephemeral },
 			},
 		});
 
@@ -95,19 +97,19 @@ export const handleModal = async ({ interaction, context }: HandleModalInput) =>
 		return jsonResponse({
 			data: {
 				type: InteractionResponseType.ChannelMessageWithSource,
-				data: { content: "Reply is required.", flags: MessageFlags.Ephemeral },
+				data: { content: t(locale, "replyRequired"), flags: MessageFlags.Ephemeral },
 			},
 		});
 
 	const rawDescription = (fields.description ?? "").trim();
-	const description = (rawDescription || "A command made by Slashy.").slice(0, 100);
+	const description = (rawDescription || t(locale, "defaultDescription")).slice(0, 100);
 
 	const visibilityParsed = parseVisibility(fields.visibility_select ?? fields.visibility ?? fields.ephemeral);
 	if (visibilityParsed === undefined)
 		return jsonResponse({
 			data: {
 				type: InteractionResponseType.ChannelMessageWithSource,
-				data: { content: "Invalid visibility. Use public or ephemeral.", flags: MessageFlags.Ephemeral },
+				data: { content: t(locale, "invalidVisibility"), flags: MessageFlags.Ephemeral },
 			},
 		});
 
@@ -120,7 +122,7 @@ export const handleModal = async ({ interaction, context }: HandleModalInput) =>
 		return jsonResponse({
 			data: {
 				type: InteractionResponseType.ChannelMessageWithSource,
-				data: { content: "Command not found.", flags: MessageFlags.Ephemeral },
+				data: { content: t(locale, "commandNotFound"), flags: MessageFlags.Ephemeral },
 			},
 		});
 
@@ -132,7 +134,7 @@ export const handleModal = async ({ interaction, context }: HandleModalInput) =>
 			return jsonResponse({
 				data: {
 					type: InteractionResponseType.ChannelMessageWithSource,
-					data: { content: "That name is already in use.", flags: MessageFlags.Ephemeral },
+					data: { content: t(locale, "nameInUse"), flags: MessageFlags.Ephemeral },
 				},
 			});
 	}
@@ -145,7 +147,7 @@ export const handleModal = async ({ interaction, context }: HandleModalInput) =>
 		return jsonResponse({
 			data: {
 				type: InteractionResponseType.ChannelMessageWithSource,
-				data: { content: "This server is banned.", flags: MessageFlags.Ephemeral },
+				data: { content: t(locale, "guildBanned"), flags: MessageFlags.Ephemeral },
 			},
 		});
 
@@ -154,7 +156,7 @@ export const handleModal = async ({ interaction, context }: HandleModalInput) =>
 			data: {
 				type: InteractionResponseType.ChannelMessageWithSource,
 				data: {
-					content: `Limit reached (${guild.maxCommands}). Delete some first.`,
+					content: t(locale, "limitReached", { limit: guild.maxCommands }),
 					flags: MessageFlags.Ephemeral,
 				},
 			},
@@ -171,7 +173,7 @@ export const handleModal = async ({ interaction, context }: HandleModalInput) =>
 				data: {
 					type: InteractionResponseType.ChannelMessageWithSource,
 					data: {
-						content: `Saved but failed to register with Discord: ${registration.error}`,
+						content: t(locale, "savedButFailedDiscord", { error: registration.error ?? "unknown" }),
 						flags: MessageFlags.Ephemeral,
 					},
 				},
@@ -193,7 +195,7 @@ export const handleModal = async ({ interaction, context }: HandleModalInput) =>
 		return jsonResponse({
 			data: {
 				type: InteractionResponseType.ChannelMessageWithSource,
-				data: { content: `/${name} added.`, flags: MessageFlags.Ephemeral },
+				data: { content: t(locale, "addedCommand", { name }), flags: MessageFlags.Ephemeral },
 			},
 		});
 	}
@@ -218,7 +220,7 @@ export const handleModal = async ({ interaction, context }: HandleModalInput) =>
 				data: {
 					type: InteractionResponseType.ChannelMessageWithSource,
 					data: {
-						content: `Saved but failed to register with Discord: ${registration.error}`,
+						content: t(locale, "savedButFailedDiscord", { error: registration.error ?? "unknown" }),
 						flags: MessageFlags.Ephemeral,
 					},
 				},
@@ -230,7 +232,7 @@ export const handleModal = async ({ interaction, context }: HandleModalInput) =>
 				data: {
 					type: InteractionResponseType.ChannelMessageWithSource,
 					data: {
-						content: `Failed to register new name with Discord: ${registration.error}`,
+						content: t(locale, "failedRegisterNewName", { error: registration.error ?? "unknown" }),
 						flags: MessageFlags.Ephemeral,
 					},
 				},
@@ -268,7 +270,9 @@ export const handleModal = async ({ interaction, context }: HandleModalInput) =>
 		},
 	});
 
-	const content = rename ? `/${name} updated (was /${existingName}).` : `/${name} updated.`;
+	const content = rename
+		? t(locale, "updatedCommandRenamed", { name, previousName: existingName })
+		: t(locale, "updatedCommand", { name });
 
 	return jsonResponse({
 		data: {

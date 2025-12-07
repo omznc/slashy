@@ -1,6 +1,7 @@
 import { type APIInteraction, InteractionResponseType, MessageFlags } from "discord-api-types/v10";
 import { handleAdmin, primeAdminSecret } from "./admin";
 import { createHandlerContext } from "./context";
+import { resolveLocale, t } from "./i18n";
 import { logInteractionDebug } from "./interactions/debug";
 import { routeInteraction } from "./router";
 import type { Env } from "./types";
@@ -36,7 +37,7 @@ export default {
 			return jsonResponse({
 				data: {
 					type: InteractionResponseType.ChannelMessageWithSource,
-					data: { content: "Error, try again.", flags: MessageFlags.Ephemeral },
+					data: { content: t(resolveLocale(interaction), "errorTryAgain"), flags: MessageFlags.Ephemeral },
 				},
 			});
 		}

@@ -4,6 +4,7 @@ import type {
 } from "discord-api-types/v10";
 import { ApplicationCommandType, InteractionResponseType, MessageFlags } from "discord-api-types/v10";
 import { getCommand, incrementCommandUses } from "../db/commands";
+import { resolveLocale, t } from "../i18n";
 import type { HandlerContext } from "../types";
 import { formatReply } from "../utils/interaction";
 import { captureEvent } from "../utils/posthog";
@@ -16,11 +17,12 @@ export type HandleDynamicInput = {
 
 export const handleDynamic = async ({ interaction, context }: HandleDynamicInput) => {
 	const guildId = interaction.guild_id;
+	const locale = resolveLocale(interaction);
 	if (!guildId)
 		return jsonResponse({
 			data: {
 				type: InteractionResponseType.ChannelMessageWithSource,
-				data: { content: "Run this in a server.", flags: MessageFlags.Ephemeral },
+				data: { content: t(locale, "useInServer"), flags: MessageFlags.Ephemeral },
 			},
 		});
 
@@ -28,7 +30,7 @@ export const handleDynamic = async ({ interaction, context }: HandleDynamicInput
 		return jsonResponse({
 			data: {
 				type: InteractionResponseType.ChannelMessageWithSource,
-				data: { content: "Use chat input commands.", flags: MessageFlags.Ephemeral },
+				data: { content: t(locale, "chatInputOnly"), flags: MessageFlags.Ephemeral },
 			},
 		});
 	const data = interaction.data as APIChatInputApplicationCommandInteractionData;
@@ -38,7 +40,7 @@ export const handleDynamic = async ({ interaction, context }: HandleDynamicInput
 		return jsonResponse({
 			data: {
 				type: InteractionResponseType.ChannelMessageWithSource,
-				data: { content: "Unknown command. Use /slashy add to create it.", flags: MessageFlags.Ephemeral },
+				data: { content: t(locale, "unknownCommand"), flags: MessageFlags.Ephemeral },
 			},
 		});
 

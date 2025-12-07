@@ -5,6 +5,8 @@ export type GuildInfo = {
 	maxCommands: number;
 };
 
+export type EnsureGuildResult = GuildInfo & { created: boolean };
+
 type GuildRow = {
 	banned: number;
 	maxCommands: number;
@@ -15,11 +17,12 @@ export type EnsureGuildInput = {
 	env: Env;
 };
 
-export const ensureGuild = async ({ guildId, env }: EnsureGuildInput): Promise<GuildInfo> => {
+export const ensureGuild = async ({ guildId, env }: EnsureGuildInput): Promise<EnsureGuildResult> => {
 	const defaultMax = Number.isFinite(Number(env.MAX_COMMANDS)) ? Number(env.MAX_COMMANDS) : 50;
-	await env.DB.prepare("INSERT OR IGNORE INTO guilds (id, max_commands) VALUES (?, ?)")
+	const insertResult = await env.DB.prepare("INSERT OR IGNORE INTO guilds (id, max_commands) VALUES (?, ?)")
 		.bind(guildId, defaultMax)
 		.run();
+	const created = insertResult.meta.changes > 0;
 
 	const row = await env.DB.prepare("SELECT banned, max_commands AS maxCommands FROM guilds WHERE id = ?")
 		.bind(guildId)
@@ -28,6 +31,7 @@ export const ensureGuild = async ({ guildId, env }: EnsureGuildInput): Promise<G
 	return {
 		banned: !!row?.banned,
 		maxCommands: row?.maxCommands ?? defaultMax,
+		created,
 	};
 };
 

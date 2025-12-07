@@ -140,10 +140,7 @@ export const handleModal = async ({ interaction, context, ctx }: HandleModalInpu
 			});
 	}
 
-	const [guild, count] = await Promise.all([
-		ensureGuild({ guildId, env: context.env }),
-		guildCommandCount({ guildId, env: context.env }),
-	]);
+	const guild = await ensureGuild({ guildId, env: context.env });
 	if (guild.banned)
 		return jsonResponse({
 			data: {
@@ -151,6 +148,22 @@ export const handleModal = async ({ interaction, context, ctx }: HandleModalInpu
 				data: { content: t(locale, "guildBanned"), flags: MessageFlags.Ephemeral },
 			},
 		});
+
+	const count = await guildCommandCount({ guildId, env: context.env });
+	if (guild.created)
+		ctx.waitUntil(
+			captureEvent({
+				env: context.env,
+				options: {
+					distinctId: guildId,
+					event: "guild_joined",
+					properties: {
+						maxCommands: guild.maxCommands,
+						commandCount: count,
+					},
+				},
+			}),
+		);
 
 	if (!isEdit && count >= guild.maxCommands)
 		return jsonResponse({

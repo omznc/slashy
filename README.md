@@ -1,6 +1,6 @@
 <p align="center"><img src="https://i.imgur.com/j8rrx7R.png" style="width: 8rem;border-radius: 20%;"><h1 align="center">Slashy – Create custom slash commands on Discord</h1></p>
 <p align="center" style="display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;">
-    <a href="hhttps://discord.com/api/oauth2/authorize?client_id=928089024252506173&scope=applications.commands%20bot&permissions=0"><img src="media/invite-to-discord-button.svg" alt="Invite to Discord" style="height:42px;display:block;"></a>
+    <a href="https://discord.com/api/oauth2/authorize?client_id=928089024252506173&scope=applications.commands%20bot&permissions=0"><img src="media/invite-to-discord-button.svg" alt="Invite to Discord" style="height:42px;display:block;"></a>
   <a href="https://deploy.workers.cloudflare.com/?url=https://github.com/omznc/slashy"><img src="https://deploy.workers.cloudflare.com/button" alt="Deploy to Cloudflare" style="height:42px;display:block;"></a>
 </p>
 
@@ -17,7 +17,7 @@ Couple of cool features:
   - full internationalization ([all Discord locales  are supported](https://discord.com/developers/docs/reference#locales))
   - admin endpoints (limiting the number of commands per-guild, and banning guilds)
 
-The publicly-hosted version of Slashy can be [added with this link](hhttps://discord.com/api/oauth2/authorize?client_id=928089024252506173&scope=applications.commands%20bot&permissions=0), or the button in the header. You can also (pretty easily) host it yourself if you'd like.
+The publicly-hosted version of Slashy can be [added with this link](https://discord.com/api/oauth2/authorize?client_id=928089024252506173&scope=applications.commands%20bot&permissions=0), or the button in the header. You can also (pretty easily) host it yourself if you'd like.
 
 Have fun.
 

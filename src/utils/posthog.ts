@@ -28,7 +28,12 @@ const resetClient = () => {
 	if (client !== null) client = undefined;
 };
 
-export const captureEvent = async (env: Env, options: CaptureOptions) => {
+export type CaptureEventInput = {
+	env: Env;
+	options: CaptureOptions;
+};
+
+export const captureEvent = async ({ env, options }: CaptureEventInput) => {
 	const instance = await loadPostHog(env);
 
 	if (!instance) return;

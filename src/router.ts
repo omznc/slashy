@@ -14,17 +14,26 @@ import { handleSlashy, handleSlashyAutocomplete } from "./handlers/slashy";
 import type { HandlerContext } from "./types";
 import { jsonResponse } from "./utils/responses";
 
-type InteractionRoute = (interaction: APIInteraction, context: HandlerContext) => Promise<Response>;
+type InteractionRouteInput = {
+	interaction: APIInteraction;
+	context: HandlerContext;
+};
 
-type AutocompleteRoute = (
-	interaction: APIApplicationCommandAutocompleteInteraction,
-	context: HandlerContext,
-) => Promise<Response>;
+type InteractionRoute = (input: InteractionRouteInput) => Promise<Response>;
 
-type ApplicationCommandRoute = (
-	interaction: APIApplicationCommandInteraction,
-	context: HandlerContext,
-) => Promise<Response>;
+type AutocompleteRouteInput = {
+	interaction: APIApplicationCommandAutocompleteInteraction;
+	context: HandlerContext;
+};
+
+type AutocompleteRoute = (input: AutocompleteRouteInput) => Promise<Response>;
+
+type ApplicationCommandRouteInput = {
+	interaction: APIApplicationCommandInteraction;
+	context: HandlerContext;
+};
+
+type ApplicationCommandRoute = (input: ApplicationCommandRouteInput) => Promise<Response>;
 
 const isApplicationCommandInteraction = (
 	interaction: APIInteraction,
@@ -38,43 +47,48 @@ const isAutocompleteInteraction = (
 ): interaction is APIApplicationCommandAutocompleteInteraction =>
 	interaction.type === InteractionType.ApplicationCommandAutocomplete;
 
-const routeAutocomplete: AutocompleteRoute = async (interaction, context) => {
+const routeAutocomplete: AutocompleteRoute = async ({ interaction, context }) => {
 	if (interaction.data.name === "slashy") {
 		ensureBaseCommand({ rest: context.rest, appId: context.env.DISCORD_APP_ID }).catch((error) =>
 			console.error("ensureBaseCommand", error),
 		);
 
-		return handleSlashyAutocomplete(interaction, context);
+		return handleSlashyAutocomplete({ interaction, context });
 	}
 
 	return jsonResponse({
-		type: InteractionResponseType.ApplicationCommandAutocompleteResult,
-		data: { choices: [] },
+		data: {
+			type: InteractionResponseType.ApplicationCommandAutocompleteResult,
+			data: { choices: [] },
+		},
 	});
 };
 
-const routeApplicationCommand: ApplicationCommandRoute = async (interaction, context) => {
+const routeApplicationCommand: ApplicationCommandRoute = async ({ interaction, context }) => {
 	if (interaction.data.name === "slashy") {
 		ensureBaseCommand({ rest: context.rest, appId: context.env.DISCORD_APP_ID }).catch((error) =>
 			console.error("ensureBaseCommand", error),
 		);
 
-		return handleSlashy(interaction, context);
+		return handleSlashy({ interaction, context });
 	}
 
-	return handleDynamic(interaction, context);
+	return handleDynamic({ interaction, context });
 };
 
-export const routeInteraction: InteractionRoute = async (interaction, context) => {
-	if (interaction.type === InteractionType.Ping) return jsonResponse({ type: InteractionResponseType.Pong });
+export const routeInteraction: InteractionRoute = async ({ interaction, context }) => {
+	if (interaction.type === InteractionType.Ping)
+		return jsonResponse({ data: { type: InteractionResponseType.Pong } });
 
-	if (isAutocompleteInteraction(interaction)) return routeAutocomplete(interaction, context);
-	if (isApplicationCommandInteraction(interaction)) return routeApplicationCommand(interaction, context);
+	if (isAutocompleteInteraction(interaction)) return routeAutocomplete({ interaction, context });
+	if (isApplicationCommandInteraction(interaction)) return routeApplicationCommand({ interaction, context });
 	if (isModalSubmitInteraction(interaction) && interaction.data.custom_id === "slashy:add")
-		return handleModal(interaction, context);
+		return handleModal({ interaction, context });
 
 	return jsonResponse({
-		type: InteractionResponseType.ChannelMessageWithSource,
-		data: { content: "Unsupported interaction.", flags: MessageFlags.Ephemeral },
+		data: {
+			type: InteractionResponseType.ChannelMessageWithSource,
+			data: { content: "Unsupported interaction.", flags: MessageFlags.Ephemeral },
+		},
 	});
 };

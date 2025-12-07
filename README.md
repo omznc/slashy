@@ -48,6 +48,8 @@ The current Slashy version (and hopefully final) runs in Cloudflare Workers off 
 - Secret: set `SLASHY_SECRET` or let the worker log a generated one on first boot.
 - `GET /admin/register-base` registers `/slashy` globally.
 - `GET /admin/reset-commands?guildId=123,456` resets global `/slashy` and recreates guild commands (excluding `/slashy`) for listed guilds.
+- `POST /admin/guild-limit` sets a guild's max commands; body `{ "guildId": "123", "limit": 50 }` (query params also work).
+- `POST /admin/guild-ban` sets banned flag; body `{ "guildId": "123", "banned": true }` (query params also work).
 
 ## Env / secrets
 - `DISCORD_TOKEN`, `DISCORD_APP_ID`, `DISCORD_PUBLIC_KEY` secrets in Wrangler.

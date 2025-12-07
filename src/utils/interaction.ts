@@ -94,7 +94,12 @@ export const collectFields = (interaction: APIModalSubmitInteraction) => {
 	return entries;
 };
 
-export const formatReply = (template: string, interaction: APIApplicationCommandInteraction) => {
+export type FormatReplyInput = {
+	template: string;
+	interaction: APIApplicationCommandInteraction;
+};
+
+export const formatReply = ({ template, interaction }: FormatReplyInput) => {
 	const userId = interaction.member?.user.id ?? interaction.user?.id ?? "";
 	const username = interaction.member?.user.username ?? interaction.user?.username ?? "user";
 

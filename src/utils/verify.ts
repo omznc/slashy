@@ -10,12 +10,14 @@ const hexToUint8 = (hex: string) => {
 	return bytes;
 };
 
-export const verifySignature = (
-	body: string,
-	signature: string | null,
-	timestamp: string | null,
-	publicKey: string,
-) => {
+export type VerifySignatureInput = {
+	body: string;
+	signature: string | null;
+	timestamp: string | null;
+	publicKey: string;
+};
+
+export const verifySignature = ({ body, signature, timestamp, publicKey }: VerifySignatureInput) => {
 	if (!signature || !timestamp) return false;
 
 	const message = encoder.encode(timestamp + body);

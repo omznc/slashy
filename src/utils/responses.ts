@@ -1,6 +1,11 @@
 export type JsonInit = number | ResponseInit;
 
-export const jsonResponse = (data: unknown, init: JsonInit = 200) => {
+export type JsonResponseInput = {
+	data: unknown;
+	init?: JsonInit;
+};
+
+export const jsonResponse = ({ data, init = 200 }: JsonResponseInput) => {
 	const status = typeof init === "number" ? init : (init.status ?? 200);
 
 	return new Response(JSON.stringify(data), {

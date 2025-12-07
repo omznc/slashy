@@ -35,7 +35,13 @@ type ListedCommandRow = {
 	ephemeral: number;
 };
 
-export const getCommand = async (guildId: string, name: string, env: Env): Promise<CommandRecord | undefined> => {
+export type GetCommandInput = {
+	guildId: string;
+	name: string;
+	env: Env;
+};
+
+export const getCommand = async ({ guildId, name, env }: GetCommandInput): Promise<CommandRecord | undefined> => {
 	const row = await env.DB.prepare("SELECT id, reply, ephemeral FROM commands WHERE guild_id = ? AND name = ?")
 		.bind(guildId, name)
 		.first<CommandRow>();
@@ -45,11 +51,21 @@ export const getCommand = async (guildId: string, name: string, env: Env): Promi
 	return { id: row.id, reply: row.reply, ephemeral: !!row.ephemeral };
 };
 
-export const incrementCommandUses = async (commandId: string, env: Env) => {
+export type IncrementCommandUsesInput = {
+	commandId: string;
+	env: Env;
+};
+
+export const incrementCommandUses = async ({ commandId, env }: IncrementCommandUsesInput) => {
 	await env.DB.prepare("UPDATE commands SET uses = uses + 1 WHERE id = ?").bind(commandId).run();
 };
 
-export const listCommands = async (guildId: string, env: Env): Promise<ListedCommand[]> => {
+export type ListCommandsInput = {
+	guildId: string;
+	env: Env;
+};
+
+export const listCommands = async ({ guildId, env }: ListCommandsInput): Promise<ListedCommand[]> => {
 	const result = await env.DB.prepare(
 		"SELECT name, description, uses, ephemeral FROM commands WHERE guild_id = ? ORDER BY name",
 	)
@@ -64,12 +80,20 @@ export const listCommands = async (guildId: string, env: Env): Promise<ListedCom
 	}));
 };
 
-export const removeCommand = async (guildId: string, name: string, env: Env) => {
+export type RemoveCommandInput = {
+	guildId: string;
+	name: string;
+	env: Env;
+};
+
+export const removeCommand = async ({ guildId, name, env }: RemoveCommandInput) => {
 	await env.DB.prepare("DELETE FROM commands WHERE guild_id = ? AND name = ?").bind(guildId, name).run();
 };
 
-export const upsertCommand = async (input: UpsertCommandInput, env: Env) => {
-	const { id, guildId, name, reply, description, ephemeral } = input;
+export type UpsertCommandParams = UpsertCommandInput & { env: Env };
+
+export const upsertCommand = async (input: UpsertCommandParams) => {
+	const { id, guildId, name, reply, description, ephemeral, env } = input;
 
 	await env.DB.prepare(
 		"INSERT INTO commands (id, guild_id, name, reply, description, ephemeral) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (guild_id, name) DO UPDATE SET reply = excluded.reply, description = excluded.description, ephemeral = excluded.ephemeral",

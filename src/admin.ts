@@ -36,7 +36,12 @@ const getBearer = (authorization: string | null) => {
 	return authorization.trim();
 };
 
-const authorized = (request: Request, env: Env) => {
+type AuthorizedInput = {
+	request: Request;
+	env: Env;
+};
+
+const authorized = ({ request, env }: AuthorizedInput) => {
 	const secret = resolveSecret(env);
 	const url = new URL(request.url);
 	const header = getBearer(request.headers.get("authorization"));
@@ -46,7 +51,12 @@ const authorized = (request: Request, env: Env) => {
 	return secret && (header === secret || xHeader === secret || query === secret);
 };
 
-const json = (data: unknown, status = 200) =>
+type JsonInput = {
+	data: unknown;
+	status?: number;
+};
+
+const json = ({ data, status = 200 }: JsonInput) =>
 	new Response(JSON.stringify(data), {
 		status,
 		headers: { "content-type": "application/json" },
@@ -65,11 +75,22 @@ const mapGuildCommand = (cmd: GuildCommandShape) => ({
 	type: 1,
 });
 
-const resetGlobal = async (rest: REST, appId: string) => {
+export type ResetGlobalInput = {
+	rest: REST;
+	appId: string;
+};
+
+const resetGlobal = async ({ rest, appId }: ResetGlobalInput) => {
 	await ensureBaseCommand({ rest, appId });
 };
 
-const resetGuild = async (rest: REST, appId: string, guildId: string) => {
+export type ResetGuildInput = {
+	rest: REST;
+	appId: string;
+	guildId: string;
+};
+
+const resetGuild = async ({ rest, appId, guildId }: ResetGuildInput) => {
 	const existing = (await rest.get(Routes.applicationGuildCommands(appId, guildId))) as GuildCommandShape[];
 	const recreated = existing.filter((cmd) => cmd.name !== "slashy" && cmd.type === 1).map(mapGuildCommand);
 
@@ -77,18 +98,23 @@ const resetGuild = async (rest: REST, appId: string, guildId: string) => {
 	return recreated.length;
 };
 
-export const handleAdmin = async (request: Request, env: Env) => {
+export type HandleAdminInput = {
+	request: Request;
+	env: Env;
+};
+
+export const handleAdmin = async ({ request, env }: HandleAdminInput) => {
 	const url = new URL(request.url);
 	if (!url.pathname.startsWith("/admin")) return undefined;
 
 	const secret = resolveSecret(env);
-	if (!authorized(request, env)) return json({ error: "unauthorized" }, 401);
+	if (!authorized({ request, env })) return json({ data: { error: "unauthorized" }, status: 401 });
 
 	const rest = createRestClient(env.DISCORD_TOKEN);
 
 	if (url.pathname === "/admin/register-base") {
 		await ensureBaseCommand({ rest, appId: env.DISCORD_APP_ID });
-		return json({ ok: true });
+		return json({ data: { ok: true } });
 	}
 
 	if (url.pathname === "/admin/reset-commands") {
@@ -103,11 +129,11 @@ export const handleAdmin = async (request: Request, env: Env) => {
 		const result: { global: string; guilds: { id: string; status: string; recreated?: number; error?: string }[] } =
 			{ global: "ok", guilds: [] };
 
-		await resetGlobal(rest, env.DISCORD_APP_ID);
+		await resetGlobal({ rest, appId: env.DISCORD_APP_ID });
 
 		for (const gid of guildIds) {
 			try {
-				const recreated = await resetGuild(rest, env.DISCORD_APP_ID, gid);
+				const recreated = await resetGuild({ rest, appId: env.DISCORD_APP_ID, guildId: gid });
 				result.guilds.push({ id: gid, status: "ok", recreated });
 			} catch (error) {
 				if (
@@ -120,7 +146,84 @@ export const handleAdmin = async (request: Request, env: Env) => {
 				result.guilds.push({ id: gid, status: "error", error: String(error) });
 			}
 		}
-		return json({ secret, ...result });
+		return json({ data: { secret, ...result } });
 	}
-	return json({ error: "not found" }, 404);
+	if (url.pathname === "/admin/guild-limit") {
+		const body = request.method === "POST" ? await request.json().catch(() => ({})) : {};
+		const guildId =
+			(body as { guildId?: string; guild?: string }).guildId ??
+			(body as { guild?: string }).guild ??
+			url.searchParams.get("guildId") ??
+			url.searchParams.get("guild");
+		const limitParam =
+			(body as { limit?: unknown; max?: unknown }).limit ??
+			(body as { max?: unknown }).max ??
+			url.searchParams.get("limit") ??
+			url.searchParams.get("max");
+		const limit = Number(limitParam);
+
+		if (!guildId) return json({ data: { error: "missing guildId" }, status: 400 });
+		if (!Number.isFinite(limit)) return json({ data: { error: "invalid limit" }, status: 400 });
+
+		await env.DB.prepare("INSERT OR IGNORE INTO guilds (id, max_commands) VALUES (?, ?)")
+			.bind(guildId, limit)
+			.run();
+		await env.DB.prepare("UPDATE guilds SET max_commands = ? WHERE id = ?").bind(limit, guildId).run();
+
+		const row = await env.DB.prepare("SELECT max_commands AS maxCommands FROM guilds WHERE id = ?")
+			.bind(guildId)
+			.first<{ maxCommands: number }>();
+
+		return json({ data: { guildId, maxCommands: row?.maxCommands ?? limit } });
+	}
+	if (url.pathname === "/admin/guild-ban") {
+		const body = request.method === "POST" ? await request.json().catch(() => ({})) : {};
+		const guildId =
+			(body as { guildId?: string; guild?: string }).guildId ??
+			(body as { guild?: string }).guild ??
+			url.searchParams.get("guildId") ??
+			url.searchParams.get("guild");
+		const bannedParam =
+			(body as { banned?: unknown; ban?: unknown }).banned ??
+			(body as { ban?: unknown }).ban ??
+			url.searchParams.get("banned") ??
+			url.searchParams.get("ban");
+
+		if (!guildId) return json({ data: { error: "missing guildId" }, status: 400 });
+		const bannedString = typeof bannedParam === "string" ? bannedParam.trim().toLowerCase() : bannedParam;
+		const banned =
+			bannedString === true ||
+			bannedString === 1 ||
+			bannedString === "1" ||
+			bannedString === "true" ||
+			bannedString === "yes" ||
+			bannedString === "y" ||
+			bannedString === "on";
+		const bannedValid =
+			bannedString === 0 ||
+			bannedString === "0" ||
+			bannedString === false ||
+			bannedString === "false" ||
+			bannedString === "no" ||
+			bannedString === "n" ||
+			bannedString === "off" ||
+			banned ||
+			bannedString === undefined;
+
+		if (!bannedValid) return json({ data: { error: "invalid banned" }, status: 400 });
+
+		const bannedValue = banned ? 1 : 0;
+
+		await env.DB.prepare("INSERT OR IGNORE INTO guilds (id, banned) VALUES (?, ?)")
+			.bind(guildId, bannedValue)
+			.run();
+		await env.DB.prepare("UPDATE guilds SET banned = ? WHERE id = ?").bind(bannedValue, guildId).run();
+
+		const row = await env.DB.prepare("SELECT banned FROM guilds WHERE id = ?")
+			.bind(guildId)
+			.first<{ banned: number }>();
+
+		return json({ data: { guildId, banned: !!row?.banned } });
+	}
+	return json({ data: { error: "not found" }, status: 404 });
 };

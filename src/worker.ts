@@ -7,11 +7,16 @@ import type { Env } from "./types";
 import { jsonResponse } from "./utils/responses";
 import { verifySignature } from "./utils/verify";
 
+type FetchInput = {
+	request: Request;
+	env: Env;
+};
+
 export default {
-	async fetch(request: Request, env: Env): Promise<Response> {
+	async fetch({ request, env }: FetchInput): Promise<Response> {
 		primeAdminSecret(env);
 
-		const adminResponse = await handleAdmin(request, env);
+		const adminResponse = await handleAdmin({ request, env });
 		if (adminResponse) return adminResponse;
 
 		if (request.method === "GET") return new Response("ok");
@@ -20,7 +25,7 @@ export default {
 		const timestamp = request.headers.get("x-signature-timestamp");
 		const body = await request.text();
 
-		if (!verifySignature(body, signature, timestamp, env.DISCORD_PUBLIC_KEY))
+		if (!verifySignature({ body, signature, timestamp, publicKey: env.DISCORD_PUBLIC_KEY }))
 			return new Response("invalid request", { status: 401 });
 
 		const interaction = JSON.parse(body) as APIInteraction;
@@ -29,13 +34,15 @@ export default {
 		const context = createHandlerContext(env);
 
 		try {
-			return await routeInteraction(interaction, context);
+			return await routeInteraction({ interaction, context });
 		} catch (error) {
 			console.error("dispatch error", error);
 
 			return jsonResponse({
-				type: InteractionResponseType.ChannelMessageWithSource,
-				data: { content: "Error, try again.", flags: MessageFlags.Ephemeral },
+				data: {
+					type: InteractionResponseType.ChannelMessageWithSource,
+					data: { content: "Error, try again.", flags: MessageFlags.Ephemeral },
+				},
 			});
 		}
 	},

@@ -67,15 +67,10 @@ async function resetGuild(guildId: string) {
 		await rest.put(Routes.applicationGuildCommands(appId, guildId), { body: recreated });
 
 		console.log(
-			`guild ${guildId}: deleted ${existing.length} commands (${existing
-				.map((c) => c.name)
-				.join(", ")}) and recreated ${recreated.length}`,
+			`guild ${guildId}: deleted ${existing.length} commands (${existing.map((c) => c.name).join(", ")}) and recreated ${recreated.length}`,
 		);
 	} catch (error) {
-		if (
-			error instanceof DiscordAPIError &&
-			(error.status === 403 || error.status === 404 || error.code === 50001)
-		) {
+		if (error instanceof DiscordAPIError && (error.status === 403 || error.status === 404 || error.code === 50001)) {
 			console.warn(`guild ${guildId}: missing access, skipped`);
 			return;
 		}

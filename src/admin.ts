@@ -127,8 +127,7 @@ export const handleAdmin = async ({ request, env }: HandleAdminInput) => {
 					.filter(Boolean)
 			: [];
 
-		const result: { global: string; guilds: { id: string; status: string; recreated?: number; error?: string }[] } =
-			{ global: "ok", guilds: [] };
+		const result: { global: string; guilds: { id: string; status: string; recreated?: number; error?: string }[] } = { global: "ok", guilds: [] };
 
 		await resetGlobal({ rest, appId: env.DISCORD_APP_ID });
 
@@ -137,10 +136,7 @@ export const handleAdmin = async ({ request, env }: HandleAdminInput) => {
 				const recreated = await resetGuild({ rest, appId: env.DISCORD_APP_ID, guildId: gid });
 				result.guilds.push({ id: gid, status: "ok", recreated });
 			} catch (error) {
-				if (
-					error instanceof DiscordAPIError &&
-					(error.status === 403 || error.status === 404 || error.code === 50001)
-				) {
+				if (error instanceof DiscordAPIError && (error.status === 403 || error.status === 404 || error.code === 50001)) {
 					result.guilds.push({ id: gid, status: "skipped", error: "missing access" });
 					continue;
 				}
@@ -166,9 +162,7 @@ export const handleAdmin = async ({ request, env }: HandleAdminInput) => {
 		if (!guildId) return json({ data: { error: "missing guildId" }, status: 400 });
 		if (!Number.isFinite(limit)) return json({ data: { error: "invalid limit" }, status: 400 });
 
-		await env.DB.prepare("INSERT OR IGNORE INTO guilds (id, max_commands) VALUES (?, ?)")
-			.bind(guildId, limit)
-			.run();
+		await env.DB.prepare("INSERT OR IGNORE INTO guilds (id, max_commands) VALUES (?, ?)").bind(guildId, limit).run();
 		await env.DB.prepare("UPDATE guilds SET max_commands = ? WHERE id = ?").bind(limit, guildId).run();
 
 		const row = await env.DB.prepare("SELECT max_commands AS maxCommands FROM guilds WHERE id = ?")
@@ -215,14 +209,10 @@ export const handleAdmin = async ({ request, env }: HandleAdminInput) => {
 
 		const bannedValue = banned ? 1 : 0;
 
-		await env.DB.prepare("INSERT OR IGNORE INTO guilds (id, banned) VALUES (?, ?)")
-			.bind(guildId, bannedValue)
-			.run();
+		await env.DB.prepare("INSERT OR IGNORE INTO guilds (id, banned) VALUES (?, ?)").bind(guildId, bannedValue).run();
 		await env.DB.prepare("UPDATE guilds SET banned = ? WHERE id = ?").bind(bannedValue, guildId).run();
 
-		const row = await env.DB.prepare("SELECT banned FROM guilds WHERE id = ?")
-			.bind(guildId)
-			.first<{ banned: number }>();
+		const row = await env.DB.prepare("SELECT banned FROM guilds WHERE id = ?").bind(guildId).first<{ banned: number }>();
 
 		return json({ data: { guildId, banned: !!row?.banned } });
 	}

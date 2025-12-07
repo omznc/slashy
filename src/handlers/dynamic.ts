@@ -1,7 +1,4 @@
-import type {
-	APIApplicationCommandInteraction,
-	APIChatInputApplicationCommandInteractionData,
-} from "discord-api-types/v10";
+import type { APIApplicationCommandInteraction, APIChatInputApplicationCommandInteractionData } from "discord-api-types/v10";
 import { ApplicationCommandType, InteractionResponseType, MessageFlags } from "discord-api-types/v10";
 import { getCommand, incrementCommandUses } from "../db/commands";
 import { resolveLocale, t } from "../i18n";
@@ -44,6 +41,20 @@ export const handleDynamic = async ({ interaction, context, ctx }: HandleDynamic
 					appId: context.env.DISCORD_APP_ID,
 					token: interaction.token,
 					content: t(locale, "unknownCommand"),
+					flags: MessageFlags.Ephemeral,
+					rest: context.rest,
+				});
+				return;
+			}
+
+			const allowedRoles = command.allowedRoles ?? [];
+			const memberRoles =
+				Array.isArray((interaction.member as { roles?: string[] } | undefined)?.roles) && interaction.member ? interaction.member.roles : [];
+			if (allowedRoles.length && !memberRoles.some((roleId) => allowedRoles.includes(roleId))) {
+				await editInteractionResponse({
+					appId: context.env.DISCORD_APP_ID,
+					token: interaction.token,
+					content: t(locale, "roleNotAllowed"),
 					flags: MessageFlags.Ephemeral,
 					rest: context.rest,
 				});

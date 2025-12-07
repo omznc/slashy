@@ -29,11 +29,7 @@ export const resolveLocale = (input?: { locale?: string; guild_locale?: string }
 	return normalizeLocale(input?.locale ?? input?.guild_locale);
 };
 
-export const t = (
-	input: { locale?: SupportedLocale; guild_locale?: string } | string | undefined,
-	key: MessageKey,
-	vars?: Vars,
-) => {
+export const t = (input: { locale?: SupportedLocale; guild_locale?: string } | string | undefined, key: MessageKey, vars?: Vars) => {
 	const locale = resolveLocale(input);
 	const table = translations[key];
 	const template = table[locale as SupportedLocale] ?? table[fallbackLocale];

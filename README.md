@@ -14,7 +14,8 @@ Couple of cool features:
   - command adding, editing, deleting and listing (for admins/managers)
   - tracking the usages of each command (for admins/managers, or the bot host via PostHog)
   - ephemeral replies (only the person that runs the command gets to see its reply)
-  - full internationalization ([all Discord locales  are supported](https://discord.com/developers/docs/reference#locales))
+  - role-gated commands (multi-select roles per command; empty = everyone)
+  - full internationalization ([all Discord locales  are supported](https://discord.com/developers/docs/reference#locales), can't vouch on how correct they are)
   - admin endpoints (limiting the number of commands per-guild, and banning guilds)
 
 The publicly-hosted version of Slashy can be [added with this link](https://discord.com/api/oauth2/authorize?client_id=928089024252506173&scope=applications.commands%20bot&permissions=0), or the button in the header. You can also (pretty easily) host it yourself if you'd like.
@@ -37,6 +38,7 @@ https://github.com/user-attachments/assets/2ced7d0e-7fbc-4fa9-b6e9-2722d79a5863
 - `/slashy edit <name>` edit a command. Has autocomplete too.
 
 - Created commands become real slash commands per guild; replies honor the stored visibility flag.
+- Optional role gate: select allowed roles in the modal; if none are chosen, everyone can run it.
 
 ## Placeholders
 Command replies can have placeholders, check out the full list in [`PLACEHOLDERS.md`](./PLACEHOLDERS.md).
@@ -92,7 +94,7 @@ The current Slashy version (and hopefully final) runs in Cloudflare Workers off 
 - `bun dev -- --remote` (or `bunx wrangler dev src/worker.ts --remote` to hit real Discord)
 
 ## Data model
-- `commands`: `id`, `guild_id`, `name` (unique per guild), `reply`, `description` (<=100), `ephemeral` (0/1), `uses`, timestamps.
+- `commands`: `id`, `guild_id`, `name` (unique per guild), `reply`, `description` (<=100), `ephemeral` (0/1), `allowed_roles` (JSON array of role IDs), `uses`, timestamps.
 - `guilds`: `id`, `banned`, `max_commands` (default 50, override with `MAX_COMMANDS`), `joined_at`.
 
 ## Notes

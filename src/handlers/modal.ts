@@ -21,12 +21,7 @@ export type RegisterWithDiscordInput = {
 	context: HandlerContext;
 };
 
-const registerWithDiscord = async ({
-	name,
-	description,
-	guildId,
-	context,
-}: RegisterWithDiscordInput): Promise<RegisterResult> => {
+const registerWithDiscord = async ({ name, description, guildId, context }: RegisterWithDiscordInput): Promise<RegisterResult> => {
 	try {
 		await registerGuildCommand({
 			rest: context.rest,
@@ -49,10 +44,19 @@ export type HandleModalInput = {
 
 const parseCustomId = (customId: string) => {
 	if (customId === "slashy:add") return { mode: "add" as const };
-	if (customId.startsWith("slashy:edit:"))
-		return { mode: "edit" as const, originalName: sanitizeName(customId.slice("slashy:edit:".length)) };
+	if (customId.startsWith("slashy:edit:")) return { mode: "edit" as const, originalName: sanitizeName(customId.slice("slashy:edit:".length)) };
 	return { mode: "unknown" as const };
 };
+
+const parseRoleIds = (value: string | undefined) =>
+	Array.from(
+		new Set(
+			(value ?? "")
+				.split(",")
+				.map((entry) => entry.trim())
+				.filter(Boolean),
+		),
+	).slice(0, 25);
 
 export const handleModal = async ({ interaction, context, ctx }: HandleModalInput) => {
 	const guildId = interaction.guild_id;
@@ -115,9 +119,9 @@ export const handleModal = async ({ interaction, context, ctx }: HandleModalInpu
 		});
 
 	const ephemeral = visibilityParsed;
+	const allowedRoles = parseRoleIds(fields.role_select);
 
-	const existing =
-		isEdit && originalName ? await getCommand({ guildId, name: originalName, env: context.env }) : undefined;
+	const existing = isEdit && originalName ? await getCommand({ guildId, name: originalName, env: context.env }) : undefined;
 
 	if (isEdit && (!originalName || !existing))
 		return jsonResponse({
@@ -182,7 +186,16 @@ export const handleModal = async ({ interaction, context, ctx }: HandleModalInpu
 				const id = crypto.randomUUID();
 				const [registration] = await Promise.all([
 					registerWithDiscord({ name, description, guildId, context }),
-					upsertCommand({ id, guildId, name, reply, description, ephemeral, env: context.env }),
+					upsertCommand({
+						id,
+						guildId,
+						name,
+						reply,
+						description,
+						ephemeral,
+						allowedRoles,
+						env: context.env,
+					}),
 				]);
 
 				const content = registration.success
@@ -232,6 +245,7 @@ export const handleModal = async ({ interaction, context, ctx }: HandleModalInpu
 						reply,
 						description,
 						ephemeral,
+						allowedRoles,
 						env: context.env,
 					}),
 				]);
@@ -258,6 +272,7 @@ export const handleModal = async ({ interaction, context, ctx }: HandleModalInpu
 					reply,
 					description,
 					ephemeral,
+					allowedRoles,
 					env: context.env,
 				});
 				await deleteGuildCommand({

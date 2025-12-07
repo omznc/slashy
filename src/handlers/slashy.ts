@@ -5,12 +5,7 @@ import type {
 	APIApplicationCommandInteractionDataSubcommandOption,
 	APIChatInputApplicationCommandInteractionData,
 } from "discord-api-types/v10";
-import {
-	ApplicationCommandOptionType,
-	ApplicationCommandType,
-	InteractionResponseType,
-	MessageFlags,
-} from "discord-api-types/v10";
+import { ApplicationCommandOptionType, ApplicationCommandType, InteractionResponseType, MessageFlags } from "discord-api-types/v10";
 import { getCommand, listCommands, removeCommand } from "../db/commands";
 import { deleteGuildCommand } from "../discord/registration";
 import { resolveLocale, t } from "../i18n";
@@ -36,9 +31,7 @@ type ListInput = {
 	ctx: ExecutionContext;
 };
 
-type SubcommandOptions =
-	| APIChatInputApplicationCommandInteractionData["options"]
-	| APIApplicationCommandAutocompleteInteraction["data"]["options"];
+type SubcommandOptions = APIChatInputApplicationCommandInteractionData["options"] | APIApplicationCommandAutocompleteInteraction["data"]["options"];
 
 type AutocompleteOption = APIApplicationCommandInteractionDataOption<4> & {
 	options?: AutocompleteOption[];
@@ -59,6 +52,7 @@ type ModalCommandState = {
 	reply: string;
 	description: string;
 	ephemeral: boolean;
+	allowedRoles: string[];
 };
 
 const modalResponse = (locale: string, command?: ModalCommandState) =>
@@ -140,6 +134,26 @@ const modalResponse = (locale: string, command?: ModalCommandState) =>
 							],
 						},
 					},
+					{
+						type: 18,
+						label: t(locale, "modalRoleSelectLabel"),
+						description: t(locale, "modalRoleSelectDescription"),
+						component: {
+							type: 6,
+							custom_id: "role_select",
+							min_values: 0,
+							max_values: 25,
+							required: false,
+							...(command?.allowedRoles?.length
+								? {
+										default_values: command.allowedRoles.map((roleId) => ({
+											id: roleId,
+											type: "role" as const,
+										})),
+									}
+								: {}),
+						},
+					},
 				],
 			},
 		},
@@ -152,8 +166,7 @@ const handleList = async ({ guildId, context, locale, token, ctx }: ListInput) =
 			const usesLabel = t(locale, "usesLabel");
 			const ephemeralLabel = t(locale, "ephemeralLabel");
 			const lines = commands.map(
-				(row) =>
-					`/${row.name} — ${row.description} (${row.uses} ${usesLabel}${row.ephemeral ? `, ${ephemeralLabel}` : ""})`,
+				(row) => `/${row.name} — ${row.description} (${row.uses} ${usesLabel}${row.ephemeral ? `, ${ephemeralLabel}` : ""})`,
 			);
 			const content = lines.join("\n").slice(0, 1900) || t(locale, "listEmpty");
 
@@ -298,6 +311,7 @@ export const handleSlashy = async ({ interaction, context, ctx }: HandleSlashyIn
 			reply: command.reply,
 			description: command.description,
 			ephemeral: command.ephemeral,
+			allowedRoles: command.allowedRoles,
 		});
 	}
 

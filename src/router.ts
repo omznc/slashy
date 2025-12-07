@@ -39,23 +39,18 @@ type ApplicationCommandRouteInput = {
 
 type ApplicationCommandRoute = (input: ApplicationCommandRouteInput) => Promise<Response>;
 
-const isApplicationCommandInteraction = (
-	interaction: APIInteraction,
-): interaction is APIApplicationCommandInteraction => interaction.type === InteractionType.ApplicationCommand;
+const isApplicationCommandInteraction = (interaction: APIInteraction): interaction is APIApplicationCommandInteraction =>
+	interaction.type === InteractionType.ApplicationCommand;
 
 const isModalSubmitInteraction = (interaction: APIInteraction): interaction is APIModalSubmitInteraction =>
 	interaction.type === InteractionType.ModalSubmit;
 
-const isAutocompleteInteraction = (
-	interaction: APIInteraction,
-): interaction is APIApplicationCommandAutocompleteInteraction =>
+const isAutocompleteInteraction = (interaction: APIInteraction): interaction is APIApplicationCommandAutocompleteInteraction =>
 	interaction.type === InteractionType.ApplicationCommandAutocomplete;
 
 const routeAutocomplete: AutocompleteRoute = async ({ interaction, context }) => {
 	if (interaction.data.name === "slashy") {
-		ensureBaseCommand({ rest: context.rest, appId: context.env.DISCORD_APP_ID }).catch((error) =>
-			console.error("ensureBaseCommand", error),
-		);
+		ensureBaseCommand({ rest: context.rest, appId: context.env.DISCORD_APP_ID }).catch((error) => console.error("ensureBaseCommand", error));
 
 		return handleSlashyAutocomplete({ interaction, context });
 	}
@@ -70,9 +65,7 @@ const routeAutocomplete: AutocompleteRoute = async ({ interaction, context }) =>
 
 const routeApplicationCommand: ApplicationCommandRoute = async ({ interaction, context, ctx }) => {
 	if (interaction.data.name === "slashy") {
-		ensureBaseCommand({ rest: context.rest, appId: context.env.DISCORD_APP_ID }).catch((error) =>
-			console.error("ensureBaseCommand", error),
-		);
+		ensureBaseCommand({ rest: context.rest, appId: context.env.DISCORD_APP_ID }).catch((error) => console.error("ensureBaseCommand", error));
 
 		return handleSlashy({ interaction, context, ctx });
 	}
@@ -81,13 +74,11 @@ const routeApplicationCommand: ApplicationCommandRoute = async ({ interaction, c
 };
 
 export const routeInteraction: InteractionRoute = async ({ interaction, context, ctx }) => {
-	if (interaction.type === InteractionType.Ping)
-		return jsonResponse({ data: { type: InteractionResponseType.Pong } });
+	if (interaction.type === InteractionType.Ping) return jsonResponse({ data: { type: InteractionResponseType.Pong } });
 
 	if (isAutocompleteInteraction(interaction)) return routeAutocomplete({ interaction, context, ctx });
 	if (isApplicationCommandInteraction(interaction)) return routeApplicationCommand({ interaction, context, ctx });
-	if (isModalSubmitInteraction(interaction) && interaction.data.custom_id?.startsWith("slashy:"))
-		return handleModal({ interaction, context, ctx });
+	if (isModalSubmitInteraction(interaction) && interaction.data.custom_id?.startsWith("slashy:")) return handleModal({ interaction, context, ctx });
 
 	const locale = resolveLocale(interaction);
 

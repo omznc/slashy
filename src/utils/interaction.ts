@@ -1,9 +1,4 @@
-import type {
-	APIApplicationCommandInteraction,
-	APIModalComponent,
-	APIModalSubmitInteraction,
-	APISelectMenuComponent,
-} from "discord-api-types/v10";
+import type { APIApplicationCommandInteraction, APIModalComponent, APIModalSubmitInteraction, APISelectMenuComponent } from "discord-api-types/v10";
 
 type VisibilityParseResult = boolean | undefined;
 
@@ -213,8 +208,9 @@ const isComponentWrapper = (row: ModalComponentRow | ComponentWrapper): row is C
 const extractComponentValue = (component: ModalComponentEntry): ComponentValue | null => {
 	if (!("custom_id" in component) || typeof component.custom_id !== "string") return null;
 
-	if ("values" in component && Array.isArray(component.values) && typeof component.values[0] === "string") {
-		return { id: component.custom_id, value: component.values[0] };
+	if ("values" in component && Array.isArray(component.values)) {
+		const values = component.values.filter((value): value is string => typeof value === "string");
+		return { id: component.custom_id, value: values.join(",") };
 	}
 
 	if ("value" in component && typeof component.value === "string") {

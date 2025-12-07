@@ -1,10 +1,6 @@
 import type { REST } from "@discordjs/rest";
 import type { RESTPostAPIChatInputApplicationCommandsJSONBody } from "discord-api-types/v10";
-import {
-	ApplicationCommandOptionType,
-	type RESTGetAPIApplicationGuildCommandsResult,
-	Routes,
-} from "discord-api-types/v10";
+import { ApplicationCommandOptionType, type RESTGetAPIApplicationGuildCommandsResult, Routes } from "discord-api-types/v10";
 import { localizations, t } from "../i18n";
 
 export const baseCommand: RESTPostAPIChatInputApplicationCommandsJSONBody = {
@@ -81,9 +77,7 @@ export type GuildCommandRegistrationInput = {
 export const registerGuildCommand = async (input: GuildCommandRegistrationInput) => {
 	const { rest, appId, guildId, name, description } = input;
 
-	const commands = (await rest.get(
-		Routes.applicationGuildCommands(appId, guildId),
-	)) as RESTGetAPIApplicationGuildCommandsResult;
+	const commands = (await rest.get(Routes.applicationGuildCommands(appId, guildId))) as RESTGetAPIApplicationGuildCommandsResult;
 
 	const existing = commands.find((command) => command.name === name);
 	const desc = (description || t("en", "defaultDescription")).slice(0, 100);
@@ -120,9 +114,7 @@ export type DeleteGuildCommandInput = {
 export const deleteGuildCommand = async (input: DeleteGuildCommandInput) => {
 	const { rest, appId, guildId, name } = input;
 
-	const commands = (await rest.get(
-		Routes.applicationGuildCommands(appId, guildId),
-	)) as RESTGetAPIApplicationGuildCommandsResult;
+	const commands = (await rest.get(Routes.applicationGuildCommands(appId, guildId))) as RESTGetAPIApplicationGuildCommandsResult;
 
 	const target = commands.find((command) => command.name === name);
 	if (!target) return;

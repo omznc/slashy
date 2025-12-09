@@ -72,7 +72,7 @@ type GuildCommandShape = {
 
 const mapGuildCommand = (cmd: GuildCommandShape) => ({
 	name: cmd.name,
-	description: cmd.description || t("en", "defaultDescription"),
+	description: cmd.description || t("en", "defaultDescription", { user: "unknown user" }),
 	type: 1,
 });
 

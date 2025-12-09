@@ -107,7 +107,9 @@ export const handleModal = async ({ interaction, context, ctx }: HandleModalInpu
 		});
 
 	const rawDescription = (fields.description ?? "").trim();
-	const description = (rawDescription || t(locale, "defaultDescription")).slice(0, 100);
+	const user = interaction.member?.user ?? interaction.user;
+	const displayName = interaction.member?.nick || user?.global_name || user?.username || "";
+	const description = (rawDescription || t(locale, "defaultDescription", { user: displayName || "someone" })).slice(0, 100);
 
 	const visibilityParsed = parseVisibility(fields.visibility_select ?? fields.visibility ?? fields.ephemeral);
 	if (visibilityParsed === undefined)

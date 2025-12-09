@@ -80,14 +80,18 @@ export const registerGuildCommand = async (input: GuildCommandRegistrationInput)
 	const commands = (await rest.get(Routes.applicationGuildCommands(appId, guildId))) as RESTGetAPIApplicationGuildCommandsResult;
 
 	const existing = commands.find((command) => command.name === name);
-	const desc = (description || t("en", "defaultDescription")).slice(0, 100);
+	const defaultUser = "Slashy";
+	const desc = (description || t("en", "defaultDescription", { user: defaultUser })).slice(0, 100);
 	const isDefaultDescription = !description;
+	const localizedDefaultDescription = Object.fromEntries(
+		Object.entries(localizations("defaultDescription")).map(([locale, value]) => [locale, value.replaceAll("{user}", defaultUser)]),
+	);
 
 	const payload: RESTPostAPIChatInputApplicationCommandsJSONBody = isDefaultDescription
 		? {
 				name,
 				description: desc,
-				description_localizations: localizations("defaultDescription"),
+				description_localizations: localizedDefaultDescription,
 				type: 1,
 			}
 		: {

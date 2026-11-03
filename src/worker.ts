@@ -5,6 +5,7 @@ import { resolveLocale, t } from "./i18n";
 import { logInteractionDebug } from "./interactions/debug";
 import { routeInteraction } from "./router";
 import type { Env } from "./types";
+import { captureError } from "./utils/posthog";
 import { jsonResponse } from "./utils/responses";
 import { verifySignature } from "./utils/verify";
 
@@ -33,6 +34,7 @@ export default {
 			return await routeInteraction({ interaction, context, ctx });
 		} catch (error) {
 			console.error("dispatch error", error);
+			ctx.waitUntil(captureError({ env, error, distinctId: interaction.guild_id, properties: { source: "dispatch" } }));
 
 			return jsonResponse({
 				data: {

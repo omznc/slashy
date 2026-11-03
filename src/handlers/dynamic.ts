@@ -4,7 +4,7 @@ import { getCommand, incrementCommandUses } from "../db/commands";
 import { resolveLocale, t } from "../i18n";
 import type { HandlerContext } from "../types";
 import { formatReply } from "../utils/interaction";
-import { captureEvent } from "../utils/posthog";
+import { captureError, captureEvent } from "../utils/posthog";
 import { jsonResponse } from "../utils/responses";
 
 export type HandleDynamicInput = {
@@ -58,6 +58,7 @@ export const handleDynamic = async ({ interaction, context, ctx }: HandleDynamic
 		content = (await formatReply({ template: command.reply, interaction })).slice(0, 2000);
 	} catch (error) {
 		console.error("formatReply error", error);
+		ctx.waitUntil(captureError({ env: context.env, error, distinctId: guildId, properties: { source: "formatReply" } }));
 		return jsonResponse({
 			data: {
 				type: InteractionResponseType.ChannelMessageWithSource,

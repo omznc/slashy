@@ -33,6 +33,29 @@ export type CaptureEventInput = {
 	options: CaptureOptions;
 };
 
+export type CaptureErrorInput = {
+	env: Env;
+	error: unknown;
+	distinctId?: string;
+	properties?: Record<string, unknown>;
+};
+
+export const captureError = async ({ env, error, distinctId, properties }: CaptureErrorInput) => {
+	const instance = await loadPostHog(env);
+
+	if (!instance) return;
+
+	try {
+		await instance.captureException(error, distinctId ?? "unknown", properties);
+	} catch {}
+
+	try {
+		await instance.shutdown();
+	} catch {}
+
+	resetClient();
+};
+
 export const captureEvent = async ({ env, options }: CaptureEventInput) => {
 	const instance = await loadPostHog(env);
 

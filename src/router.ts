@@ -13,6 +13,7 @@ import { handleModal } from "./handlers/modal";
 import { handleSlashy, handleSlashyAutocomplete } from "./handlers/slashy";
 import { resolveLocale, t } from "./i18n";
 import type { HandlerContext } from "./types";
+import { captureError } from "./utils/posthog";
 import { jsonResponse } from "./utils/responses";
 
 type InteractionRouteInput = {
@@ -48,9 +49,18 @@ const isModalSubmitInteraction = (interaction: APIInteraction): interaction is A
 const isAutocompleteInteraction = (interaction: APIInteraction): interaction is APIApplicationCommandAutocompleteInteraction =>
 	interaction.type === InteractionType.ApplicationCommandAutocomplete;
 
-const routeAutocomplete: AutocompleteRoute = async ({ interaction, context }) => {
+const syncBaseCommand = ({ context, ctx, guildId }: { context: HandlerContext; ctx: ExecutionContext; guildId?: string }) => {
+	ctx.waitUntil(
+		ensureBaseCommand({ rest: context.rest, appId: context.env.DISCORD_APP_ID }).catch((error) => {
+			console.error("ensureBaseCommand", error);
+			return captureError({ env: context.env, error, distinctId: guildId, properties: { source: "ensureBaseCommand" } });
+		}),
+	);
+};
+
+const routeAutocomplete: AutocompleteRoute = async ({ interaction, context, ctx }) => {
 	if (interaction.data.name === "slashy") {
-		ensureBaseCommand({ rest: context.rest, appId: context.env.DISCORD_APP_ID }).catch((error) => console.error("ensureBaseCommand", error));
+		syncBaseCommand({ context, ctx, guildId: interaction.guild_id });
 
 		return handleSlashyAutocomplete({ interaction, context });
 	}
@@ -65,7 +75,7 @@ const routeAutocomplete: AutocompleteRoute = async ({ interaction, context }) =>
 
 const routeApplicationCommand: ApplicationCommandRoute = async ({ interaction, context, ctx }) => {
 	if (interaction.data.name === "slashy") {
-		ensureBaseCommand({ rest: context.rest, appId: context.env.DISCORD_APP_ID }).catch((error) => console.error("ensureBaseCommand", error));
+		syncBaseCommand({ context, ctx, guildId: interaction.guild_id });
 
 		return handleSlashy({ interaction, context, ctx });
 	}

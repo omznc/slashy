@@ -85,7 +85,10 @@ export const handleDynamic = async ({ interaction, context, ctx }: HandleDynamic
 					},
 				},
 			}),
-		]).catch((error) => console.error("handleDynamic async error", error)),
+		]).catch((error) => {
+				console.error("handleDynamic async error", error);
+				return captureError({ env: context.env, error, distinctId: guildId, properties: { source: "handleDynamic" } });
+			}),
 	);
 
 	return jsonResponse({

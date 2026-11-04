@@ -11,7 +11,7 @@ import { deleteGuildCommand } from "../discord/registration";
 import { resolveLocale, t } from "../i18n";
 import type { HandlerContext } from "../types";
 import { hasManageGuild, sanitizeName } from "../utils/interaction";
-import { captureEvent } from "../utils/posthog";
+import { captureError, captureEvent } from "../utils/posthog";
 import { deferredResponse, editInteractionResponse, jsonResponse } from "../utils/responses";
 
 type DeleteInput = {
@@ -187,7 +187,10 @@ const handleList = async ({ guildId, context, locale, token, ctx }: ListInput) =
 					rest: context.rest,
 				}),
 			]);
-		})().catch((error) => console.error("handleList async error", error)),
+		})().catch((error) => {
+			console.error("handleList async error", error);
+			return captureError({ env: context.env, error, distinctId: guildId, properties: { source: "handleList" } });
+		}),
 	);
 
 	return deferredResponse(true);
@@ -225,7 +228,10 @@ const handleDelete = async ({ guildId, name, context, locale, token, ctx }: Dele
 					rest: context.rest,
 				}),
 			]);
-		})().catch((error) => console.error("handleDelete async error", error)),
+		})().catch((error) => {
+			console.error("handleDelete async error", error);
+			return captureError({ env: context.env, error, distinctId: guildId, properties: { source: "handleDelete" } });
+		}),
 	);
 
 	return deferredResponse(true);

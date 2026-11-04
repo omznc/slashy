@@ -6,7 +6,7 @@ import { deleteGuildCommand, registerGuildCommand } from "../discord/registratio
 import { resolveLocale, t } from "../i18n";
 import type { HandlerContext } from "../types";
 import { collectFields, hasManageGuild, parseVisibility, sanitizeName } from "../utils/interaction";
-import { captureEvent } from "../utils/posthog";
+import { captureError, captureEvent } from "../utils/posthog";
 import { deferredResponse, editInteractionResponse, jsonResponse } from "../utils/responses";
 
 type RegisterResult = {
@@ -225,7 +225,10 @@ export const handleModal = async ({ interaction, context, ctx }: HandleModalInpu
 						rest: context.rest,
 					}),
 				]);
-			})().catch((error) => console.error("handleModal add async error", error)),
+			})().catch((error) => {
+				console.error("handleModal add async error", error);
+				return captureError({ env: context.env, error, distinctId: guildId, properties: { source: "handleModalAdd" } });
+			}),
 		);
 
 		return deferredResponse(true);
@@ -282,7 +285,10 @@ export const handleModal = async ({ interaction, context, ctx }: HandleModalInpu
 					appId: context.env.DISCORD_APP_ID,
 					guildId,
 					name: existingName,
-				}).catch((error) => console.error("deleteGuildCommand", error));
+				}).catch((error) => {
+						console.error("deleteGuildCommand", error);
+						return captureError({ env: context.env, error, distinctId: guildId, properties: { source: "deleteGuildCommand" } });
+					});
 
 				finalContent = t(locale, "updatedCommandRenamed", { name, previousName: existingName });
 			}
@@ -310,7 +316,10 @@ export const handleModal = async ({ interaction, context, ctx }: HandleModalInpu
 					rest: context.rest,
 				}),
 			]);
-		})().catch((error) => console.error("handleModal edit async error", error)),
+		})().catch((error) => {
+				console.error("handleModal edit async error", error);
+				return captureError({ env: context.env, error, distinctId: guildId, properties: { source: "handleModalEdit" } });
+			}),
 	);
 
 	return deferredResponse(true);
